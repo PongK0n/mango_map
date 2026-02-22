@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIANG MAP</title>
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700;800&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- CSS Styling เดิมของคุณ --- */
+        body { margin: 0; padding: 0; font-family: 'Barlow', 'Sarabun', sans-serif; overflow: hidden; }
+        #map { height: 100vh; width: 100%; padding-top: 80px; box-sizing: border-box; z-index: 1; }
+
+        .big-nav {
+            position: fixed; top: 0; left: 0; width: 100%; height: 80px;
+            background-color: #000; display: flex; align-items: center;
+            justify-content: space-between; padding: 0 30px; box-sizing: border-box;
+            z-index: 2000; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        
+        .nav-brand { color: white; font-size: 26px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
+        .nav-links { display: flex; gap: 15px; align-items: center; }
+        
+        .nav-btn {
+            background: none; border: none; color: #999; font-family: 'Barlow', sans-serif;
+            font-size: 16px; font-weight: 600; text-transform: uppercase;
+            cursor: pointer; padding: 10px 5px; transition: 0.3s; position: relative; white-space: nowrap; letter-spacing: 0.5px;
+        }
+        .nav-btn:hover { color: white; }
+        .nav-btn.active { color: white; font-size: 17px; font-weight: 700; }
+        .nav-btn.active::after {
+            content: ''; position: absolute; bottom: 5px; left: 0;
+            width: 100%; height: 3px; background-color: white; border-radius: 2px;
+        }
+
+        .gps-btn { color: #4dabf7 !important; }
+        .gps-btn:hover { color: #74c0fc !important; text-shadow: 0 0 5px #4dabf7; }
+
+        /* --- CSS ส่วนที่เพิ่มใหม่สำหรับระบบ Admin --- */
+        .admin-btn { color: #ff6b6b !important; border: 1px solid #ff6b6b; border-radius: 5px; padding: 5px 10px; margin-left: 10px; }
+        .admin-btn:hover { background-color: #ff6b6b; color: white !important; }
+
+        .edit-marker-btn {
+            margin-top: 10px; width: 100%; padding: 8px; background: #333; color: white;
+            border: none; border-radius: 4px; cursor: pointer; font-family: 'Barlow', sans-serif; font-weight: bold;
+        }
+        .edit-marker-btn:hover { background: #555; }
+
+        /* Modals (Login & Edit) */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); z-index: 3000; justify-content: center; align-items: center;
+        }
+        .modal-box {
+            background: white; padding: 25px; border-radius: 8px; width: 320px;
+            font-family: 'Barlow', 'Sarabun', sans-serif; box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            max-height: 90vh; overflow-y: auto;
+        }
+        .modal-box h3 { margin-top: 0; margin-bottom: 15px; }
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 14px; margin-bottom: 5px; font-weight: bold; }
+        .form-group input, .form-group select {
+            width: 100%; padding: 8px; box-sizing: border-box;
+            border: 1px solid #ccc; border-radius: 4px; font-family: 'Sarabun', sans-serif;
+        }
+        .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+        .btn { padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-cancel { background: #ddd; color: #333; }
+        .btn-save { background: #1a73e8; color: white; }
+
+        /* Popup Card Style เดิม */
+        .leaflet-popup-content-wrapper { border-radius: 8px; padding: 0; }
+        .leaflet-popup-content { margin: 0; width: 280px !important; }
+        .g-card { padding: 16px; width: 100%; box-sizing: border-box; color: #333; font-family: 'Sarabun', sans-serif; }
+        .g-header { font-size: 12px; color: #777; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .g-title { font-size: 18px; font-weight: bold; margin-bottom: 5px; color: #000; line-height: 1.3; }
+        .g-address { font-size: 14px; color: #555; margin-bottom: 8px; }
+        .g-link-row { display: flex; align-items: center; margin-bottom: 5px; font-size: 14px; }
+        .g-icon { margin-right: 8px; width: 16px; text-align: center; }
+        .g-link { color: #1a73e8; text-decoration: none; font-weight: 500; }
+        .g-rating { margin-top: 10px; color: #e7711b; font-weight: bold; font-family: 'Barlow', sans-serif; }
+        
+        @media (max-width: 768px) {
+            .big-nav { flex-direction: column; height: auto; padding: 15px 0; align-items: flex-start; }
+            .nav-brand { margin-left: 20px; margin-bottom: 5px; }
+            .nav-links { width: 100%; overflow-x: auto; white-space: nowrap; padding-left: 20px; padding-bottom: 10px; gap: 15px; }
+            .nav-links::-webkit-scrollbar { display: none; }
+            #map { padding-top: 110px; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="big-nav">
+        <div class="nav-brand">MIANG MAP</div>
+        <div class="nav-links">
+            <button onclick="filterMap('all')" class="nav-btn active">Home</button>
+            <button onclick="filterMap('stay')" class="nav-btn">🏠 Home Stay</button>
+            <button onclick="filterMap('food')" class="nav-btn">🍛 Eatery</button>
+            <button onclick="filterMap('tour')" class="nav-btn">🌳 Attraction</button>
+            <button onclick="findMyLocation()" class="nav-btn gps-btn">📍 My Location</button>
+            
+            <button id="authBtn" onclick="toggleAuthModal()" class="nav-btn admin-btn">Admin Login</button>
+        </div>
+    </nav>
+
+    <div id="map"></div>
+
+    <div id="loginModal" class="modal-overlay">
+        <div class="modal-box">
+            <h3>Admin Login</h3>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="emailInput" placeholder="Enter admin email">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="passwordInput" placeholder="Enter password">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-cancel" onclick="closeModal('loginModal')">Cancel</button>
+                <button class="btn btn-save" onclick="handleLogin()">Login</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="editModal" class="modal-overlay">
+        <div class="modal-box">
+            <h3>Edit Location</h3>
+            <input type="hidden" id="editId">
+            <div class="form-group">
+                <label>Name</label>
+                <input type="text" id="editName">
+            </div>
+            
+            <div class="form-group" style="display: flex; gap: 10px;">
+                <div style="flex: 1;">
+                    <label>Latitude</label>
+                    <input type="text" id="editLat">
+                </div>
+                <div style="flex: 1;">
+                    <label>Longitude</label>
+                    <input type="text" id="editLng">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Category</label>
+                <select id="editCat">
+                    <option value="stay">Home Stay</option>
+                    <option value="food">Eatery</option>
+                    <option value="tour">Attraction</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Phone</label>
+                <input type="text" id="editPhone">
+            </div>
+            <div class="form-group">
+                <label>Facebook Link URL</label>
+                <input type="text" id="editFacebook">
+            </div>
+            <div class="form-group">
+                <label>Rating (e.g. 5.0)</label>
+                <input type="text" id="editRating">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-cancel" onclick="closeModal('editModal')">Cancel</button>
+                <button class="btn btn-save" onclick="saveLocationEdit()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <script>
+        // --- 1. ตั้งค่าเชื่อมต่อ Supabase ---
+        const { createClient } = supabase;
+        const supabaseUrl = "https://siuxbtxvpsntzumcmzjb.supabase.co";
+        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNpdXhidHh2cHNudHp1bWNtempiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEzMzc3NzYsImV4cCI6MjA4NjkxMzc3Nn0.Hn2Nuut3JszHzDpbHFB3W4nPaW0eH9tVVdLSOU7GUNY";
+        const db = createClient(supabaseUrl, supabaseKey);
+
+        // --- ตัวแปรหลักของระบบ ---
+        let locations = [];
+        let isAdminLoggedIn = false;
+        let currentFilter = 'all';
+
+        // --- 2. สร้างแผนที่ Leaflet ---
+        var map = L.map('map').setView([18.83081, 99.38724], 15);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        var markersLayer = L.layerGroup().addTo(map);
+
+        // --- 3. ตรวจสอบสถานะล็อกอิน ---
+        db.auth.onAuthStateChange((event, session) => {
+            isAdminLoggedIn = !!session; // เป็น true ถ้ามี session
+            document.getElementById('authBtn').innerText = isAdminLoggedIn ? "Logout Admin" : "Admin Login";
+            filterMap(currentFilter); // รีเฟรชแผนที่เมื่อสถานะเปลี่ยน
+        });
+
+        // --- 4. ดึงข้อมูลสถานที่จากฐานข้อมูล ---
+        async function fetchLocations() {
+            const { data, error } = await db.from('locations').select('*');
+            if (error) {
+                console.error("Error fetching data:", error);
+                alert("ไม่สามารถโหลดข้อมูลจากฐานข้อมูลได้");
+                return;
+            }
+            locations = data; 
+            filterMap(currentFilter);
+        }
+
+        // --- 5. วาดหมุดและฟิลเตอร์หมวดหมู่ ---
+        function filterMap(category) {
+            currentFilter = category;
+            markersLayer.clearLayers();
+            
+            locations.forEach(loc => {
+                if (category === 'all' || loc.category === category) {
+                    
+                    // เพิ่ม draggable property ถ้าแอดมินล็อกอิน
+                    var marker = L.marker([loc.lat, loc.lng], {
+                        draggable: isAdminLoggedIn
+                    });
+
+                    // ฟังก์ชันเมื่อแอดมินลากหมุดไปวางที่ใหม่
+                    if (isAdminLoggedIn) {
+                        marker.on('dragend', async function(e) {
+                            const newPos = e.target.getLatLng();
+                            const confirmMove = confirm(`ต้องการย้ายตำแหน่ง "${loc.name}" ใช่หรือไม่?`);
+
+                            if (confirmMove) {
+                                const { error } = await db.from('locations').update({
+                                    lat: newPos.lat,
+                                    lng: newPos.lng
+                                }).eq('id', loc.id);
+
+                                if (error) {
+                                    alert("เกิดข้อผิดพลาดในการย้าย: " + error.message);
+                                } else {
+                                    alert("บันทึกตำแหน่งใหม่เรียบร้อยแล้ว!");
+                                }
+                                fetchLocations(); // โหลดข้อมูลใหม่เพื่อความชัวร์
+                            } else {
+                                fetchLocations(); // ถ้ากดยกเลิก ให้หมุดกลับที่เดิม
+                            }
+                        });
+                    }
+
+                    const address = loc.address || "-";
+                    const phone = loc.phone || "";
+                    const facebookLink = loc.facebook || "";
+                    const rating = loc.rating || "-";
+
+                    // ถ้าแอดมินล็อกอิน ให้แสดงปุ่ม Edit ท้าย Popup
+                    let adminControls = "";
+                    if (isAdminLoggedIn) {
+                        adminControls = `<button class="edit-marker-btn" onclick="openEditModal(${loc.id})">✏️ Edit Marker</button>`;
+                    }
+
+                    const popupHtml = `
+                        <div class="g-card">
+                            <div class="g-header">Location Info</div>
+                            <div class="g-title">${loc.name}</div>
+                            <div class="g-address">${address}</div>
+                            ${phone ? `<div class="g-link-row"><span class="g-icon">📞</span><a href="tel:${phone}" class="g-link">${phone}</a></div>` : ''}
+                            ${facebookLink ? `<div class="g-link-row"><span class="g-icon">📘</span><a href="${facebookLink}" target="_blank" class="g-link">Facebook Page</a></div>` : ''}
+                            <div class="g-rating">
+                                <span class="g-score">${rating}</span>
+                                <span class="g-stars">★★★★☆</span>
+                            </div>
+                            ${adminControls}
+                        </div>
+                    `;
+                    marker.bindPopup(popupHtml);
+                    markersLayer.addLayer(marker);
+                }
+            });
+
+            // อัปเดตสถานะปุ่มเมนูให้ทำงานตรงหมวดที่เลือก
+            const buttons = document.querySelectorAll('.nav-btn:not(.admin-btn):not(.gps-btn)');
+            buttons.forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(category)) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+
+        // --- 6. ระบบ Login / Logout แอดมิน ---
+        async function toggleAuthModal() {
+            if (isAdminLoggedIn) {
+                const { error } = await db.auth.signOut();
+                if(!error) alert("ออกจากระบบสำเร็จ");
+            } else {
+                document.getElementById('loginModal').style.display = "flex";
+            }
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = "none";
+        }
+
+        async function handleLogin() {
+            const email = document.getElementById('emailInput').value;
+            const pass = document.getElementById('passwordInput').value;
+            
+            const { error } = await db.auth.signInWithPassword({ email: email, password: pass });
+
+            if (error) {
+                alert("อีเมลหรือรหัสผ่านไม่ถูกต้อง");
+            } else {
+                alert("เข้าสู่ระบบสำเร็จ!");
+                document.getElementById('emailInput').value = '';
+                document.getElementById('passwordInput').value = '';
+                closeModal('loginModal');
+            }
+        }
+
+        // --- 7. ระบบแก้ไขข้อมูล ---
+        function openEditModal(id) {
+            const loc = locations.find(item => item.id === id);
+            if(!loc) return;
+
+            document.getElementById('editId').value = loc.id;
+            document.getElementById('editName').value = loc.name;
+            document.getElementById('editLat').value = loc.lat; // ใส่ค่าละติจูด
+            document.getElementById('editLng').value = loc.lng; // ใส่ค่าลองจิจูด
+            document.getElementById('editCat').value = loc.category;
+            document.getElementById('editPhone').value = loc.phone || "";
+            document.getElementById('editFacebook').value = loc.facebook || "";
+            document.getElementById('editRating').value = loc.rating || "";
+            
+            document.getElementById('editModal').style.display = "flex";
+            map.closePopup(); 
+        }
+
+        async function saveLocationEdit() {
+            const updateBtn = document.querySelector('.btn-save');
+            updateBtn.innerText = "กำลังบันทึก...";
+
+            const id = document.getElementById('editId').value;
+            const updatedData = {
+                name: document.getElementById('editName').value,
+                lat: parseFloat(document.getElementById('editLat').value), // บันทึกค่าละติจูด
+                lng: parseFloat(document.getElementById('editLng').value), // บันทึกค่าลองจิจูด
+                category: document.getElementById('editCat').value,
+                phone: document.getElementById('editPhone').value,
+                facebook: document.getElementById('editFacebook').value,
+                rating: document.getElementById('editRating').value
+            };
+
+            const { error } = await db.from('locations').update(updatedData).eq('id', id);
+
+            updateBtn.innerText = "Save Changes";
+
+            if (error) {
+                alert("เกิดข้อผิดพลาดในการบันทึก: " + error.message);
+            } else {
+                alert("อัปเดตข้อมูลสำเร็จ!");
+                closeModal('editModal');
+                fetchLocations(); // โหลดข้อมูลใหม่จากฐานข้อมูลมาแสดงทันที
+            }
+        }
+
+        // --- 8. GPS (เดิม) ---
+        var myLocationMarker = null;
+
+        function findMyLocation() {
+            map.locate({setView: true, maxZoom: 16});
+        }
+
+        map.on('locationfound', function(e) {
+            var radius = e.accuracy / 2;
+            if (myLocationMarker) map.removeLayer(myLocationMarker);
+            myLocationMarker = L.layerGroup([
+                L.marker(e.latlng).bindPopup("You are here (within " + radius.toFixed(0) + " m.)").openPopup(),
+                L.circle(e.latlng, radius)
+            ]).addTo(map);
+        });
+
+        map.on('locationerror', function(e) {
+            alert("Cannot access location. Please enable GPS permissions.");
+        });
+
+        // --- 9. โหลดข้อมูลเมื่อเปิดหน้าเว็บ ---
+        fetchLocations();
+
+    </script>
+</body>
+</html>
