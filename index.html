@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700;800&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
     
     <style>
-        /* --- CSS Styling เดิมของคุณ --- */
+        /* --- CSS Styling --- */
         body { margin: 0; padding: 0; font-family: 'Barlow', 'Sarabun', sans-serif; overflow: hidden; }
         #map { height: 100vh; width: 100%; padding-top: 80px; box-sizing: border-box; z-index: 1; }
 
@@ -38,7 +38,7 @@
         .gps-btn { color: #4dabf7 !important; }
         .gps-btn:hover { color: #74c0fc !important; text-shadow: 0 0 5px #4dabf7; }
 
-        /* --- CSS ส่วนที่เพิ่มใหม่สำหรับระบบ Admin --- */
+        /* --- CSS ส่วนของ Admin --- */
         .admin-btn { color: #ff6b6b !important; border: 1px solid #ff6b6b; border-radius: 5px; padding: 5px 10px; margin-left: 10px; }
         .admin-btn:hover { background-color: #ff6b6b; color: white !important; }
 
@@ -48,7 +48,17 @@
         }
         .edit-marker-btn:hover { background: #555; }
 
-        /* Modals (Login & Edit) */
+        /* 🌟 CSS ปุ่มเพิ่มสถานที่ใหม่ (มุมขวาล่าง) 🌟 */
+        .add-marker-float {
+            position: fixed; bottom: 30px; right: 30px;
+            background: #28a745; color: white; border: none; border-radius: 50px;
+            padding: 15px 25px; font-size: 16px; font-weight: bold; cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 2000; font-family: 'Barlow', sans-serif;
+            transition: 0.3s;
+        }
+        .add-marker-float:hover { background: #218838; transform: scale(1.05); }
+
+        /* Modals */
         .modal-overlay {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.6); z-index: 3000; justify-content: center; align-items: center;
@@ -69,8 +79,9 @@
         .btn { padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
         .btn-cancel { background: #ddd; color: #333; }
         .btn-save { background: #1a73e8; color: white; }
+        .btn-add-submit { background: #28a745; color: white; }
 
-        /* Popup Card Style เดิม */
+        /* Popup Card Style */
         .leaflet-popup-content-wrapper { border-radius: 8px; padding: 0; }
         .leaflet-popup-content { margin: 0; width: 280px !important; }
         .g-card { padding: 16px; width: 100%; box-sizing: border-box; color: #333; font-family: 'Sarabun', sans-serif; }
@@ -88,6 +99,7 @@
             .nav-links { width: 100%; overflow-x: auto; white-space: nowrap; padding-left: 20px; padding-bottom: 10px; gap: 15px; }
             .nav-links::-webkit-scrollbar { display: none; }
             #map { padding-top: 110px; }
+            .add-marker-float { bottom: 20px; right: 20px; padding: 12px 20px; font-size: 14px; }
         }
     </style>
 </head>
@@ -107,6 +119,10 @@
     </nav>
 
     <div id="map"></div>
+
+    <button id="addMarkerBtn" class="add-marker-float" onclick="openAddModal()" style="display: none;">
+        ➕ Add New Location
+    </button>
 
     <div id="loginModal" class="modal-overlay">
         <div class="modal-box">
@@ -173,6 +189,52 @@
         </div>
     </div>
 
+    <div id="addModal" class="modal-overlay">
+        <div class="modal-box">
+            <h3>Add New Location</h3>
+            <div class="form-group">
+                <label>Name *</label>
+                <input type="text" id="addName" placeholder="ชื่อสถานที่ (ต้องระบุ)">
+            </div>
+            
+            <div class="form-group" style="display: flex; gap: 10px;">
+                <div style="flex: 1;">
+                    <label>Latitude *</label>
+                    <input type="text" id="addLat">
+                </div>
+                <div style="flex: 1;">
+                    <label>Longitude *</label>
+                    <input type="text" id="addLng">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Category</label>
+                <select id="addCat">
+                    <option value="stay">Home Stay</option>
+                    <option value="food">Eatery</option>
+                    <option value="tour">Attraction</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Phone</label>
+                <input type="text" id="addPhone">
+            </div>
+            <div class="form-group">
+                <label>Facebook Link URL</label>
+                <input type="text" id="addFacebook">
+            </div>
+            <div class="form-group">
+                <label>Rating (e.g. 5.0)</label>
+                <input type="text" id="addRating">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-cancel" onclick="closeModal('addModal')">Cancel</button>
+                <button class="btn btn-add-submit" onclick="saveNewLocation()">Add Location</button>
+            </div>
+        </div>
+    </div>
+
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
@@ -200,6 +262,10 @@
         db.auth.onAuthStateChange((event, session) => {
             isAdminLoggedIn = !!session; // เป็น true ถ้ามี session
             document.getElementById('authBtn').innerText = isAdminLoggedIn ? "Logout Admin" : "Admin Login";
+            
+            // 🌟 ซ่อน/แสดง ปุ่ม Add Marker 🌟
+            document.getElementById('addMarkerBtn').style.display = isAdminLoggedIn ? "block" : "none";
+            
             filterMap(currentFilter); // รีเฟรชแผนที่เมื่อสถานะเปลี่ยน
         });
 
@@ -223,12 +289,10 @@
             locations.forEach(loc => {
                 if (category === 'all' || loc.category === category) {
                     
-                    // เพิ่ม draggable property ถ้าแอดมินล็อกอิน
                     var marker = L.marker([loc.lat, loc.lng], {
                         draggable: isAdminLoggedIn
                     });
 
-                    // ฟังก์ชันเมื่อแอดมินลากหมุดไปวางที่ใหม่
                     if (isAdminLoggedIn) {
                         marker.on('dragend', async function(e) {
                             const newPos = e.target.getLatLng();
@@ -245,9 +309,9 @@
                                 } else {
                                     alert("บันทึกตำแหน่งใหม่เรียบร้อยแล้ว!");
                                 }
-                                fetchLocations(); // โหลดข้อมูลใหม่เพื่อความชัวร์
+                                fetchLocations(); 
                             } else {
-                                fetchLocations(); // ถ้ากดยกเลิก ให้หมุดกลับที่เดิม
+                                fetchLocations(); 
                             }
                         });
                     }
@@ -257,7 +321,6 @@
                     const facebookLink = loc.facebook || "";
                     const rating = loc.rating || "-";
 
-                    // ถ้าแอดมินล็อกอิน ให้แสดงปุ่ม Edit ท้าย Popup
                     let adminControls = "";
                     if (isAdminLoggedIn) {
                         adminControls = `<button class="edit-marker-btn" onclick="openEditModal(${loc.id})">✏️ Edit Marker</button>`;
@@ -282,7 +345,6 @@
                 }
             });
 
-            // อัปเดตสถานะปุ่มเมนูให้ทำงานตรงหมวดที่เลือก
             const buttons = document.querySelectorAll('.nav-btn:not(.admin-btn):not(.gps-btn)');
             buttons.forEach(btn => {
                 btn.classList.remove('active');
@@ -329,8 +391,8 @@
 
             document.getElementById('editId').value = loc.id;
             document.getElementById('editName').value = loc.name;
-            document.getElementById('editLat').value = loc.lat; // ใส่ค่าละติจูด
-            document.getElementById('editLng').value = loc.lng; // ใส่ค่าลองจิจูด
+            document.getElementById('editLat').value = loc.lat;
+            document.getElementById('editLng').value = loc.lng;
             document.getElementById('editCat').value = loc.category;
             document.getElementById('editPhone').value = loc.phone || "";
             document.getElementById('editFacebook').value = loc.facebook || "";
@@ -347,8 +409,8 @@
             const id = document.getElementById('editId').value;
             const updatedData = {
                 name: document.getElementById('editName').value,
-                lat: parseFloat(document.getElementById('editLat').value), // บันทึกค่าละติจูด
-                lng: parseFloat(document.getElementById('editLng').value), // บันทึกค่าลองจิจูด
+                lat: parseFloat(document.getElementById('editLat').value),
+                lng: parseFloat(document.getElementById('editLng').value),
                 category: document.getElementById('editCat').value,
                 phone: document.getElementById('editPhone').value,
                 facebook: document.getElementById('editFacebook').value,
@@ -364,11 +426,66 @@
             } else {
                 alert("อัปเดตข้อมูลสำเร็จ!");
                 closeModal('editModal');
-                fetchLocations(); // โหลดข้อมูลใหม่จากฐานข้อมูลมาแสดงทันที
+                fetchLocations(); 
             }
         }
 
-        // --- 8. GPS (เดิม) ---
+        // --- 🌟 8. ระบบเพิ่มข้อมูลใหม่ (Add New Location) 🌟 ---
+        function openAddModal() {
+            // ดึงจุดกึ่งกลางของหน้าจอแผนที่ปัจจุบัน มาเป็นค่าเริ่มต้นให้ช่องพิกัด
+            const center = map.getCenter();
+            document.getElementById('addLat').value = center.lat.toFixed(5);
+            document.getElementById('addLng').value = center.lng.toFixed(5);
+
+            // เคลียร์ข้อมูลในช่องอื่นๆ ให้ว่าง
+            document.getElementById('addName').value = "";
+            document.getElementById('addCat').value = "stay";
+            document.getElementById('addPhone').value = "";
+            document.getElementById('addFacebook').value = "";
+            document.getElementById('addRating').value = "";
+
+            document.getElementById('addModal').style.display = "flex";
+        }
+
+        async function saveNewLocation() {
+            const name = document.getElementById('addName').value.trim();
+            const lat = document.getElementById('addLat').value;
+            const lng = document.getElementById('addLng').value;
+
+            // บังคับว่าต้องใส่ชื่อและพิกัด
+            if(!name || !lat || !lng) {
+                alert("กรุณาระบุชื่อสถานที่ และพิกัดให้ครบถ้วน");
+                return;
+            }
+
+            const addBtn = document.querySelector('.btn-add-submit');
+            addBtn.innerText = "กำลังเพิ่ม...";
+
+            const newData = {
+                name: name,
+                lat: parseFloat(lat),
+                lng: parseFloat(lng),
+                category: document.getElementById('addCat').value,
+                phone: document.getElementById('addPhone').value,
+                facebook: document.getElementById('addFacebook').value,
+                rating: document.getElementById('addRating').value
+            };
+
+            // อัปโหลดขึ้น Database ด้วยคำสั่ง .insert()
+            const { error } = await db.from('locations').insert([newData]);
+
+            addBtn.innerText = "Add Location";
+
+            if (error) {
+                alert("เกิดข้อผิดพลาดในการเพิ่มสถานที่: " + error.message);
+            } else {
+                alert("เพิ่มสถานที่ใหม่สำเร็จ! หมุดใหม่ลงแผนที่แล้ว");
+                closeModal('addModal');
+                fetchLocations(); // รีเฟรชเพื่อโหลดหมุดใหม่มาโชว์
+            }
+        }
+
+        // --- 9. GPS (เดิม) ---
         var myLocationMarker = null;
 
         function findMyLocation() {
@@ -388,7 +505,7 @@
             alert("Cannot access location. Please enable GPS permissions.");
         });
 
-        // --- 9. โหลดข้อมูลเมื่อเปิดหน้าเว็บ ---
+        // --- 10. โหลดข้อมูลเมื่อเปิดหน้าเว็บ ---
         fetchLocations();
 
     </script>
