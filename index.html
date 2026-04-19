@@ -1,108 +1,316 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MIANG MAP</title>
-    
+
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700;800&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
-    
+    <link
+        href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700;800&family=Sarabun:wght@300;400;600&display=swap"
+        rel="stylesheet">
+
     <style>
-        /* --- CSS Styling --- */
-        body { margin: 0; padding: 0; font-family: 'Barlow', 'Sarabun', sans-serif; overflow: hidden; }
-        #map { height: 100vh; width: 100%; padding-top: 80px; box-sizing: border-box; z-index: 1; }
+        /* --- CSS Styling เดิมของคุณ --- */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Barlow', 'Sarabun', sans-serif;
+            overflow: hidden;
+        }
+
+        #map {
+            height: 100vh;
+            width: 100%;
+            padding-top: 80px;
+            box-sizing: border-box;
+            z-index: 1;
+        }
 
         .big-nav {
-            position: fixed; top: 0; left: 0; width: 100%; height: 80px;
-            background-color: #000; display: flex; align-items: center;
-            justify-content: space-between; padding: 0 30px; box-sizing: border-box;
-            z-index: 2000; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 80px;
+            background-color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            box-sizing: border-box;
+            z-index: 2000;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
         }
-        
-        .nav-brand { color: white; font-size: 26px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
-        .nav-links { display: flex; gap: 15px; align-items: center; }
-        
+
+        .nav-brand {
+            color: white;
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
         .nav-btn {
-            background: none; border: none; color: #999; font-family: 'Barlow', sans-serif;
-            font-size: 16px; font-weight: 600; text-transform: uppercase;
-            cursor: pointer; padding: 10px 5px; transition: 0.3s; position: relative; white-space: nowrap; letter-spacing: 0.5px;
+            background: none;
+            border: none;
+            color: #999;
+            font-family: 'Barlow', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            text-transform: uppercase;
+            cursor: pointer;
+            padding: 10px 5px;
+            transition: 0.3s;
+            position: relative;
+            white-space: nowrap;
+            letter-spacing: 0.5px;
         }
-        .nav-btn:hover { color: white; }
-        .nav-btn.active { color: white; font-size: 17px; font-weight: 700; }
+
+        .nav-btn:hover {
+            color: white;
+        }
+
+        .nav-btn.active {
+            color: white;
+            font-size: 17px;
+            font-weight: 700;
+        }
+
         .nav-btn.active::after {
-            content: ''; position: absolute; bottom: 5px; left: 0;
-            width: 100%; height: 3px; background-color: white; border-radius: 2px;
+            content: '';
+            position: absolute;
+            bottom: 5px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: white;
+            border-radius: 2px;
         }
 
-        .gps-btn { color: #4dabf7 !important; }
-        .gps-btn:hover { color: #74c0fc !important; text-shadow: 0 0 5px #4dabf7; }
+        .gps-btn {
+            color: #4dabf7 !important;
+        }
 
-        /* --- CSS ส่วนของ Admin --- */
-        .admin-btn { color: #ff6b6b !important; border: 1px solid #ff6b6b; border-radius: 5px; padding: 5px 10px; margin-left: 10px; }
-        .admin-btn:hover { background-color: #ff6b6b; color: white !important; }
+        .gps-btn:hover {
+            color: #74c0fc !important;
+            text-shadow: 0 0 5px #4dabf7;
+        }
+
+        /* --- CSS ส่วนที่เพิ่มใหม่สำหรับระบบ Admin --- */
+        .admin-btn {
+            color: #ff6b6b !important;
+            border: 1px solid #ff6b6b;
+            border-radius: 5px;
+            padding: 5px 10px;
+            margin-left: 10px;
+        }
+
+        .admin-btn:hover {
+            background-color: #ff6b6b;
+            color: white !important;
+        }
 
         .edit-marker-btn {
-            margin-top: 10px; width: 100%; padding: 8px; background: #333; color: white;
-            border: none; border-radius: 4px; cursor: pointer; font-family: 'Barlow', sans-serif; font-weight: bold;
+            margin-top: 10px;
+            width: 100%;
+            padding: 8px;
+            background: #333;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'Barlow', sans-serif;
+            font-weight: bold;
         }
-        .edit-marker-btn:hover { background: #555; }
 
-        /* 🌟 CSS ปุ่มเพิ่มสถานที่ใหม่ (มุมขวาล่าง) 🌟 */
-        .add-marker-float {
-            position: fixed; bottom: 30px; right: 30px;
-            background: #28a745; color: white; border: none; border-radius: 50px;
-            padding: 15px 25px; font-size: 16px; font-weight: bold; cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 2000; font-family: 'Barlow', sans-serif;
-            transition: 0.3s;
+        .edit-marker-btn:hover {
+            background: #555;
         }
-        .add-marker-float:hover { background: #218838; transform: scale(1.05); }
 
-        /* Modals */
+        /* Modals (Login & Edit) */
         .modal-overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6); z-index: 3000; justify-content: center; align-items: center;
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 3000;
+            justify-content: center;
+            align-items: center;
         }
-        .modal-box {
-            background: white; padding: 25px; border-radius: 8px; width: 320px;
-            font-family: 'Barlow', 'Sarabun', sans-serif; box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            max-height: 90vh; overflow-y: auto;
-        }
-        .modal-box h3 { margin-top: 0; margin-bottom: 15px; }
-        .form-group { margin-bottom: 12px; }
-        .form-group label { display: block; font-size: 14px; margin-bottom: 5px; font-weight: bold; }
-        .form-group input, .form-group select {
-            width: 100%; padding: 8px; box-sizing: border-box;
-            border: 1px solid #ccc; border-radius: 4px; font-family: 'Sarabun', sans-serif;
-        }
-        .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
-        .btn { padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        .btn-cancel { background: #ddd; color: #333; }
-        .btn-save { background: #1a73e8; color: white; }
-        .btn-add-submit { background: #28a745; color: white; }
 
-        /* Popup Card Style */
-        .leaflet-popup-content-wrapper { border-radius: 8px; padding: 0; }
-        .leaflet-popup-content { margin: 0; width: 280px !important; }
-        .g-card { padding: 16px; width: 100%; box-sizing: border-box; color: #333; font-family: 'Sarabun', sans-serif; }
-        .g-header { font-size: 12px; color: #777; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .g-title { font-size: 18px; font-weight: bold; margin-bottom: 5px; color: #000; line-height: 1.3; }
-        .g-address { font-size: 14px; color: #555; margin-bottom: 8px; }
-        .g-link-row { display: flex; align-items: center; margin-bottom: 5px; font-size: 14px; }
-        .g-icon { margin-right: 8px; width: 16px; text-align: center; }
-        .g-link { color: #1a73e8; text-decoration: none; font-weight: 500; }
-        .g-rating { margin-top: 10px; color: #e7711b; font-weight: bold; font-family: 'Barlow', sans-serif; }
-        
+        .modal-box {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            width: 320px;
+            font-family: 'Barlow', 'Sarabun', sans-serif;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-box h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: 'Sarabun', sans-serif;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-cancel {
+            background: #ddd;
+            color: #333;
+        }
+
+        .btn-save {
+            background: #1a73e8;
+            color: white;
+        }
+
+        /* Popup Card Style เดิม */
+        .leaflet-popup-content-wrapper {
+            border-radius: 8px;
+            padding: 0;
+        }
+
+        .leaflet-popup-content {
+            margin: 0;
+            width: 280px !important;
+        }
+
+        .g-card {
+            padding: 16px;
+            width: 100%;
+            box-sizing: border-box;
+            color: #333;
+            font-family: 'Sarabun', sans-serif;
+        }
+
+        .g-header {
+            font-size: 12px;
+            color: #777;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .g-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #000;
+            line-height: 1.3;
+        }
+
+        .g-address {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 8px;
+        }
+
+        .g-link-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .g-icon {
+            margin-right: 8px;
+            width: 16px;
+            text-align: center;
+        }
+
+        .g-link {
+            color: #1a73e8;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .g-rating {
+            margin-top: 10px;
+            color: #e7711b;
+            font-weight: bold;
+            font-family: 'Barlow', sans-serif;
+        }
+
         @media (max-width: 768px) {
-            .big-nav { flex-direction: column; height: auto; padding: 15px 0; align-items: flex-start; }
-            .nav-brand { margin-left: 20px; margin-bottom: 5px; }
-            .nav-links { width: 100%; overflow-x: auto; white-space: nowrap; padding-left: 20px; padding-bottom: 10px; gap: 15px; }
-            .nav-links::-webkit-scrollbar { display: none; }
-            #map { padding-top: 110px; }
-            .add-marker-float { bottom: 20px; right: 20px; padding: 12px 20px; font-size: 14px; }
+            .big-nav {
+                flex-direction: column;
+                height: auto;
+                padding: 15px 0;
+                align-items: flex-start;
+            }
+
+            .nav-brand {
+                margin-left: 20px;
+                margin-bottom: 5px;
+            }
+
+            .nav-links {
+                width: 100%;
+                overflow-x: auto;
+                white-space: nowrap;
+                padding-left: 20px;
+                padding-bottom: 10px;
+                gap: 15px;
+            }
+
+            .nav-links::-webkit-scrollbar {
+                display: none;
+            }
+
+            #map {
+                padding-top: 110px;
+            }
         }
     </style>
 </head>
+
 <body>
 
     <nav class="big-nav">
@@ -113,31 +321,47 @@
             <button onclick="filterMap('food')" class="nav-btn">🍛 Eatery</button>
             <button onclick="filterMap('tour')" class="nav-btn">🌳 Attraction</button>
             <button onclick="findMyLocation()" class="nav-btn gps-btn">📍 My Location</button>
-            
-            <button id="authBtn" onclick="toggleAuthModal()" class="nav-btn admin-btn">Admin Login</button>
+
+            <button id="authBtn" onclick="toggleAuthModal()" class="nav-btn admin-btn">Login / Sign Up</button>
         </div>
     </nav>
 
     <div id="map"></div>
 
-    <button id="addMarkerBtn" class="add-marker-float" onclick="openAddModal()" style="display: none;">
-        ➕ Add New Location
-    </button>
-
     <div id="loginModal" class="modal-overlay">
         <div class="modal-box">
-            <h3>Admin Login</h3>
+            <h3 id="authModalTitle">Login</h3>
+
+            <div id="signupFields" style="display: none;">
+                <div class="form-group">
+                    <label>First Name (ชื่อ)</label>
+                    <input type="text" id="firstNameInput" placeholder="Enter first name">
+                </div>
+                <div class="form-group">
+                    <label>Last Name (นามสกุล)</label>
+                    <input type="text" id="lastNameInput" placeholder="Enter last name">
+                </div>
+                <div class="form-group">
+                    <label>Phone Number (เบอร์โทร)</label>
+                    <input type="tel" id="phoneNumInput" placeholder="Enter phone number">
+                </div>
+            </div>
+
             <div class="form-group">
                 <label>Email</label>
-                <input type="email" id="emailInput" placeholder="Enter admin email">
+                <input type="email" id="emailInput" placeholder="Enter email">
             </div>
             <div class="form-group">
                 <label>Password</label>
                 <input type="password" id="passwordInput" placeholder="Enter password">
             </div>
+            <div style="font-size: 14px; text-align: center; margin-bottom: 15px;">
+                <a href="#" onclick="toggleAuthType()" id="authToggleLink"
+                    style="color: #1a73e8; text-decoration: none;">Don't have an account? Sign Up</a>
+            </div>
             <div class="modal-actions">
                 <button class="btn btn-cancel" onclick="closeModal('loginModal')">Cancel</button>
-                <button class="btn btn-save" onclick="handleLogin()">Login</button>
+                <button class="btn btn-save" id="authSubmitBtn" onclick="handleAuthAction()">Login</button>
             </div>
         </div>
     </div>
@@ -150,7 +374,7 @@
                 <label>Name</label>
                 <input type="text" id="editName">
             </div>
-            
+
             <div class="form-group" style="display: flex; gap: 10px;">
                 <div style="flex: 1;">
                     <label>Latitude</label>
@@ -189,55 +413,39 @@
         </div>
     </div>
 
-    <div id="addModal" class="modal-overlay">
+    <div id="bookModal" class="modal-overlay">
         <div class="modal-box">
-            <h3>Add New Location</h3>
-            <div class="form-group">
-                <label>Name *</label>
-                <input type="text" id="addName" placeholder="ชื่อสถานที่ (ต้องระบุ)">
-            </div>
+            <h3>Book Home Stay</h3>
+            <p id="bookLocName" style="color: #1a73e8; font-weight: bold; font-size: 16px; margin-top: -10px;"></p>
+            <input type="hidden" id="bookLocId">
             
-            <div class="form-group" style="display: flex; gap: 10px;">
-                <div style="flex: 1;">
-                    <label>Latitude *</label>
-                    <input type="text" id="addLat">
-                </div>
-                <div style="flex: 1;">
-                    <label>Longitude *</label>
-                    <input type="text" id="addLng">
-                </div>
+            <div class="form-group" style="background: #f1f3f4; padding: 10px; border-radius: 4px; margin-bottom: 15px;">
+                <div style="font-size: 12px; color: #555;">Contact Info</div>
+                <div id="bookUserName" style="font-weight: bold;"></div>
+                <div id="bookUserPhone" style="font-size: 14px;"></div>
+                <div id="bookUserEmail" style="font-size: 14px; color: #666;"></div>
             </div>
 
             <div class="form-group">
-                <label>Category</label>
-                <select id="addCat">
-                    <option value="stay">Home Stay</option>
-                    <option value="food">Eatery</option>
-                    <option value="tour">Attraction</option>
-                </select>
+                <label>Travel Date (วันที่เข้าพัก)</label>
+                <input type="date" id="bookDateInput">
             </div>
+            
             <div class="form-group">
-                <label>Phone</label>
-                <input type="text" id="addPhone">
+                <label>Guests Count (จำนวนผู้เข้าพัก)</label>
+                <input type="number" id="bookGuestsInput" min="1" value="1">
             </div>
-            <div class="form-group">
-                <label>Facebook Link URL</label>
-                <input type="text" id="addFacebook">
-            </div>
-            <div class="form-group">
-                <label>Rating (e.g. 5.0)</label>
-                <input type="text" id="addRating">
-            </div>
+
             <div class="modal-actions">
-                <button class="btn btn-cancel" onclick="closeModal('addModal')">Cancel</button>
-                <button class="btn btn-add-submit" onclick="saveNewLocation()">Add Location</button>
+                <button class="btn btn-cancel" onclick="closeModal('bookModal')">Cancel</button>
+                <button class="btn btn-save" id="confirmBookBtn" onclick="submitBooking()">Confirm Booking</button>
             </div>
         </div>
     </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
+
     <script>
         // --- 1. ตั้งค่าเชื่อมต่อ Supabase ---
         const { createClient } = supabase;
@@ -248,7 +456,13 @@
         // --- ตัวแปรหลักของระบบ ---
         let locations = [];
         let isAdminLoggedIn = false;
+        let isUserLoggedIn = false;
+        let currentUserEmail = "";
+        let currentUserProfile = {};
         let currentFilter = 'all';
+
+        // กำหนด Email ของ Admin (สมมติว่าเป็น admin@example.com ถ้าใช้จริงให้เปลี่ยนใหม่)
+        const ADMIN_EMAIL = 'miangmap@gmail.com'; 
 
         // --- 2. สร้างแผนที่ Leaflet ---
         var map = L.map('map').setView([18.83081, 99.38724], 15);
@@ -260,12 +474,18 @@
 
         // --- 3. ตรวจสอบสถานะล็อกอิน ---
         db.auth.onAuthStateChange((event, session) => {
-            isAdminLoggedIn = !!session; // เป็น true ถ้ามี session
-            document.getElementById('authBtn').innerText = isAdminLoggedIn ? "Logout Admin" : "Admin Login";
-            
-            // 🌟 ซ่อน/แสดง ปุ่ม Add Marker 🌟
-            document.getElementById('addMarkerBtn').style.display = isAdminLoggedIn ? "block" : "none";
-            
+            isUserLoggedIn = !!session;
+            if (session) {
+                currentUserEmail = session.user.email;
+                currentUserProfile = session.user.user_metadata || {};
+                isAdminLoggedIn = (currentUserEmail === ADMIN_EMAIL);
+                document.getElementById('authBtn').innerText = isAdminLoggedIn ? "Logout (Admin)" : "Logout (User)";
+            } else {
+                currentUserEmail = "";
+                currentUserProfile = {};
+                isAdminLoggedIn = false;
+                document.getElementById('authBtn').innerText = "Login / Sign Up";
+            }
             filterMap(currentFilter); // รีเฟรชแผนที่เมื่อสถานะเปลี่ยน
         });
 
@@ -277,7 +497,7 @@
                 alert("ไม่สามารถโหลดข้อมูลจากฐานข้อมูลได้");
                 return;
             }
-            locations = data; 
+            locations = data;
             filterMap(currentFilter);
         }
 
@@ -285,16 +505,18 @@
         function filterMap(category) {
             currentFilter = category;
             markersLayer.clearLayers();
-            
+
             locations.forEach(loc => {
                 if (category === 'all' || loc.category === category) {
-                    
+
+                    // เพิ่ม draggable property ถ้าแอดมินล็อกอิน
                     var marker = L.marker([loc.lat, loc.lng], {
                         draggable: isAdminLoggedIn
                     });
 
+                    // ฟังก์ชันเมื่อแอดมินลากหมุดไปวางที่ใหม่
                     if (isAdminLoggedIn) {
-                        marker.on('dragend', async function(e) {
+                        marker.on('dragend', async function (e) {
                             const newPos = e.target.getLatLng();
                             const confirmMove = confirm(`ต้องการย้ายตำแหน่ง "${loc.name}" ใช่หรือไม่?`);
 
@@ -309,9 +531,9 @@
                                 } else {
                                     alert("บันทึกตำแหน่งใหม่เรียบร้อยแล้ว!");
                                 }
-                                fetchLocations(); 
+                                fetchLocations(); // โหลดข้อมูลใหม่เพื่อความชัวร์
                             } else {
-                                fetchLocations(); 
+                                fetchLocations(); // ถ้ากดยกเลิก ให้หมุดกลับที่เดิม
                             }
                         });
                     }
@@ -321,9 +543,15 @@
                     const facebookLink = loc.facebook || "";
                     const rating = loc.rating || "-";
 
+                    // ถ้าแอดมินล็อกอิน ให้แสดงปุ่ม Edit ท้าย Popup
                     let adminControls = "";
                     if (isAdminLoggedIn) {
                         adminControls = `<button class="edit-marker-btn" onclick="openEditModal(${loc.id})">✏️ Edit Marker</button>`;
+                    }
+
+                    let bookBtn = "";
+                    if (loc.category === 'stay') {
+                        bookBtn = `<button class="book-package-btn" onclick="handleBookPackage(${loc.id}, '${loc.name}')" style="margin-top: 10px; width: 100%; padding: 8px; background: #1a73e8; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-family: 'Barlow', sans-serif; transition: 0.2s;">📅 Book Now</button>`;
                     }
 
                     const popupHtml = `
@@ -338,6 +566,7 @@
                                 <span class="g-stars">★★★★☆</span>
                             </div>
                             ${adminControls}
+                            ${bookBtn}
                         </div>
                     `;
                     marker.bindPopup(popupHtml);
@@ -345,6 +574,7 @@
                 }
             });
 
+            // อัปเดตสถานะปุ่มเมนูให้ทำงานตรงหมวดที่เลือก
             const buttons = document.querySelectorAll('.nav-btn:not(.admin-btn):not(.gps-btn)');
             buttons.forEach(btn => {
                 btn.classList.remove('active');
@@ -354,12 +584,21 @@
             });
         }
 
-        // --- 6. ระบบ Login / Logout แอดมิน ---
+        // --- 6. ระบบ Login / Logout / Register ---
+        let isSignUpMode = false;
+
         async function toggleAuthModal() {
-            if (isAdminLoggedIn) {
+            if (isUserLoggedIn) {
                 const { error } = await db.auth.signOut();
-                if(!error) alert("ออกจากระบบสำเร็จ");
+                if (!error) alert("ออกจากระบบสำเร็จ");
             } else {
+                isSignUpMode = false;
+                updateAuthModalUI();
+                document.getElementById('emailInput').value = '';
+                document.getElementById('passwordInput').value = '';
+                document.getElementById('firstNameInput').value = '';
+                document.getElementById('lastNameInput').value = '';
+                document.getElementById('phoneNumInput').value = '';
                 document.getElementById('loginModal').style.display = "flex";
             }
         }
@@ -368,38 +607,154 @@
             document.getElementById(modalId).style.display = "none";
         }
 
-        async function handleLogin() {
+        function updateAuthModalUI() {
+            document.getElementById('authModalTitle').innerText = isSignUpMode ? "Sign Up" : "Login";
+            document.getElementById('authSubmitBtn').innerText = isSignUpMode ? "Sign Up" : "Login";
+            document.getElementById('authToggleLink').innerText = isSignUpMode ? "Already have an account? Login" : "Don't have an account? Sign Up";
+            document.getElementById('signupFields').style.display = isSignUpMode ? "block" : "none";
+        }
+
+        function toggleAuthType() {
+            isSignUpMode = !isSignUpMode;
+            updateAuthModalUI();
+        }
+
+        async function handleAuthAction() {
             const email = document.getElementById('emailInput').value;
             const pass = document.getElementById('passwordInput').value;
             
-            const { error } = await db.auth.signInWithPassword({ email: email, password: pass });
+            const fName = document.getElementById('firstNameInput').value;
+            const lName = document.getElementById('lastNameInput').value;
+            const phoneStr = document.getElementById('phoneNumInput').value;
+
+            const submitBtn = document.getElementById('authSubmitBtn');
+
+            if (!email || !pass) {
+                alert("กรุณากรอกอีเมลและรหัสผ่าน");
+                return;
+            }
+
+            if (isSignUpMode && (!fName || !lName || !phoneStr)) {
+                alert("กรุณากรอก ชื่อ, นามสกุล และเบอร์โทรศัพท์ ให้ครบถ้วน");
+                return;
+            }
+
+            submitBtn.innerText = "กำลังประมวลผล...";
+
+            let error = null;
+            if (isSignUpMode) {
+                const res = await db.auth.signUp({ 
+                    email: email, 
+                    password: pass,
+                    options: {
+                        data: {
+                            first_name: fName,
+                            last_name: lName,
+                            phone: phoneStr
+                        }
+                    } 
+                });
+                error = res.error;
+                if (!error) alert("สมัครสมาชิกสำเร็จ! ยินดีต้อนรับสู่ระบบ");
+            } else {
+                const res = await db.auth.signInWithPassword({ email: email, password: pass });
+                error = res.error;
+                if (!error) alert("เข้าสู่ระบบสำเร็จ!");
+            }
 
             if (error) {
-                alert("อีเมลหรือรหัสผ่านไม่ถูกต้อง");
+                alert("เกิดข้อผิดพลาด: " + error.message);
+                updateAuthModalUI(); // รีเซ็ตข้อความปุ่ม
             } else {
-                alert("เข้าสู่ระบบสำเร็จ!");
                 document.getElementById('emailInput').value = '';
                 document.getElementById('passwordInput').value = '';
                 closeModal('loginModal');
             }
         }
 
+        // --- ฟังก์ชันสำหรับการจอง ---
+        function handleBookPackage(locId, locName) {
+            if (!isUserLoggedIn) {
+                alert("กรุณาเข้าสู่ระบบ (Login) หรือสมัครสมาชิกใหม่ก่อน จึงจะสามารถจองที่พักได้ครับ");
+                toggleAuthModal();
+                return;
+            }
+            
+            const userName = currentUserProfile.first_name ? `${currentUserProfile.first_name} ${currentUserProfile.last_name}` : "-";
+            const userPhone = currentUserProfile.phone || "-";
+
+            // เซ็ตข้อมูลลง Modal
+            document.getElementById('bookLocId').value = locId;
+            document.getElementById('bookLocName').innerText = locName;
+            document.getElementById('bookUserName').innerText = userName;
+            document.getElementById('bookUserPhone').innerText = "Tel: " + userPhone;
+            document.getElementById('bookUserEmail').innerText = currentUserEmail;
+            
+            // ล้างค่าเก่า
+            document.getElementById('bookDateInput').value = '';
+            document.getElementById('bookGuestsInput').value = 1;
+
+            document.getElementById('bookModal').style.display = "flex";
+            map.closePopup();
+        }
+
+        async function submitBooking() {
+            const dateVal = document.getElementById('bookDateInput').value;
+            const guestsVal = document.getElementById('bookGuestsInput').value;
+            const btn = document.getElementById('confirmBookBtn');
+
+            if (!dateVal) {
+                alert("กรุณาเลือกวันที่เข้าพัก");
+                return;
+            }
+
+            btn.innerText = "กำลังดำเนินการ...";
+
+            const locId = document.getElementById('bookLocId').value;
+            const locName = document.getElementById('bookLocName').innerText;
+            const userName = currentUserProfile.first_name ? `${currentUserProfile.first_name} ${currentUserProfile.last_name}` : currentUserEmail;
+            const userPhone = currentUserProfile.phone || '-';
+
+            const payload = {
+                location_id: parseInt(locId),
+                location_name: locName,
+                user_email: currentUserEmail,
+                user_name: userName,
+                user_phone: userPhone,
+                travel_date: dateVal,
+                guests_count: parseInt(guestsVal),
+                status: 'pending'
+            };
+
+            const { data, error } = await db.from('bookings').insert([payload]);
+
+            btn.innerText = "Confirm Booking";
+
+            if (error) {
+                console.error("Booking err:", error);
+                alert("เกิดข้อผิดพลาดในการจอง: " + error.message);
+            } else {
+                alert("🎉 การจองสำเร็จ! ทางโฮมสเตย์จะติดต่อกลับไปทางเบอร์โทรศัพท์ที่ให้ไว้ครับ");
+                closeModal('bookModal');
+            }
+        }
+
         // --- 7. ระบบแก้ไขข้อมูล ---
         function openEditModal(id) {
             const loc = locations.find(item => item.id === id);
-            if(!loc) return;
+            if (!loc) return;
 
             document.getElementById('editId').value = loc.id;
             document.getElementById('editName').value = loc.name;
-            document.getElementById('editLat').value = loc.lat;
-            document.getElementById('editLng').value = loc.lng;
+            document.getElementById('editLat').value = loc.lat; // ใส่ค่าละติจูด
+            document.getElementById('editLng').value = loc.lng; // ใส่ค่าลองจิจูด
             document.getElementById('editCat').value = loc.category;
             document.getElementById('editPhone').value = loc.phone || "";
             document.getElementById('editFacebook').value = loc.facebook || "";
             document.getElementById('editRating').value = loc.rating || "";
-            
+
             document.getElementById('editModal').style.display = "flex";
-            map.closePopup(); 
+            map.closePopup();
         }
 
         async function saveLocationEdit() {
@@ -409,8 +764,8 @@
             const id = document.getElementById('editId').value;
             const updatedData = {
                 name: document.getElementById('editName').value,
-                lat: parseFloat(document.getElementById('editLat').value),
-                lng: parseFloat(document.getElementById('editLng').value),
+                lat: parseFloat(document.getElementById('editLat').value), // บันทึกค่าละติจูด
+                lng: parseFloat(document.getElementById('editLng').value), // บันทึกค่าลองจิจูด
                 category: document.getElementById('editCat').value,
                 phone: document.getElementById('editPhone').value,
                 facebook: document.getElementById('editFacebook').value,
@@ -426,73 +781,18 @@
             } else {
                 alert("อัปเดตข้อมูลสำเร็จ!");
                 closeModal('editModal');
-                fetchLocations(); 
+                fetchLocations(); // โหลดข้อมูลใหม่จากฐานข้อมูลมาแสดงทันที
             }
         }
 
-        // --- 🌟 8. ระบบเพิ่มข้อมูลใหม่ (Add New Location) 🌟 ---
-        function openAddModal() {
-            // ดึงจุดกึ่งกลางของหน้าจอแผนที่ปัจจุบัน มาเป็นค่าเริ่มต้นให้ช่องพิกัด
-            const center = map.getCenter();
-            document.getElementById('addLat').value = center.lat.toFixed(5);
-            document.getElementById('addLng').value = center.lng.toFixed(5);
-
-            // เคลียร์ข้อมูลในช่องอื่นๆ ให้ว่าง
-            document.getElementById('addName').value = "";
-            document.getElementById('addCat').value = "stay";
-            document.getElementById('addPhone').value = "";
-            document.getElementById('addFacebook').value = "";
-            document.getElementById('addRating').value = "";
-
-            document.getElementById('addModal').style.display = "flex";
-        }
-
-        async function saveNewLocation() {
-            const name = document.getElementById('addName').value.trim();
-            const lat = document.getElementById('addLat').value;
-            const lng = document.getElementById('addLng').value;
-
-            // บังคับว่าต้องใส่ชื่อและพิกัด
-            if(!name || !lat || !lng) {
-                alert("กรุณาระบุชื่อสถานที่ และพิกัดให้ครบถ้วน");
-                return;
-            }
-
-            const addBtn = document.querySelector('.btn-add-submit');
-            addBtn.innerText = "กำลังเพิ่ม...";
-
-            const newData = {
-                name: name,
-                lat: parseFloat(lat),
-                lng: parseFloat(lng),
-                category: document.getElementById('addCat').value,
-                phone: document.getElementById('addPhone').value,
-                facebook: document.getElementById('addFacebook').value,
-                rating: document.getElementById('addRating').value
-            };
-
-            // อัปโหลดขึ้น Database ด้วยคำสั่ง .insert()
-            const { error } = await db.from('locations').insert([newData]);
-
-            addBtn.innerText = "Add Location";
-
-            if (error) {
-                alert("เกิดข้อผิดพลาดในการเพิ่มสถานที่: " + error.message);
-            } else {
-                alert("เพิ่มสถานที่ใหม่สำเร็จ! หมุดใหม่ลงแผนที่แล้ว");
-                closeModal('addModal');
-                fetchLocations(); // รีเฟรชเพื่อโหลดหมุดใหม่มาโชว์
-            }
-        }
-
-        // --- 9. GPS (เดิม) ---
+        // --- 8. GPS (เดิม) ---
         var myLocationMarker = null;
 
         function findMyLocation() {
-            map.locate({setView: true, maxZoom: 16});
+            map.locate({ setView: true, maxZoom: 16 });
         }
 
-        map.on('locationfound', function(e) {
+        map.on('locationfound', function (e) {
             var radius = e.accuracy / 2;
             if (myLocationMarker) map.removeLayer(myLocationMarker);
             myLocationMarker = L.layerGroup([
@@ -501,13 +801,14 @@
             ]).addTo(map);
         });
 
-        map.on('locationerror', function(e) {
+        map.on('locationerror', function (e) {
             alert("Cannot access location. Please enable GPS permissions.");
         });
 
-        // --- 10. โหลดข้อมูลเมื่อเปิดหน้าเว็บ ---
+        // --- 9. โหลดข้อมูลเมื่อเปิดหน้าเว็บ ---
         fetchLocations();
 
     </script>
 </body>
+
 </html>
