@@ -20,7 +20,99 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 
 const markersLayer = L.layerGroup().addTo(map);
 
+const packageList = [
+    {
+        title: 'Adventure Package',
+        subtitle: 'สำหรับคนชอบ Adventure',
+        description: 'เน้นการใช้แรงขาแทนเครื่องยนต์เพื่อลดการปล่อยคาร์บอน และสัมผัสระบบนิเวศธรรมชาติ',
+        highlights: [
+            'ช่วงเวลาแนะนำ: พฤศจิกายน - กุมภาพันธ์',
+            'เส้นทางหมู่บ้าน - กิ่วฝิ่น: ระยะทางประมาณ 3 กม. ทางชันระดับปานกลาง',
+            'เส้นทางน้ำตกแม่ก๋า: เดินลัดเลาะลำธารและป่าดิบเขา',
+            'Low Carbon Tip: พกกระติกน้ำส่วนตัวและถุงเก็บขยะ (Plogging)'
+        ],
+        carbonSummary: 'รวม 14.1 kgCO2e',
+        details: ['รถส่วนตัว ลำปาง-ป่าเหมี้ยง 8.4 kgCO2e', 'อาหาร 3.2 kgCO2e', 'ที่พักแบบพัดลม 2.5 kgCO2e', 'กิจกรรมเดินป่า 0 kgCO2e']
+    },
+    {
+        title: 'Foodie Package',
+        subtitle: 'สำหรับคนชอบกิน',
+        description: 'เน้นอาหารตามฤดูกาลและของท้องถิ่น ลด Food Miles ด้วยวัตถุดิบภายในรัศมี 0 กิโลเมตร',
+        highlights: [
+            'ช่วงเวลาแนะนำ: มิถุนายน - กันยายน',
+            'เมนูห้ามพลาด: ยำใบเหมี้ยง, ไข่ป่าเหมี้ยง, เมนูประจำภาคเหนือ, กาแฟดริปมือ',
+            'Low Carbon Tip: เลือกทานอาหารที่โฮมสเตย์จัดให้ เพราะมาจากสวนหลังบ้านหรือป่ารอบๆ'
+        ],
+        carbonSummary: 'รวม 24.9 kgCO2e',
+        details: ['รถส่วนตัว ลำปาง-ป่าเหมี้ยง 8.4 kgCO2e', 'อาหาร 7.2 kgCO2e', 'ที่พักแบบพัดลม 2.5 kgCO2e', 'กิจกรรม workshop ทำกาแฟ 1.2 kgCO2e']
+    },
+    {
+        title: 'Scenic Package',
+        subtitle: 'สำหรับคนชอบวิว',
+        description: 'Slow Travel ดื่มด่ำกับวิวและแสงธรรมชาติ เหมาะสำหรับการหยุดพักชมบรรยากาศ',
+        highlights: [
+            'ช่วงเวลาแนะนำ: กุมภาพันธ์ (ดอกเสี้ยวบาน) และ สิงหาคม - ตุลาคม (นาขั้นบันไดและทะเลหมอก)',
+            'จุดชมวิว: กิ่วฝิ่น, ลานวัฒนธรรมหมู่บ้าน, เก็บกาแฟ-ชาและแปรรูปเมล็ดกาแฟ',
+            'Low Carbon Tip: เลือกพักโฮมสเตย์ที่มีวิวจากระเบียงห้อง เพื่อลดการเดินทางซ้ำซ้อน'
+        ],
+        carbonSummary: 'รวม 24.9 kgCO2e',
+        details: ['รถส่วนตัวและขับไปสถานที่ต่างๆ 16 kgCO2e', 'อาหาร 5.6 kgCO2e', 'ที่พักแบบพัดลม 2.5 kgCO2e', 'กิจกรรมชมวิว 0.8 kgCO2e']
+    }
+];
+
 let myLocationMarker = null;
+
+function goHome() {
+    currentFilter = 'all';
+    filterMap('all');
+    map.setView([18.83081, 99.38724], 15);
+}
+
+function getPackageHtml(pkg, index) {
+    return `
+        <div class="package-card">
+            <div class="package-card-header" onclick="togglePackageDetails(${index})">
+                <div>
+                    <div class="package-title">${pkg.title}</div>
+                    <div class="package-subtitle">${pkg.subtitle}</div>
+                </div>
+            </div>
+            <div class="package-summary">${pkg.description}</div>
+            <div class="package-details" id="packageDetails${index}">
+                <div class="package-subheading">ไฮไลต์สำคัญ</div>
+                ${pkg.highlights.map(item => `<div class="package-highlight-item">• ${item}</div>`).join('')}
+                <div class="package-subheading">รายละเอียด carbon footprint</div>
+                <ul class="package-details-list">
+                    ${pkg.details.map(item => `<li>${item}</li>`).join('')}
+                </ul>
+                <div class="package-subheading">สรุปการปล่อยคาร์บอน</div>
+                <p>${pkg.carbonSummary}</p>
+            </div>
+            <div class="package-action-row">
+                <button type="button" class="package-view-btn" onclick="event.stopPropagation(); togglePackageDetails(${index})">ดูรายละเอียด</button>
+                <button type="button" class="package-select-btn" onclick="event.stopPropagation(); selectPackage(${index})">เลือกแพ็กเกจนี้</button>
+            </div>
+        </div>
+    `;
+}
+
+function openPackageMenu() {
+    const content = document.getElementById('packageContent');
+    content.innerHTML = packageList.map(getPackageHtml).join('');
+    document.getElementById('packageModal').style.display = 'flex';
+}
+
+function togglePackageDetails(index) {
+    const details = document.getElementById(`packageDetails${index}`);
+    if (!details) return;
+    details.classList.toggle('open');
+}
+
+function selectPackage(index) {
+    const selected = packageList[index];
+    alert(`คุณเลือกแพ็กเกจ: ${selected.title}`);
+    // ถ้าต้องการเพิ่มฟังก์ชันการจองจริง ให้เพิ่มโค้ดที่นี่
+}
 
 function getMarkerIcon(category) {
     let color = 'blue';
