@@ -1177,8 +1177,13 @@
             </div>
 
             <div class="form-group">
+                <label>Rooms Count (จำนวนห้องพัก)</label>
+                <input type="number" id="bookRoomsInput" min="1" placeholder="ระบุจำนวนห้องพัก" oninput="adjustGuestsMin()" onchange="adjustGuestsMin()">
+            </div>
+
+            <div class="form-group">
                 <label>Guests Count (จำนวนผู้เข้าพัก)</label>
-                <input type="number" id="bookGuestsInput" min="1" value="1">
+                <input type="number" id="bookGuestsInput" min="1" placeholder="กรุณาระบุจำนวนห้องพักก่อน" disabled oninput="validateGuestsCount()" onchange="validateGuestsCount()">
             </div>
 
             <div class="modal-actions">
@@ -1241,7 +1246,7 @@
                             <th>ผู้จอง</th>
                             <th>ข้อมูลติดต่อ</th>
                             <th>วันที่เข้าพัก</th>
-                            <th>จำนวนคน</th>
+                            <th>ห้อง / คน</th>
                             <th>หลักฐานโอนเงิน</th>
                             <th>สถานะ</th>
                             <th>การดำเนินการ</th>
@@ -1651,7 +1656,10 @@
 
             // ล้างค่าเก่า
             document.getElementById('bookDateInput').value = '';
-            document.getElementById('bookGuestsInput').value = 1;
+            document.getElementById('bookRoomsInput').value = '';
+            document.getElementById('bookGuestsInput').value = '';
+            document.getElementById('bookGuestsInput').disabled = true;
+            document.getElementById('bookGuestsInput').min = 1;
 
             document.getElementById('bookModal').style.display = "flex";
             map.closePopup();
@@ -1659,11 +1667,30 @@
 
         async function submitBooking() {
             const dateVal = document.getElementById('bookDateInput').value;
-            const guestsVal = document.getElementById('bookGuestsInput').value;
+            const roomsInputVal = document.getElementById('bookRoomsInput').value;
+            const guestsInputVal = document.getElementById('bookGuestsInput').value;
             const btn = document.getElementById('confirmBookBtn');
 
             if (!dateVal) {
                 showToast("กรุณาเลือกวันที่เข้าพัก", "error");
+                return;
+            }
+
+            if (!roomsInputVal || parseInt(roomsInputVal) <= 0) {
+                showToast("กรุณาระบุจำนวนห้องพัก", "error");
+                return;
+            }
+
+            if (!guestsInputVal || parseInt(guestsInputVal) <= 0) {
+                showToast("กรุณาระบุจำนวนผู้เข้าพัก", "error");
+                return;
+            }
+
+            const roomsVal = parseInt(roomsInputVal);
+            const guestsVal = parseInt(guestsInputVal);
+
+            if (roomsVal > guestsVal) {
+                showToast("จำนวนห้องพักต้องไม่มากกว่าจำนวนผู้เข้าพักครับ", "error");
                 return;
             }
 
@@ -1681,7 +1708,8 @@
                 user_name: userName,
                 user_phone: userPhone,
                 travel_date: dateVal,
-                guests_count: parseInt(guestsVal),
+                guests_count: guestsVal,
+                rooms_count: roomsVal,
                 status: 'pending_payment',
                 payment_slip_url: null
             };
@@ -1869,6 +1897,7 @@
                         </div>
                         <div style="font-size: 13.5px; color: var(--text-muted);">
                             <span>📅 วันที่เข้าพัก: <strong>${escapeHTML(b.travel_date)}</strong></span>
+                            <span style="margin-left: 15px;">🛏️ ห้อง: <strong>${b.rooms_count || 1}</strong> ห้อง</span>
                             <span style="margin-left: 15px;">👥 จำนวนผู้พัก: <strong>${b.guests_count}</strong> คน</span>
                         </div>
                         ${detailsHtml}
@@ -2005,7 +2034,7 @@
                             <div style="font-size: 12px; color: var(--text-muted);">${escapeHTML(b.user_phone)}</div>
                         </td>
                         <td>${escapeHTML(b.travel_date)}</td>
-                        <td style="text-align: center;">${b.guests_count}</td>
+                        <td style="text-align: center;">${b.rooms_count || 1} ห้อง / ${b.guests_count} คน</td>
                         <td>${slipHtml}</td>
                         <td><span class="status-badge ${statusClass}">${b.status}</span></td>
                         <td>${actionHtml}</td>
@@ -2017,6 +2046,15 @@
         async function confirmBooking(bookingId, locationId) {
             const confirmAction = confirm("ต้องการยืนยันการจองนี้ และปรับปรุงจำนวนห้องพักโดยอัตโนมัติ ใช่หรือไม่?");
             if (!confirmAction) return;
+
+            // 0. ดึงข้อมูลการจองเพื่อดูจำนวนห้องที่จอง
+            const { data: bookingRec, error: fetchBookingError } = await db
+                .from('booking')
+                .select('rooms_count')
+                .eq('id', bookingId)
+                .single();
+
+            const roomsBooked = (bookingRec && bookingRec.rooms_count) ? bookingRec.rooms_count : 1;
 
             // 1. อัปเดตสถานะการจองในฐานข้อมูล
             const { error: updateError } = await db
@@ -2037,9 +2075,9 @@
                 .single();
 
             if (!fetchLocError && loc) {
-                // ปรับปรุงจำนวนห้อง: ลดห้องว่างลง 1, เพิ่มห้องที่จองขึ้น 1
-                const newAvailable = Math.max(0, (loc.available_rooms || 0) - 1);
-                const newBooked = (loc.booked_rooms || 0) + 1;
+                // ปรับปรุงจำนวนห้อง: ลดห้องว่างลงตามจำนวนที่จอง, เพิ่มห้องที่จองขึ้นตามจำนวนที่จอง
+                const newAvailable = Math.max(0, (loc.available_rooms || 0) - roomsBooked);
+                const newBooked = (loc.booked_rooms || 0) + roomsBooked;
 
                 await db.from('locations')
                     .update({
@@ -2116,6 +2154,45 @@
                 findMyLocation();
             }
         })();
+
+        // Booking validation helpers
+        function adjustGuestsMin() {
+            const roomsInput = document.getElementById('bookRoomsInput');
+            const guestsInput = document.getElementById('bookGuestsInput');
+            if (roomsInput && guestsInput) {
+                const roomsVal = parseInt(roomsInput.value) || 0;
+                if (roomsVal > 0) {
+                    guestsInput.disabled = false;
+                    guestsInput.min = roomsVal;
+                    const guestsVal = parseInt(guestsInput.value) || 0;
+                    if (guestsVal < roomsVal) {
+                        guestsInput.value = roomsVal;
+                    }
+                } else {
+                    guestsInput.disabled = true;
+                    guestsInput.value = '';
+                }
+            }
+        }
+
+        function validateGuestsCount() {
+            const roomsInput = document.getElementById('bookRoomsInput');
+            const guestsInput = document.getElementById('bookGuestsInput');
+            if (roomsInput && guestsInput) {
+                const roomsVal = parseInt(roomsInput.value) || 0;
+                const guestsVal = parseInt(guestsInput.value) || 0;
+                if (roomsVal <= 0) {
+                    showToast("กรุณาเลือกจำนวนห้องพักก่อนครับ", "info");
+                    guestsInput.value = '';
+                    guestsInput.disabled = true;
+                    return;
+                }
+                if (guestsVal < roomsVal) {
+                    showToast("จำนวนผู้เข้าพักต้องไม่น้อยกว่าจำนวนห้องพักครับ", "info");
+                    guestsInput.value = roomsVal;
+                }
+            }
+        }
 
         // HTML escape helper
         function escapeHTML(str) {
