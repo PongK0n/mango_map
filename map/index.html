@@ -1766,8 +1766,17 @@
             document.getElementById('bookUserPhone').innerText = "Tel: " + userPhone;
             document.getElementById('bookUserEmail').innerText = currentUserEmail;
 
-            // ล้างค่าเก่า
-            document.getElementById('bookDateInput').value = '';
+            // ล้างค่าเก่า & ป้องกันการเลือกวันในอดีต
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+            const todayStr = `${yyyy}-${mm}-${dd}`;
+            
+            const dateInput = document.getElementById('bookDateInput');
+            dateInput.value = '';
+            dateInput.min = todayStr;
+
             bookingRooms = 0;
             bookingAdults = 0;
             bookingChildren = 0;
@@ -1785,6 +1794,16 @@
 
             if (!dateVal) {
                 showToast("กรุณาเลือกวันที่เข้าพัก", "error");
+                return;
+            }
+
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const selectedDate = new Date(dateVal);
+            selectedDate.setHours(0, 0, 0, 0);
+
+            if (selectedDate < today) {
+                showToast("ไม่สามารถเลือกวันที่เข้าพักในอดีตได้ครับ", "error");
                 return;
             }
 
