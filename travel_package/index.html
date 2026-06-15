@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="เลือกแพ็กเกจท่องเที่ยวคาร์บอนต่ำ (Low Carbon Packages) ณ ชุมชนบ้านป่าเหมี้ยง สัมผัสธรรมชาติและการเดินทางที่เป็นมิตรต่อโลก">
+    <title>MIANG MAP - Travel Packages</title>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700;800&family=Sarabun:wght@300;400;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <nav class="big-nav">
+        <div class="nav-left">
+            <button class="hamburger-btn" onclick="toggleHamburger()" id="hamburgerBtn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <div class="nav-brand" onclick="goHome()" style="cursor: pointer;">MIANG MAP</div>
+        </div>
+
+        <div class="hamburger-menu" id="hamburgerMenu">
+            <a href="../home/index.html" class="hamburger-link">
+                <span class="hamburger-icon">🏠</span>
+                <span>Home</span>
+            </a>
+            <a href="../map/index.html" class="hamburger-link">
+                <span class="hamburger-icon">🗺️</span>
+                <span>Map</span>
+            </a>
+            <a href="../travel_package/index.html" class="hamburger-link active">
+                <span class="hamburger-icon">📦</span>
+                <span>Package</span>
+            </a>
+        </div>
+        <div class="hamburger-backdrop" id="hamburgerBackdrop" onclick="toggleHamburger()"></div>
+
+        <div class="nav-links">
+            <button onclick="window.location.href='../home/index.html'" class="nav-btn">🏠 Home</button>
+            <button onclick="window.location.href='../map/index.html'" class="nav-btn">🗺️ Map</button>
+            <button onclick="openPackageMenu()" class="nav-btn active">📦 Package</button>
+            <button onclick="filterMap('stay')" class="nav-btn">🏠 Home Stay</button>
+            <button onclick="filterMap('food')" class="nav-btn">🍛 Eatery</button>
+            <button onclick="filterMap('tour')" class="nav-btn">🌳 Attraction</button>
+            <button onclick="filterMap('other')" class="nav-btn">📌 Other</button>
+            <button onclick="findMyLocation()" class="nav-btn gps-btn">📍 My Location</button>
+
+            <button id="authBtn" onclick="toggleAuthModal()" class="nav-btn admin-btn">Login / Sign Up</button>
+        </div>
+    </nav>
+
+    <div id="loginModal" class="modal-overlay" onclick="if(event.target === this) closeModal('loginModal')">
+        <div class="modal-box">
+            <h3 id="authModalTitle">Login</h3>
+
+            <div id="signupFields" style="display: none;">
+                <div class="form-group">
+                    <label>First Name (ชื่อ)</label>
+                    <input type="text" id="firstNameInput" placeholder="Enter first name">
+                </div>
+                <div class="form-group">
+                    <label>Last Name (นามสกุล)</label>
+                    <input type="text" id="lastNameInput" placeholder="Enter last name">
+                </div>
+                <div class="form-group">
+                    <label>Phone Number (เบอร์โทร)</label>
+                    <input type="tel" id="phoneNumInput" placeholder="Enter phone number">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="emailInput" placeholder="Enter email">
+            </div>
+            <div class="form-group" id="passwordFieldGroup">
+                <label>Password</label>
+                <input type="password" id="passwordInput" placeholder="Enter password">
+            </div>
+            <div style="font-size: 14px; text-align: center; margin-bottom: 15px; display: flex; flex-direction: column; gap: 8px;">
+                <a href="#" onclick="toggleAuthType()" id="authToggleLink"
+                    style="color: #1a73e8; text-decoration: none;">Don't have an account? Sign Up</a>
+                <a href="#" onclick="switchToForgotMode()" id="forgotPasswordLink"
+                    style="color: #868e96; text-decoration: none; font-size: 13px;">Forgot Password? (ลืมรหัสผ่าน?)</a>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-cancel" onclick="closeModal('loginModal')">Cancel</button>
+                <button class="btn btn-save" id="authSubmitBtn" onclick="handleAuthAction()">Login</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Password Recovery/Update Modal -->
+    <div id="updatePasswordModal" class="modal-overlay" onclick="if(event.target === this) closeModal('updatePasswordModal')">
+        <div class="modal-box">
+            <h3>Set New Password</h3>
+            <div class="form-group">
+                <label>New Password (รหัสผ่านใหม่)</label>
+                <input type="password" id="newPasswordInput" placeholder="Enter new password (at least 6 chars)">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-cancel" onclick="closeModal('updatePasswordModal')">Cancel</button>
+                <button class="btn btn-save" id="updatePasswordBtn" onclick="handleUpdatePassword()">Update Password</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="editModal" class="modal-overlay" onclick="if(event.target === this) closeModal('editModal')">
+        <div class="modal-box">
+            <h3>Edit Location</h3>
+            <input type="hidden" id="editId">
+            <div class="form-group">
+                <label>Name</label>
+                <input type="text" id="editName">
+            </div>
+
+            <div class="form-group" style="display: flex; gap: 10px;">
+                <div style="flex: 1;">
+                    <label>Latitude</label>
+                    <input type="text" id="editLat">
+                </div>
+                <div style="flex: 1;">
+                    <label>Longitude</label>
+                    <input type="text" id="editLng">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Category</label>
+                <select id="editCat">
+                    <option value="stay">Home Stay</option>
+                    <option value="food">Eatery</option>
+                    <option value="tour">Attraction</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Phone</label>
+                <input type="text" id="editPhone">
+            </div>
+            <div class="form-group">
+                <label>Facebook Link URL</label>
+                <input type="text" id="editFacebook">
+            </div>
+            <div class="form-group">
+                <label>Rating (e.g. 5.0)</label>
+                <input type="text" id="editRating">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-cancel" onclick="closeModal('editModal')">Cancel</button>
+                <button class="btn btn-save" onclick="saveLocationEdit()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="bookModal" class="modal-overlay" onclick="if(event.target === this) closeModal('bookModal')">
+        <div class="modal-box">
+            <h3>Book Home Stay</h3>
+            <p id="bookLocName" style="color: #1a73e8; font-weight: bold; font-size: 16px; margin-top: -10px;"></p>
+            <input type="hidden" id="bookLocId">
+
+            <div class="form-group"
+                style="background: #f1f3f4; padding: 10px; border-radius: 4px; margin-bottom: 15px;">
+                <div style="font-size: 12px; color: #555;">Contact Info</div>
+                <div id="bookUserName" style="font-weight: bold;"></div>
+                <div id="bookUserPhone" style="font-size: 14px;"></div>
+                <div id="bookUserEmail" style="font-size: 14px; color: #666;"></div>
+            </div>
+
+            <div class="form-group">
+                <label>Travel Date (วันที่เข้าพัก)</label>
+                <input type="date" id="bookDateInput">
+            </div>
+
+            <div class="form-group">
+                <label>Guests Count (จำนวนผู้เข้าพัก)</label>
+                <input type="number" id="bookGuestsInput" min="1" value="1">
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn btn-cancel" onclick="closeModal('bookModal')">Cancel</button>
+                <button class="btn btn-save" id="confirmBookBtn" onclick="submitBooking()">Confirm Booking</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="bookPackageModal" class="modal-overlay" onclick="if(event.target === this) closeModal('bookPackageModal')">
+        <div class="modal-box">
+            <h3>Book Travel Package</h3>
+            <p id="bookPkgName" style="color: #1a73e8; font-weight: bold; font-size: 16px; margin-top: -10px;"></p>
+            <input type="hidden" id="bookPkgId">
+
+            <div class="form-group"
+                style="background: #f1f3f4; padding: 10px; border-radius: 4px; margin-bottom: 15px;">
+                <div style="font-size: 12px; color: #555;">Contact Info</div>
+                <div id="bookPkgUserName" style="font-weight: bold;"></div>
+                <div id="bookPkgUserPhone" style="font-size: 14px;"></div>
+                <div id="bookPkgUserEmail" style="font-size: 14px; color: #666;"></div>
+            </div>
+
+            <div class="form-group">
+                <label>Travel Date (วันที่เดินทาง)</label>
+                <input type="date" id="bookPkgDateInput">
+            </div>
+
+            <div class="form-group">
+                <label>Guests Count (จำนวนผู้เดินทาง)</label>
+                <input type="number" id="bookPkgGuestsInput" min="1" value="1">
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn btn-cancel" onclick="closeModal('bookPackageModal')">Cancel</button>
+                <button class="btn btn-save" id="confirmBookPkgBtn" onclick="submitPackageBooking()">Confirm Booking</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="packageSection" class="package-page">
+        <div class="package-page-inner">
+            <div class="package-page-header">
+                <h2 class="package-page-title">🌿 Low Carbon Packages</h2>
+                <p class="package-page-desc">เลือกแพ็กเกจท่องเที่ยวคาร์บอนต่ำที่เหมาะกับคุณ</p>
+            </div>
+
+            <!-- Low Carbon Information & Scale Section -->
+            <div class="low-carbon-info-card">
+                <div class="info-card-header">
+                    <h3>🍃 การท่องเที่ยวคาร์บอนต่ำ (Low Carbon Tourism) คืออะไร?</h3>
+                    <p>แนวทางการเดินทางท่องเที่ยวรูปแบบใหม่ที่เป็นมิตรต่อโลก พร้อมการประเมินปริมาณคาร์บอนฟุตพริ้นท์เพื่อการตัดสินใจที่ดีขึ้น</p>
+                </div>
+                <div class="info-card-body">
+                    <div class="info-text-section">
+                        <p><strong>การท่องเที่ยวคาร์บอนต่ำ</strong> คือการเดินทางท่องเที่ยวที่เน้นการทำกิจกรรมที่ปล่อยก๊าซเรือนกระจก (โดยเฉพาะคาร์บอนไดออกไซด์) ให้น้อยที่สุดตลอดทั้งทริป เช่น การเลือกเดินเท้าหรือใช้จักรยานในการท่องเที่ยว, การพักในโฮมสเตย์ที่ใช้พลังงานอย่างประหยัดและเป็นมิตรกับสิ่งแวดล้อม, การเลือกรับประทานอาหารท้องถิ่นเพื่อลดระยะทางในการขนส่งวัตถุดิบ (Food Miles) และการลดขยะพลาสติกตลอดทริป เพื่อรักษาความสมบูรณ์และระบบนิเวศดั้งเดิมของชุมชนป่าเหมี้ยงอย่างยั่งยืน</p>
+                    </div>
+                    <div class="scale-section">
+                        <h4>เกณฑ์การประเมินปริมาณคาร์บอน (Carbon Footprint Scale ต่อคน/วัน)</h4>
+                        <p class="scale-info-desc">ปริมาณการปล่อยคาร์บอนฟุตพริ้นท์ที่เหมาะสมและส่งผลต่อสิ่งแวดล้อม:</p>
+                        <div class="carbon-scale-bar">
+                            <div class="scale-segment scale-good">
+                                <span class="scale-badge badge-good">🟢 ดีต่อสิ่งแวดล้อม (Low Carbon)</span>
+                                <span class="scale-value">น้อยกว่า 15 kgCO2e</span>
+                                <span class="scale-desc">ปล่อยคาร์บอนน้อยมาก จากกิจกรรมประหยัดพลังงาน เดินเท้า ทานพืชผักท้องถิ่น</span>
+                            </div>
+                            <div class="scale-segment scale-moderate">
+                                <span class="scale-badge badge-moderate">🟡 ปานกลาง (Moderate Carbon)</span>
+                                <span class="scale-value">15 - 30 kgCO2e</span>
+                                <span class="scale-desc">ระดับการใช้ชีวิตทั่วไป มีการเดินทางโดยรถยนต์ส่วนตัวและใช้พลังงานระดับปกติ</span>
+                            </div>
+                            <div class="scale-segment scale-high">
+                                <span class="scale-badge badge-high">🔴 ควรปรับปรุง (High Carbon)</span>
+                                <span class="scale-value">มากกว่า 30 kgCO2e</span>
+                                <span class="scale-desc">มีการปล่อยคาร์บอนสูง จากการเดินทางระยะไกล หรือกิจกรรมที่ใช้พลังงานเชื้อเพลิงสูง</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="info-card-footer">
+                    <span class="info-source-title">📌 อ้างอิงเกณฑ์และวิธีคำนวณคาร์บอนฟุตพริ้นท์:</span>
+                    <p>ปริมาณคาร์บอนฟุตพริ้นท์ (kgCO2e) คำนวณตามแนวทางและค่าสัมประสิทธิ์การปล่อยก๊าซเรือนกระจก (Emission Factors) ของ <strong>องค์การบริหารจัดการก๊าซเรือนกระจก (องค์การมหาชน) (อบก. - TGO)</strong> ประเทศไทย โดยวิเคราะห์ข้อมูลรายกิจกรรม เช่น การเดินทางด้วยรถยนต์ส่วนตัว (เฉลี่ย 0.22 kgCO2e/กม.), อาหารและเครื่องดื่มท้องถิ่น (เฉลี่ย 1.2 - 2.4 kgCO2e/มื้อ), พลังงานไฟฟ้าในที่พักโฮมสเตย์ (เฉลี่ย 2.5 kgCO2e/คืน), และค่าสัมประสิทธิ์กิจกรรมสันทนาการอื่นๆ เพื่อให้ผู้เดินทางสามารถประเมินและชดเชยการปล่อยคาร์บอนได้อย่างแม่นยำ</p>
+                </div>
+            </div>
+
+            <div id="packageContent" class="package-grid"></div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>

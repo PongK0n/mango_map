@@ -1,0 +1,2078 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="แผนที่ท่องเที่ยวแบบโต้ตอบเชิงลึกของชุมชนบ้านป่าเหมี้ยง ค้นหาพิกัดโฮมสเตย์ ร้านอาหาร และสถานที่ท่องเที่ยวพร้อมคำนวณคาร์บอนฟุตพริ้นท์">
+    <title>MIANG MAP - Map</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700;800&family=Sarabun:wght@300;400;600&display=swap"
+        rel="stylesheet">
+
+    <style>
+        /* --- CSS Styling เดิมของคุณ --- */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Barlow', 'Sarabun', sans-serif;
+            overflow: hidden;
+        }
+
+        #map {
+            height: 100vh;
+            width: 100%;
+            padding-top: 80px;
+            box-sizing: border-box;
+            z-index: 1;
+        }
+
+        :root {
+            --primary: #2b8a3e;
+            --primary-light: #40c057;
+            --primary-dark: #1b4332;
+            --accent: #d3f9d8;
+            --bg-dark: #0f1410;
+            --bg-light: #f4f6f5;
+            --text-light: #ffffff;
+            --text-dark: #2b2b2b;
+            --text-muted: #868e96;
+            --glass-bg: rgba(15, 20, 16, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        .big-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 80px;
+            background-color: rgba(15, 20, 16, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            box-sizing: border-box;
+            z-index: 2000;
+            border-bottom: 1px solid var(--glass-border);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Hamburger Button */
+        .hamburger-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            z-index: 2100;
+        }
+
+        .hamburger-btn span {
+            display: block;
+            width: 24px;
+            height: 3px;
+            background: #fff;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger-btn.open span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 6px);
+        }
+
+        .hamburger-btn.open span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger-btn.open span:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -6px);
+        }
+
+        /* Hamburger Dropdown Menu */
+        .hamburger-menu {
+            position: fixed;
+            top: 80px;
+            left: 0;
+            width: 260px;
+            background: var(--bg-dark);
+            border-right: 1px solid var(--glass-border);
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.5);
+            z-index: 2050;
+            transform: translateX(-100%);
+            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 16px 0;
+            border-radius: 0 0 12px 0;
+        }
+
+        .hamburger-menu.open {
+            transform: translateX(0);
+        }
+
+        .hamburger-link {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 24px;
+            color: #bbb;
+            text-decoration: none;
+            font-family: 'Barlow', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .hamburger-link:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+        }
+
+        .hamburger-link.active {
+            color: var(--primary-light);
+            background: linear-gradient(90deg, rgba(64, 192, 87, 0.15) 0%, transparent 100%);
+            border-left: 3px solid var(--primary-light);
+        }
+
+        .hamburger-icon {
+            font-size: 20px;
+            width: 28px;
+            text-align: center;
+        }
+
+        /* Backdrop */
+        .hamburger-backdrop {
+            display: none;
+            position: fixed;
+            top: 80px;
+            left: 0;
+            width: 100%;
+            height: calc(100vh - 80px);
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 2040;
+        }
+
+        .hamburger-backdrop.open {
+            display: block;
+        }
+
+        .nav-brand {
+            color: white;
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+        }
+
+        .nav-brand:hover {
+            color: var(--primary-light);
+            text-shadow: 0 0 10px rgba(64, 192, 87, 0.5);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .nav-btn {
+            background: none;
+            border: none;
+            color: #ccc;
+            font-family: 'Barlow', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            text-transform: uppercase;
+            cursor: pointer;
+            padding: 10px 15px;
+            transition: all 0.3s ease;
+            position: relative;
+            white-space: nowrap;
+            letter-spacing: 0.5px;
+            border-radius: 4px;
+        }
+
+        .nav-btn:hover {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-btn.active {
+            color: var(--primary-light);
+            font-weight: 700;
+        }
+
+        .nav-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: 2px;
+            left: 15px;
+            width: calc(100% - 30px);
+            height: 3px;
+            background-color: var(--primary-light);
+            border-radius: 2px;
+        }
+
+        .gps-btn {
+            color: var(--primary-light) !important;
+        }
+
+        .gps-btn:hover {
+            color: #ffffff !important;
+            text-shadow: 0 0 8px var(--primary-light);
+        }
+
+        /* --- CSS ส่วนที่เพิ่มใหม่สำหรับระบบ Admin --- */
+        .admin-btn {
+            color: var(--primary-light) !important;
+            border: 1px solid var(--primary-light);
+            border-radius: 6px;
+            padding: 6px 14px;
+            margin-left: 10px;
+            background: rgba(64, 192, 87, 0.05);
+            font-family: 'Barlow', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .admin-btn:hover {
+            background-color: var(--primary-light);
+            color: white !important;
+            box-shadow: 0 4px 12px rgba(64, 192, 87, 0.2);
+        }
+
+        .edit-marker-btn {
+            margin-top: 12px;
+            width: 100%;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.08);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Barlow', sans-serif;
+            font-weight: 700;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .edit-marker-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .book-package-btn {
+            margin-top: 12px;
+            width: 100%;
+            padding: 10px;
+            background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            font-family: 'Barlow', sans-serif;
+            font-size: 14px;
+            box-shadow: 0 4px 12px rgba(64, 192, 87, 0.2);
+            transition: all 0.2s ease;
+        }
+
+        .book-package-btn:hover {
+            box-shadow: 0 6px 16px rgba(64, 192, 87, 0.4);
+            filter: brightness(1.1);
+        }
+
+        /* Modals (Login & Edit) */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 3000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-box {
+            background: #1b2318; /* Forest Floor Raised */
+            color: var(--text-light);
+            border: 1px solid var(--glass-border);
+            padding: 30px;
+            border-radius: 16px;
+            width: 340px;
+            font-family: 'Barlow', 'Sarabun', sans-serif;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-box h3 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 24px;
+            font-weight: 800;
+            color: #ffffff;
+            font-family: 'Barlow', sans-serif;
+            text-align: center;
+            letter-spacing: -0.5px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: var(--text-muted);
+            font-family: 'Barlow', 'Sarabun', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px 14px;
+            box-sizing: border-box;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #ffffff;
+            font-family: 'Sarabun', sans-serif;
+            font-size: 14.5px;
+            transition: all 0.2s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-light);
+            background: rgba(0, 0, 0, 0.4);
+            box-shadow: 0 0 0 3px rgba(64, 192, 87, 0.15);
+        }
+
+        /* Modal contact details section */
+        .modal-box .contact-details-box {
+            background: rgba(0, 0, 0, 0.15) !important;
+            padding: 12px 16px !important;
+            border-radius: 8px !important;
+            margin-bottom: 16px !important;
+            border: 1px solid rgba(255, 255, 255, 0.05) !important;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 24px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            font-family: 'Barlow', sans-serif;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-cancel {
+            background: rgba(255, 255, 255, 0.08);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-cancel:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(64, 192, 87, 0.2);
+        }
+
+        .btn-save:hover {
+            box-shadow: 0 6px 16px rgba(64, 192, 87, 0.4);
+            filter: brightness(1.1);
+        }
+
+        /* Custom Leaflet Dark Theme Popups */
+        .leaflet-popup-content-wrapper, .leaflet-popup-tip {
+            background: #1b2318 !important; /* Forest Floor Raised */
+            color: var(--text-light) !important;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
+        }
+
+        .leaflet-popup-content {
+            margin: 0;
+            width: 280px !important;
+        }
+
+        .g-card {
+            padding: 20px;
+            width: 100%;
+            box-sizing: border-box;
+            color: var(--text-light);
+            font-family: 'Sarabun', sans-serif;
+        }
+
+        .g-header {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-family: 'Barlow', sans-serif;
+            font-weight: 600;
+        }
+
+        .g-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #ffffff;
+            line-height: 1.3;
+            font-family: 'Barlow', 'Sarabun', sans-serif;
+        }
+
+        .g-address {
+            font-size: 14px;
+            color: #d1d5db; /* Overcast Text */
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+
+        .g-link-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .g-icon {
+            margin-right: 8px;
+            width: 16px;
+            text-align: center;
+        }
+
+        .g-link {
+            color: var(--primary-light) !important;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s ease;
+        }
+        
+        .g-link:hover {
+            color: #ffffff !important;
+            text-decoration: underline;
+        }
+
+        .g-rating {
+            margin-top: 12px;
+            color: #ffd43b; /* Warm yellow stars */
+            font-weight: bold;
+            font-family: 'Barlow', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .g-score {
+            background: rgba(255, 212, 59, 0.15);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        .g-rooms {
+            margin-top: 12px;
+            font-size: 13.5px;
+            color: #d3f9d8; /* Morning Mist Accent */
+            font-family: 'Sarabun', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(64, 192, 87, 0.08);
+            border: 1px solid rgba(64, 192, 87, 0.15);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+
+        /* Admin Bookings Table */
+        .admin-bookings-table-container {
+            width: 100%;
+            overflow-x: auto;
+            margin-top: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+        }
+
+        .admin-bookings-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'Sarabun', sans-serif;
+            font-size: 13px;
+            text-align: left;
+        }
+
+        .admin-bookings-table th, 
+        .admin-bookings-table td {
+            padding: 12px 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: #d1d5db;
+        }
+
+        .admin-bookings-table th {
+            background: rgba(0, 0, 0, 0.4);
+            color: #ffffff;
+            font-weight: 700;
+            font-family: 'Barlow', 'Sarabun', sans-serif;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+        }
+
+        .admin-bookings-table tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .slip-link {
+            color: var(--primary-light) !important;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .slip-link:hover {
+            text-decoration: underline;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 10.5px;
+            text-transform: uppercase;
+            display: inline-block;
+        }
+
+        .status-badge.status-pending_payment {
+            background: rgba(245, 158, 11, 0.15);
+            color: #f59e0b;
+        }
+
+        .status-badge.status-pending_verification {
+            background: rgba(255, 212, 59, 0.15);
+            color: #ffd43b;
+        }
+
+        .status-badge.status-confirmed {
+            background: rgba(64, 192, 87, 0.15);
+            color: var(--primary-light);
+        }
+
+        .status-badge.status-rejected {
+            background: rgba(224, 49, 49, 0.15);
+            color: #ff6b6b;
+        }
+
+        .action-confirm-btn {
+            background: var(--primary);
+            color: #ffffff;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: bold;
+            transition: all 0.2s ease;
+            font-family: 'Sarabun', sans-serif;
+        }
+
+        .action-confirm-btn:hover {
+            background: var(--primary-light);
+        }
+
+        .action-reject-btn {
+            background: rgba(224, 49, 49, 0.2);
+            color: #ff6b6b;
+            border: 1px solid rgba(224, 49, 49, 0.3);
+            padding: 4px 9px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: bold;
+            transition: all 0.2s ease;
+            margin-left: 4px;
+            font-family: 'Sarabun', sans-serif;
+        }
+
+        .action-reject-btn:hover {
+            background: rgba(224, 49, 49, 0.4);
+        }
+
+        /* My Bookings Card View */
+        .my-booking-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 18px;
+            color: #d1d5db;
+            font-family: 'Sarabun', sans-serif;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            position: relative;
+        }
+
+        .my-booking-card:hover {
+            border-color: rgba(64, 192, 87, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .booking-status-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
+            padding-bottom: 8px;
+            margin-bottom: 4px;
+        }
+
+        .booking-title {
+            font-weight: 700;
+            color: #ffffff;
+            font-size: 15.5px;
+            font-family: 'Barlow', 'Sarabun', sans-serif;
+        }
+
+        /* Admin Bookings Table */
+        .admin-bookings-table-container {
+            width: 100%;
+            overflow-x: auto;
+            margin-top: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+        }
+
+        .admin-bookings-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'Sarabun', sans-serif;
+            font-size: 13px;
+            text-align: left;
+        }
+
+        .admin-bookings-table th, 
+        .admin-bookings-table td {
+            padding: 12px 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: #d1d5db;
+        }
+
+        .admin-bookings-table th {
+            background: rgba(0, 0, 0, 0.4);
+            color: #ffffff;
+            font-weight: 700;
+            font-family: 'Barlow', 'Sarabun', sans-serif;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+        }
+
+        .admin-bookings-table tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .slip-link {
+            color: var(--primary-light) !important;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .slip-link:hover {
+            text-decoration: underline;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 10.5px;
+            text-transform: uppercase;
+            display: inline-block;
+        }
+
+        .status-badge.status-pending {
+            background: rgba(255, 212, 59, 0.15);
+            color: #ffd43b;
+        }
+
+        .status-badge.status-confirmed {
+            background: rgba(64, 192, 87, 0.15);
+            color: var(--primary-light);
+        }
+
+        .status-badge.status-rejected {
+            background: rgba(224, 49, 49, 0.15);
+            color: #ff6b6b;
+        }
+
+        .action-confirm-btn {
+            background: var(--primary);
+            color: #ffffff;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: bold;
+            transition: all 0.2s ease;
+            font-family: 'Sarabun', sans-serif;
+        }
+
+        .action-confirm-btn:hover {
+            background: var(--primary-light);
+        }
+
+        .action-reject-btn {
+            background: rgba(224, 49, 49, 0.2);
+            color: #ff6b6b;
+            border: 1px solid rgba(224, 49, 49, 0.3);
+            padding: 4px 9px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: bold;
+            transition: all 0.2s ease;
+            margin-left: 4px;
+            font-family: 'Sarabun', sans-serif;
+        }
+
+        .action-reject-btn:hover {
+            background: rgba(224, 49, 49, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .big-nav {
+                flex-direction: column;
+                height: auto;
+                padding: 10px 0;
+                align-items: flex-start;
+            }
+
+            .nav-left {
+                margin-left: 16px;
+                margin-bottom: 4px;
+            }
+
+            .nav-brand {
+                font-size: 20px;
+                letter-spacing: 1px;
+                margin-left: 0;
+                margin-bottom: 0;
+            }
+
+            .nav-links {
+                width: 100%;
+                overflow-x: auto;
+                white-space: nowrap;
+                padding-left: 16px;
+                padding-right: 16px;
+                padding-bottom: 6px;
+                gap: 8px;
+            }
+
+            .nav-links::-webkit-scrollbar {
+                display: none;
+            }
+
+            .nav-btn {
+                font-size: 13.5px;
+                padding: 6px 10px;
+            }
+
+            .admin-btn {
+                padding: 4px 8px;
+                margin-left: 4px;
+            }
+
+            #map {
+                padding-top: 85px;
+            }
+        }
+
+        /* Floating Map Legend */
+        .map-legend {
+            position: absolute;
+            bottom: 30px;
+            left: 30px;
+            background: rgba(15, 20, 16, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            padding: 16px 20px;
+            border-radius: 12px;
+            z-index: 1000;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            max-width: 220px;
+            font-family: 'Barlow', 'Sarabun', sans-serif;
+        }
+
+        .legend-title {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            font-weight: 700;
+            color: #ffffff;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 6px;
+        }
+
+        .legend-items {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .legend-marker {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            box-shadow: 0 0 8px rgba(0,0,0,0.3);
+        }
+
+        .marker-blue { background-color: #2b82cb; }
+        .marker-orange { background-color: #f2903f; }
+        .marker-green { background-color: #2aad27; }
+        .marker-black { background-color: #3d3d3d; }
+
+        .legend-label {
+            font-size: 13px;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .map-legend {
+                bottom: 20px;
+                left: 20px;
+                padding: 12px 14px;
+                max-width: 180px;
+            }
+            .legend-title {
+                font-size: 12.5px;
+                margin-bottom: 8px;
+            }
+            .legend-label {
+                font-size: 11.5px;
+            }
+        }
+
+        /* Toast Notification System */
+        #toast-container {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+        }
+
+        .toast {
+            background: #1b2318; /* Forest Floor Raised */
+            color: #ffffff;
+            border-left: 4px solid var(--primary-light); /* Highland Tea Leaf Accent */
+            border-top: 1px solid var(--glass-border);
+            border-right: 1px solid var(--glass-border);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 14px 20px;
+            border-radius: 8px;
+            font-family: 'Sarabun', sans-serif;
+            font-size: 14.5px;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            min-width: 280px;
+            max-width: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            pointer-events: auto;
+            transform: translateX(120%);
+            transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+            opacity: 0;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 0 4px;
+            line-height: 1;
+            transition: color 0.2s ease;
+        }
+
+        .toast-close:hover {
+            color: #ffffff;
+        }
+
+        .toast-success {
+            border-left-color: var(--primary-light);
+        }
+
+        .toast-error {
+            border-left-color: #e03131; /* Beautiful muted red */
+        }
+
+        .toast-info {
+            border-left-color: #1971c2; /* Muted blue */
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="big-nav">
+        <div class="nav-left">
+            <button class="hamburger-btn" onclick="toggleHamburger()" id="hamburgerBtn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <div class="nav-brand" style="cursor: pointer;" onclick="window.location.href='../home/index.html'">MIANG MAP</div>
+        </div>
+
+        <div class="hamburger-menu" id="hamburgerMenu">
+            <a href="../home/index.html" class="hamburger-link">
+                <span class="hamburger-icon">🏠</span>
+                <span>Home</span>
+            </a>
+            <a href="../map/index.html" class="hamburger-link active">
+                <span class="hamburger-icon">🗺️</span>
+                <span>Map</span>
+            </a>
+            <a href="../travel_package/index.html" class="hamburger-link">
+                <span class="hamburger-icon">📦</span>
+                <span>Package</span>
+            </a>
+        </div>
+        <div class="hamburger-backdrop" id="hamburgerBackdrop" onclick="toggleHamburger()"></div>
+        <div class="nav-links">
+            <button onclick="filterMap('all')" class="nav-btn active">All</button>
+            <button onclick="filterMap('stay')" class="nav-btn">🏠 Home Stay</button>
+            <button onclick="filterMap('food')" class="nav-btn">🍛 Eatery</button>
+            <button onclick="filterMap('tour')" class="nav-btn">🌳 Attraction</button>
+            <button onclick="filterMap('other')" class="nav-btn">📌 Other</button>
+            <button onclick="findMyLocation()" class="nav-btn gps-btn">📍 My Location</button>
+            <button id="myBookingsBtn" onclick="openMyBookingsModal()" class="nav-btn" style="display: none; color: var(--primary-light);">📋 การจองของฉัน</button>
+            <button id="adminBookingsBtn" onclick="openAdminBookingsModal()" class="nav-btn" style="display: none; color: #ffd43b;">📅 View Bookings</button>
+
+            <button id="authBtn" onclick="toggleAuthModal()" class="nav-btn admin-btn">Login / Sign Up</button>
+        </div>
+    </nav>
+
+    <div id="map"></div>
+
+    <!-- Map Legend Panel -->
+    <div class="map-legend">
+        <h4 class="legend-title">🍃 สัญลักษณ์แผนที่</h4>
+        <div class="legend-items">
+            <div class="legend-item">
+                <span class="legend-marker marker-blue"></span>
+                <span class="legend-label">โฮมสเตย์ (Stay)</span>
+            </div>
+            <div class="legend-item">
+                <span class="legend-marker marker-orange"></span>
+                <span class="legend-label">ร้านอาหาร (Food)</span>
+            </div>
+            <div class="legend-item">
+                <span class="legend-marker marker-green"></span>
+                <span class="legend-label">ที่เที่ยว (Attraction)</span>
+            </div>
+            <div class="legend-item">
+                <span class="legend-marker marker-black"></span>
+                <span class="legend-label">อื่นๆ (Other)</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="loginModal" class="modal-overlay" onclick="if(event.target === this) closeModal('loginModal')">
+        <div class="modal-box">
+            <h3 id="authModalTitle">Login</h3>
+
+            <div id="signupFields" style="display: none;">
+                <div class="form-group">
+                    <label>First Name (ชื่อ)</label>
+                    <input type="text" id="firstNameInput" placeholder="Enter first name">
+                </div>
+                <div class="form-group">
+                    <label>Last Name (นามสกุล)</label>
+                    <input type="text" id="lastNameInput" placeholder="Enter last name">
+                </div>
+                <div class="form-group">
+                    <label>Phone Number (เบอร์โทร)</label>
+                    <input type="tel" id="phoneNumInput" placeholder="Enter phone number">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="emailInput" placeholder="Enter email">
+            </div>
+            <div class="form-group" id="passwordFieldGroup">
+                <label>Password</label>
+                <input type="password" id="passwordInput" placeholder="Enter password">
+            </div>
+            <div style="font-size: 14px; text-align: center; margin-bottom: 15px; display: flex; flex-direction: column; gap: 8px;">
+                <a href="#" onclick="toggleAuthType()" id="authToggleLink"
+                    style="color: var(--primary-light); text-decoration: none;">Don't have an account? Sign Up</a>
+                <a href="#" onclick="switchToForgotMode()" id="forgotPasswordLink"
+                    style="color: var(--text-muted); text-decoration: none; font-size: 13px;">Forgot Password? (ลืมรหัสผ่าน?)</a>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-cancel" onclick="closeModal('loginModal')">Cancel</button>
+                <button class="btn btn-save" id="authSubmitBtn" onclick="handleAuthAction()">Login</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Password Recovery/Update Modal -->
+    <div id="updatePasswordModal" class="modal-overlay" onclick="if(event.target === this) closeModal('updatePasswordModal')">
+        <div class="modal-box">
+            <h3>Set New Password</h3>
+            <div class="form-group">
+                <label>New Password (รหัสผ่านใหม่)</label>
+                <input type="password" id="newPasswordInput" placeholder="Enter new password (at least 6 chars)">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-cancel" onclick="closeModal('updatePasswordModal')">Cancel</button>
+                <button class="btn btn-save" id="updatePasswordBtn" onclick="handleUpdatePassword()">Update Password</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="editModal" class="modal-overlay" onclick="if(event.target === this) closeModal('editModal')">
+        <div class="modal-box">
+            <h3>Edit Location</h3>
+            <input type="hidden" id="editId">
+            <div class="form-group">
+                <label>Name</label>
+                <input type="text" id="editName">
+            </div>
+
+            <div class="form-group" style="display: flex; gap: 10px;">
+                <div style="flex: 1;">
+                    <label>Latitude</label>
+                    <input type="text" id="editLat">
+                </div>
+                <div style="flex: 1;">
+                    <label>Longitude</label>
+                    <input type="text" id="editLng">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Category</label>
+                <select id="editCat" onchange="toggleRoomFields(this.value)">
+                    <option value="stay">Home Stay</option>
+                    <option value="food">Eatery</option>
+                    <option value="tour">Attraction</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+
+            <!-- Fields for room status updates (only displayed for Stay category) -->
+            <div id="roomStatusFields" class="form-group" style="display: none; gap: 10px;">
+                <div style="flex: 1;">
+                    <label>Available Rooms (ห้องว่าง)</label>
+                    <input type="number" id="editAvailableRooms" min="0" placeholder="0">
+                </div>
+                <div style="flex: 1;">
+                    <label>Booked Rooms (จองแล้ว)</label>
+                    <input type="number" id="editBookedRooms" min="0" placeholder="0">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Phone</label>
+                <input type="text" id="editPhone">
+            </div>
+            <div class="form-group">
+                <label>Facebook Link URL</label>
+                <input type="text" id="editFacebook">
+            </div>
+            <div class="form-group">
+                <label>Rating (e.g. 5.0)</label>
+                <input type="text" id="editRating">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-cancel" onclick="closeModal('editModal')">Cancel</button>
+                <button class="btn btn-save" onclick="saveLocationEdit()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="bookModal" class="modal-overlay" onclick="if(event.target === this) closeModal('bookModal')">
+        <div class="modal-box">
+            <h3>Book Home Stay</h3>
+            <p id="bookLocName" style="color: var(--primary-light); font-weight: bold; font-size: 16px; margin-top: -10px;"></p>
+            <input type="hidden" id="bookLocId">
+
+            <div class="form-group contact-details-box">
+                <div style="font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Contact Info</div>
+                <div id="bookUserName" style="font-weight: bold; color: #ffffff;"></div>
+                <div id="bookUserPhone" style="font-size: 14px; color: var(--text-muted);"></div>
+                <div id="bookUserEmail" style="font-size: 14px; color: var(--text-muted);"></div>
+            </div>
+
+            <div class="form-group">
+                <label>Travel Date (วันที่เข้าพัก)</label>
+                <input type="date" id="bookDateInput">
+            </div>
+
+            <div class="form-group">
+                <label>Guests Count (จำนวนผู้เข้าพัก)</label>
+                <input type="number" id="bookGuestsInput" min="1" value="1">
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn btn-cancel" onclick="closeModal('bookModal')">Cancel</button>
+                <button class="btn btn-save" id="confirmBookBtn" onclick="submitBooking()">Confirm Booking</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Instruction Success Modal -->
+    <div id="paymentInstructionModal" class="modal-overlay" onclick="if(event.target === this) closeModal('paymentInstructionModal')">
+        <div class="modal-box" style="width: 350px; text-align: center;">
+            <div style="font-size: 40px; margin-bottom: 12px;">🎉</div>
+            <h3 style="margin-bottom: 10px;">จองที่พักสำเร็จเบื้องต้น!</h3>
+            <p style="font-size: 14px; color: #d1d5db; line-height: 1.6; margin-bottom: 20px;">
+                กรุณาติดต่อชำระเงินกับทางโฮมสเตย์โดยตรง เพื่อทำการยืนยันสิทธิ์การจองเข้าพักของคุณครับ
+            </p>
+            
+            <div class="form-group contact-details-box" style="text-align: left; background: rgba(0,0,0,0.15); padding: 12px 16px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 20px;">
+                <div style="font-size: 12px; color: var(--primary-light); text-transform: uppercase; font-weight: bold; margin-bottom: 6px;">ข้อมูลติดต่อโฮมสเตย์</div>
+                <div id="instHomeStayName" style="font-weight: bold; color: #ffffff; font-size: 15px; margin-bottom: 4px;"></div>
+                <div id="instHomeStayPhone" style="font-size: 14px; color: var(--text-light); margin-bottom: 4px;"></div>
+                <div id="instHomeStayFB" style="font-size: 14px; color: var(--text-light);"></div>
+            </div>
+
+            <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 24px;">
+                *เมื่อชำระเงินแล้ว ให้นำหลักฐานสลิปเงินโอนมาอัปโหลดที่เมนู <strong>"การจองของฉัน"</strong> เพื่อส่งให้แอดมินทำการอนุมัติสิทธิ์เข้าพักครับ
+            </p>
+
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button class="btn btn-cancel" onclick="closeModal('paymentInstructionModal')">ปิดหน้าต่าง</button>
+                <button class="btn btn-save" onclick="closeModal('paymentInstructionModal'); openMyBookingsModal();">ไปอัปโหลดสลิป</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- My Bookings Modal -->
+    <div id="myBookingsModal" class="modal-overlay" onclick="if(event.target === this) closeModal('myBookingsModal')">
+        <div class="modal-box" style="width: 90%; max-width: 600px;">
+            <h3>📋 My Bookings (การจองของฉัน)</h3>
+            <div id="myBookingsList" style="display: flex; flex-direction: column; gap: 16px; margin-top: 15px; max-height: 55vh; overflow-y: auto; padding-right: 5px;">
+                <!-- User's bookings will load here dynamically -->
+            </div>
+            <div class="modal-actions" style="margin-top: 20px;">
+                <button class="btn btn-cancel" onclick="closeModal('myBookingsModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Bookings Modal -->
+    <div id="adminBookingsModal" class="modal-overlay" onclick="if(event.target === this) closeModal('adminBookingsModal')">
+        <div class="modal-box" style="width: 90%; max-width: 850px;">
+            <h3>📅 Booking List (รายการจองห้องพัก)</h3>
+            
+            <div class="admin-bookings-table-container">
+                <table class="admin-bookings-table">
+                    <thead>
+                        <tr>
+                            <th>สถานที่</th>
+                            <th>ผู้จอง</th>
+                            <th>ข้อมูลติดต่อ</th>
+                            <th>วันที่เข้าพัก</th>
+                            <th>จำนวนคน</th>
+                            <th>หลักฐานโอนเงิน</th>
+                            <th>สถานะ</th>
+                            <th>การดำเนินการ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminBookingsTableBody">
+                        <!-- Bookings list will load here dynamically -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="modal-actions" style="margin-top: 20px;">
+                <button class="btn btn-cancel" onclick="closeModal('adminBookingsModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+        // --- 1. ตั้งค่าเชื่อมต่อ Supabase ---
+        const { createClient } = supabase;
+        const supabaseUrl = "https://siuxbtxvpsntzumcmzjb.supabase.co";
+        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNpdXhidHh2cHNudHp1bWNtempiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEzMzc3NzYsImV4cCI6MjA4NjkxMzc3Nn0.Hn2Nuut3JszHzDpbHFB3W4nPaW0eH9tVVdLSOU7GUNY";
+        const db = createClient(supabaseUrl, supabaseKey);
+
+        // --- ตัวแปรหลักของระบบ ---
+        let locations = [];
+        let isAdminLoggedIn = false;
+        let isUserLoggedIn = false;
+        let currentUserEmail = "";
+        let currentUserProfile = {};
+        let currentFilter = 'all';
+
+        function toggleHamburger() {
+            document.getElementById('hamburgerBtn').classList.toggle('open');
+            document.getElementById('hamburgerMenu').classList.toggle('open');
+            document.getElementById('hamburgerBackdrop').classList.toggle('open');
+        }
+
+        // กำหนด Email ของ Admin (สมมติว่าเป็น admin@example.com ถ้าใช้จริงให้เปลี่ยนใหม่)
+        const ADMIN_EMAIL = 'miangmap@gmail.com';
+
+        // --- 2. สร้างแผนที่ Leaflet ---
+        var map = L.map('map').setView([18.83081, 99.38724], 15);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        var markersLayer = L.layerGroup().addTo(map);
+
+        // --- 3. ตรวจสอบสถานะล็อกอิน ---
+        db.auth.onAuthStateChange((event, session) => {
+            isUserLoggedIn = !!session;
+            if (session) {
+                currentUserEmail = session.user.email;
+                currentUserProfile = session.user.user_metadata || {};
+                isAdminLoggedIn = (currentUserEmail === ADMIN_EMAIL);
+                document.getElementById('authBtn').innerText = isAdminLoggedIn ? "Logout (Admin)" : "Logout (User)";
+            } else {
+                currentUserEmail = "";
+                currentUserProfile = {};
+                isAdminLoggedIn = false;
+                document.getElementById('authBtn').innerText = "Login / Sign Up";
+            }
+
+            // แสดง/ซ่อน ปุ่มจัดการการจองของแอดมินและปุ่มของยูสเซอร์ทั่วไป
+            const adminBtn = document.getElementById('adminBookingsBtn');
+            if (adminBtn) {
+                adminBtn.style.display = isAdminLoggedIn ? 'inline-block' : 'none';
+            }
+
+            const myBookingsBtn = document.getElementById('myBookingsBtn');
+            if (myBookingsBtn) {
+                myBookingsBtn.style.display = (isUserLoggedIn && !isAdminLoggedIn) ? 'inline-block' : 'none';
+            }
+
+            // แสดง/ซ่อน ปุ่มจัดการการจองของแอดมิน
+            const bookingsBtn = document.getElementById('adminBookingsBtn');
+            if (bookingsBtn) {
+                bookingsBtn.style.display = isAdminLoggedIn ? 'inline-block' : 'none';
+            }
+
+            if (event === 'PASSWORD_RECOVERY') {
+                // เปิดหน้าต่างตั้งรหัสผ่านใหม่
+                document.getElementById('newPasswordInput').value = '';
+                document.getElementById('updatePasswordModal').style.display = "flex";
+            }
+
+            filterMap(currentFilter); // รีเฟรชแผนที่เมื่อสถานะเปลี่ยน
+        });
+
+        // --- 4. ดึงข้อมูลสถานที่จากฐานข้อมูล ---
+        async function fetchLocations() {
+            const { data, error } = await db.from('locations').select('*');
+            if (error) {
+                console.error("Error fetching data:", error);
+                showToast("ไม่สามารถโหลดข้อมูลจากฐานข้อมูลได้", "error");
+                return;
+            }
+            locations = data;
+            filterMap(currentFilter);
+        }
+
+        // --- 5. วาดหมุดและฟิลเตอร์หมวดหมู่ ---
+        function getMarkerIcon(category) {
+            let color = 'blue'; // default
+            if (category === 'stay') color = 'blue';
+            else if (category === 'food') color = 'orange';
+            else if (category === 'tour') color = 'green';
+            else if (category === 'other') color = 'black';
+
+            return new L.Icon({
+                iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-${color}.png`,
+                shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                iconSize: [25, 41],
+                iconAnchor: [12, 41],
+                popupAnchor: [1, -34],
+                shadowSize: [41, 41]
+            });
+        }
+
+        function filterMap(category) {
+            // ถัากดปุ่ม Home (all) ให้ซูมกลับมาที่จุดเริ่มต้น
+            if (category === 'all') {
+                map.setView([18.83081, 99.38724], 15);
+            }
+
+            currentFilter = category;
+            markersLayer.clearLayers();
+
+            locations.forEach(loc => {
+                if (category === 'all' || loc.category === category) {
+
+                    // เพิ่ม draggable property ถ้าแอดมินล็อกอิน และใส่ custom icon ตามหมวดหมู่
+                    var marker = L.marker([loc.lat, loc.lng], {
+                        draggable: isAdminLoggedIn,
+                        icon: getMarkerIcon(loc.category)
+                    });
+
+                    // ฟังก์ชันเมื่อแอดมินลากหมุดไปวางที่ใหม่
+                    if (isAdminLoggedIn) {
+                        marker.on('dragend', async function (e) {
+                            const newPos = e.target.getLatLng();
+                            const confirmMove = confirm(`ต้องการย้ายตำแหน่ง "${loc.name}" ใช่หรือไม่?`);
+
+                            if (confirmMove) {
+                                const { error } = await db.from('locations').update({
+                                    lat: newPos.lat,
+                                    lng: newPos.lng
+                                }).eq('id', loc.id);
+
+                                if (error) {
+                                    showToast("เกิดข้อผิดพลาดในการย้าย: " + error.message, "error");
+                                } else {
+                                    showToast("บันทึกตำแหน่งใหม่เรียบร้อยแล้ว!", "success");
+                                }
+                                fetchLocations(); // โหลดข้อมูลใหม่เพื่อความชัวร์
+                            } else {
+                                fetchLocations(); // ถ้ากดยกเลิก ให้หมุดกลับที่เดิม
+                            }
+                        });
+                    }
+
+                    const address = loc.address || "-";
+                    const phone = loc.phone || "";
+                    const facebookLink = loc.facebook || "";
+                    const rating = loc.rating || "-";
+
+                    // ถ้าแอดมินล็อกอิน ให้แสดงปุ่ม Edit ท้าย Popup
+                    let adminControls = "";
+                    if (isAdminLoggedIn) {
+                        adminControls = `<button class="edit-marker-btn" onclick="openEditModal(${loc.id})">✏️ Edit Marker</button>`;
+                    }
+
+                    let bookBtn = "";
+                    let roomStatusHtml = "";
+                    if (loc.category === 'stay') {
+                        bookBtn = `<button class="book-package-btn" onclick="handleBookPackage(${loc.id}, '${loc.name}')">📅 Book Now</button>`;
+                        
+                        const available = loc.available_rooms !== null && loc.available_rooms !== undefined ? loc.available_rooms : 0;
+                        const booked = loc.booked_rooms !== null && loc.booked_rooms !== undefined ? loc.booked_rooms : 0;
+                        roomStatusHtml = `
+                            <div class="g-rooms">
+                                <span class="g-icon">🛏️</span>
+                                <span>สถานะห้องพัก: ว่าง <strong>${available}</strong> ห้อง | จองแล้ว <strong>${booked}</strong> ห้อง</span>
+                            </div>
+                        `;
+                    }
+
+                    const popupHtml = `
+                        <div class="g-card">
+                            <div class="g-header">Location Info</div>
+                            <div class="g-title">${loc.name}</div>
+                            <div class="g-address">${address}</div>
+                            ${phone ? `<div class="g-link-row"><span class="g-icon">📞</span><a href="tel:${phone}" class="g-link">${phone}</a></div>` : ''}
+                            ${facebookLink ? `<div class="g-link-row"><span class="g-icon">📘</span><a href="${facebookLink}" target="_blank" class="g-link">Facebook Page</a></div>` : ''}
+                            <div class="g-rating">
+                                <span class="g-score">${rating}</span>
+                                <span class="g-stars">★★★★☆</span>
+                            </div>
+                            ${roomStatusHtml}
+                            ${adminControls}
+                            ${bookBtn}
+                        </div>
+                    `;
+                    marker.bindPopup(popupHtml);
+                    markersLayer.addLayer(marker);
+                }
+            });
+
+            // อัปเดตสถานะปุ่มเมนูให้ทำงานตรงหมวดที่เลือก
+            const buttons = document.querySelectorAll('.nav-btn:not(.admin-btn):not(.gps-btn)');
+            buttons.forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(category)) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+
+        // --- 6. ระบบ Login / Logout / Register / Reset Password ---
+        let authMode = 'login'; // 'login', 'signup', 'forgot'
+
+        async function toggleAuthModal() {
+            if (isUserLoggedIn) {
+                const { error } = await db.auth.signOut();
+                if (!error) showToast("ออกจากระบบสำเร็จ", "success");
+            } else {
+                authMode = 'login';
+                updateAuthModalUI();
+                document.getElementById('emailInput').value = '';
+                document.getElementById('passwordInput').value = '';
+                document.getElementById('firstNameInput').value = '';
+                document.getElementById('lastNameInput').value = '';
+                document.getElementById('phoneNumInput').value = '';
+                document.getElementById('loginModal').style.display = "flex";
+            }
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = "none";
+        }
+
+        function updateAuthModalUI() {
+            const title = document.getElementById('authModalTitle');
+            const submitBtn = document.getElementById('authSubmitBtn');
+            const toggleLink = document.getElementById('authToggleLink');
+            const forgotLink = document.getElementById('forgotPasswordLink');
+            const signupFields = document.getElementById('signupFields');
+            const passwordGroup = document.getElementById('passwordFieldGroup');
+
+            if (authMode === 'login') {
+                title.innerText = "Login";
+                submitBtn.innerText = "Login";
+                toggleLink.innerText = "Don't have an account? Sign Up";
+                toggleLink.style.display = "inline";
+                forgotLink.style.display = "inline";
+                signupFields.style.display = "none";
+                passwordGroup.style.display = "block";
+            } else if (authMode === 'signup') {
+                title.innerText = "Sign Up";
+                submitBtn.innerText = "Sign Up";
+                toggleLink.innerText = "Already have an account? Login";
+                toggleLink.style.display = "inline";
+                forgotLink.style.display = "none";
+                signupFields.style.display = "block";
+                passwordGroup.style.display = "block";
+            } else if (authMode === 'forgot') {
+                title.innerText = "Reset Password";
+                submitBtn.innerText = "Send Reset Link";
+                toggleLink.innerText = "Back to Login";
+                toggleLink.style.display = "inline";
+                forgotLink.style.display = "none";
+                signupFields.style.display = "none";
+                passwordGroup.style.display = "none";
+            }
+        }
+
+        function toggleAuthType() {
+            if (authMode === 'forgot') {
+                authMode = 'login';
+            } else {
+                authMode = authMode === 'login' ? 'signup' : 'login';
+            }
+            updateAuthModalUI();
+        }
+
+        function switchToForgotMode() {
+            authMode = 'forgot';
+            updateAuthModalUI();
+        }
+
+        async function handleAuthAction() {
+            const email = document.getElementById('emailInput').value;
+            const pass = document.getElementById('passwordInput').value;
+
+            const fName = document.getElementById('firstNameInput').value;
+            const lName = document.getElementById('lastNameInput').value;
+            const phoneStr = document.getElementById('phoneNumInput').value;
+
+            const submitBtn = document.getElementById('authSubmitBtn');
+
+            if (!email) {
+                showToast("กรุณากรอกอีเมล", "error");
+                return;
+            }
+
+            if (authMode !== 'forgot' && !pass) {
+                showToast("กรุณากรอกรหัสผ่าน", "error");
+                return;
+            }
+
+            if (authMode === 'signup' && (!fName || !lName || !phoneStr)) {
+                showToast("กรุณากรอก ชื่อ, นามสกุล และเบอร์โทรศัพท์ ให้ครบถ้วน", "error");
+                return;
+            }
+
+            submitBtn.innerText = "กำลังประมวลผล...";
+
+            let error = null;
+            if (authMode === 'signup') {
+                const res = await db.auth.signUp({
+                    email: email,
+                    password: pass,
+                    options: {
+                        data: {
+                            first_name: fName,
+                            last_name: lName,
+                            phone: phoneStr
+                        }
+                    }
+                });
+                error = res.error;
+                if (!error) showToast("สมัครสมาชิกสำเร็จ! ยินดีต้อนรับสู่ระบบ", "success");
+            } else if (authMode === 'login') {
+                const res = await db.auth.signInWithPassword({ email: email, password: pass });
+                error = res.error;
+                if (!error) showToast("เข้าสู่ระบบสำเร็จ!", "success");
+            } else if (authMode === 'forgot') {
+                const redirectUrl = window.location.origin + window.location.pathname;
+                const res = await db.auth.resetPasswordForEmail(email, { redirectTo: redirectUrl });
+                error = res.error;
+                if (!error) showToast("ส่งลิงก์รีเซตรหัสผ่านไปยังอีเมลของคุณเรียบร้อยแล้ว!", "success");
+            }
+
+            if (error) {
+                showToast("เกิดข้อผิดพลาด: " + error.message, "error");
+                updateAuthModalUI(); // รีเซ็ตข้อความปุ่ม
+            } else {
+                document.getElementById('emailInput').value = '';
+                document.getElementById('passwordInput').value = '';
+                closeModal('loginModal');
+            }
+        }
+
+        async function handleUpdatePassword() {
+            const newPassword = document.getElementById('newPasswordInput').value;
+            const updateBtn = document.getElementById('updatePasswordBtn');
+
+            if (!newPassword || newPassword.length < 6) {
+                showToast("รหัสผ่านต้องมีความยาวอย่างน้อย 6 ตัวอักษร", "error");
+                return;
+            }
+
+            updateBtn.innerText = "กำลังบันทึก...";
+
+            const { error } = await db.auth.updateUser({ password: newPassword });
+
+            updateBtn.innerText = "Update Password";
+
+            if (error) {
+                showToast("เกิดข้อผิดพลาดในการเปลี่ยนรหัสผ่าน: " + error.message, "error");
+            } else {
+                showToast("เปลี่ยนรหัสผ่านสำเร็จแล้ว! สามารถเข้าสู่ระบบด้วยรหัสผ่านใหม่ได้ทันที", "success");
+                closeModal('updatePasswordModal');
+            }
+        }
+
+        // --- ฟังก์ชันสำหรับการจอง ---
+        function handleBookPackage(locId, locName) {
+            if (!isUserLoggedIn) {
+                showToast("กรุณาเข้าสู่ระบบ (Login) หรือสมัครสมาชิกใหม่ก่อน จึงจะสามารถจองที่พักได้ครับ", "info");
+                toggleAuthModal();
+                return;
+            }
+
+            const userName = currentUserProfile.first_name ? `${currentUserProfile.first_name} ${currentUserProfile.last_name}` : "-";
+            const userPhone = currentUserProfile.phone || "-";
+
+            // เซ็ตข้อมูลลง Modal
+            document.getElementById('bookLocId').value = locId;
+            document.getElementById('bookLocName').innerText = locName;
+            document.getElementById('bookUserName').innerText = userName;
+            document.getElementById('bookUserPhone').innerText = "Tel: " + userPhone;
+            document.getElementById('bookUserEmail').innerText = currentUserEmail;
+
+            // ล้างค่าเก่า
+            document.getElementById('bookDateInput').value = '';
+            document.getElementById('bookGuestsInput').value = 1;
+
+            document.getElementById('bookModal').style.display = "flex";
+            map.closePopup();
+        }
+
+        async function submitBooking() {
+            const dateVal = document.getElementById('bookDateInput').value;
+            const guestsVal = document.getElementById('bookGuestsInput').value;
+            const btn = document.getElementById('confirmBookBtn');
+
+            if (!dateVal) {
+                showToast("กรุณาเลือกวันที่เข้าพัก", "error");
+                return;
+            }
+
+            btn.innerText = "กำลังดำเนินการ...";
+
+            const locId = document.getElementById('bookLocId').value;
+            const locName = document.getElementById('bookLocName').innerText;
+            const userName = currentUserProfile.first_name ? `${currentUserProfile.first_name} ${currentUserProfile.last_name}` : currentUserEmail;
+            const userPhone = currentUserProfile.phone || '-';
+
+            const payload = {
+                location_id: parseInt(locId),
+                location_name: locName,
+                user_email: currentUserEmail,
+                user_name: userName,
+                user_phone: userPhone,
+                travel_date: dateVal,
+                guests_count: parseInt(guestsVal),
+                status: 'pending_payment',
+                payment_slip_url: null
+            };
+
+            const { data, error } = await db.from('booking').insert([payload]);
+
+            btn.innerText = "Confirm Booking";
+
+            if (error) {
+                console.error("Booking err:", error);
+                showToast("เกิดข้อผิดพลาดในการจอง: " + error.message, "error");
+            } else {
+                closeModal('bookModal');
+
+                // ดึงข้อมูลการติดต่อของโฮมสเตย์เพื่อแสดงในกล่องขั้นตอนการจ่ายเงิน
+                const loc = locations.find(item => item.id === parseInt(locId));
+                const phone = loc ? loc.phone : '-';
+                const facebook = loc ? loc.facebook : '-';
+
+                document.getElementById('instHomeStayName').innerText = loc ? loc.name : locName;
+                document.getElementById('instHomeStayPhone').innerText = "📞 โทร: " + (phone || "-");
+
+                const fbContainer = document.getElementById('instHomeStayFB');
+                if (facebook && facebook !== '-') {
+                    fbContainer.innerHTML = `📘 Facebook: <a href="${facebook}" target="_blank" class="g-link" style="color: var(--primary-light) !important; font-size: 13.5px; font-weight: 600;">เพจโฮมสเตย์</a>`;
+                    fbContainer.style.display = 'block';
+                } else {
+                    fbContainer.innerText = "📘 Facebook: -";
+                    fbContainer.style.display = 'none';
+                }
+
+                // แสดงหน้าต่างคำแนะนำชำระเงิน
+                document.getElementById('paymentInstructionModal').style.display = "flex";
+            }
+        }
+
+        // --- 7. ระบบแก้ไขข้อมูล ---
+        function toggleRoomFields(category) {
+            const fields = document.getElementById('roomStatusFields');
+            if (fields) {
+                fields.style.display = category === 'stay' ? 'flex' : 'none';
+            }
+        }
+
+        function openEditModal(id) {
+            const loc = locations.find(item => item.id === id);
+            if (!loc) return;
+
+            document.getElementById('editId').value = loc.id;
+            document.getElementById('editName').value = loc.name;
+            document.getElementById('editLat').value = loc.lat; // ใส่ค่าละติจูด
+            document.getElementById('editLng').value = loc.lng; // ใส่ค่าลองจิจูด
+            document.getElementById('editCat').value = loc.category;
+            document.getElementById('editPhone').value = loc.phone || "";
+            document.getElementById('editFacebook').value = loc.facebook || "";
+            document.getElementById('editRating').value = loc.rating || "";
+
+            // โชว์/ซ่อน ฟิลด์จำนวนห้อง และเซ็ตค่าเริ่มต้น
+            toggleRoomFields(loc.category);
+            document.getElementById('editAvailableRooms').value = loc.available_rooms !== null && loc.available_rooms !== undefined ? loc.available_rooms : 0;
+            document.getElementById('editBookedRooms').value = loc.booked_rooms !== null && loc.booked_rooms !== undefined ? loc.booked_rooms : 0;
+
+            document.getElementById('editModal').style.display = "flex";
+            map.closePopup();
+        }
+
+        async function saveLocationEdit() {
+            const updateBtn = document.querySelector('#editModal .btn-save');
+            updateBtn.innerText = "กำลังบันทึก...";
+
+            const id = document.getElementById('editId').value;
+            const category = document.getElementById('editCat').value;
+
+            const updatedData = {
+                name: document.getElementById('editName').value,
+                lat: parseFloat(document.getElementById('editLat').value), // บันทึกค่าละติจูด
+                lng: parseFloat(document.getElementById('editLng').value), // บันทึกค่าลองจิจูด
+                category: category,
+                phone: document.getElementById('editPhone').value,
+                facebook: document.getElementById('editFacebook').value,
+                rating: document.getElementById('editRating').value,
+                available_rooms: category === 'stay' ? parseInt(document.getElementById('editAvailableRooms').value) || 0 : null,
+                booked_rooms: category === 'stay' ? parseInt(document.getElementById('editBookedRooms').value) || 0 : null
+            };
+
+            const { error } = await db.from('locations').update(updatedData).eq('id', id);
+
+            updateBtn.innerText = "Save Changes";
+
+            if (error) {
+                showToast("เกิดข้อผิดพลาดในการบันทึก: " + error.message, "error");
+            } else {
+                showToast("อัปเดตข้อมูลสำเร็จ!", "success");
+                closeModal('editModal');
+                await fetchLocations(); // โหลดข้อมูลใหม่จากฐานข้อมูลมาแสดงทันที
+            }
+        }
+
+        // --- 7.3 ระบบการจองของฉันสำหรับยูสเซอร์ทั่วไป (My Bookings Panel) ---
+        async function openMyBookingsModal() {
+            document.getElementById('myBookingsModal').style.display = 'flex';
+            await loadMyBookings();
+        }
+
+        async function loadMyBookings() {
+            const listContainer = document.getElementById('myBookingsList');
+            listContainer.innerHTML = `<div style="text-align: center; color: var(--text-muted);">กำลังโหลดข้อมูลประวัติการจอง...</div>`;
+
+            if (!currentUserEmail) {
+                listContainer.innerHTML = `<div style="text-align: center; color: #ff6b6b;">กรุณาเข้าสู่ระบบก่อนดึงข้อมูลประวัติการจอง</div>`;
+                return;
+            }
+
+            const { data, error } = await db
+                .from('booking')
+                .select('*')
+                .eq('user_email', currentUserEmail)
+                .order('id', { ascending: false });
+
+            if (error) {
+                console.error("Load my bookings error:", error);
+                listContainer.innerHTML = `<div style="text-align: center; color: #ff6b6b;">ไม่สามารถโหลดประวัติการจองได้: ${error.message}</div>`;
+                return;
+            }
+
+            if (data.length === 0) {
+                listContainer.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 20px;">คุณยังไม่มีประวัติการจองที่พักในขณะนี้</div>`;
+                return;
+            }
+
+            listContainer.innerHTML = data.map(b => {
+                const statusClass = `status-${b.status}`;
+                let statusLabel = "";
+                let detailsHtml = "";
+
+                // ค้นหาข้อมูลติดต่อโฮมสเตย์
+                const loc = locations.find(item => item.id === b.location_id);
+                const phone = loc ? loc.phone : '-';
+                const facebook = loc ? loc.facebook : '-';
+
+                if (b.status === 'pending_payment') {
+                    statusLabel = "รอชำระเงิน";
+                    detailsHtml = `
+                        <div style="font-size: 13.5px; color: #d1d5db; margin: 6px 0; padding: 10px; background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.2); border-radius: 8px;">
+                            <div style="font-weight: 700; color: #ffd43b; margin-bottom: 4px;">ขั้นตอนการชำระเงิน:</div>
+                            <div>กรุณาติดต่อที่พักเพื่อชำระเงินโดยตรง:</div>
+                            <div style="margin-top: 4px;">📞 โทร: <strong>${phone || "-"}</strong></div>
+                            ${facebook && facebook !== '-' ? `<div style="margin-top: 2px;">📘 เพจโฮมสเตย์: <a href="${facebook}" target="_blank" style="color: var(--primary-light) !important; text-decoration: underline;">คลิกเปิด Facebook Page</a></div>` : ''}
+                        </div>
+                        <div style="margin-top: 8px;">
+                            <label style="display: block; font-size: 12px; color: var(--text-muted); font-weight: bold; margin-bottom: 4px; text-transform: uppercase;">แนบรูปภาพสลิปเงินโอน:</label>
+                            <input type="file" id="slipInput_${b.id}" accept="image/*" style="font-size: 12.5px; width: 100%;">
+                            <button class="btn btn-save" onclick="uploadSlipForBooking(${b.id})" style="width: 100%; margin-top: 8px; padding: 8px 12px; font-size: 13px; font-family: 'Sarabun', sans-serif;">📤 ส่งหลักฐานสลิปโอนเงิน</button>
+                        </div>
+                    `;
+                } else if (b.status === 'pending_verification') {
+                    statusLabel = "รอที่พักตรวจสอบ";
+                    detailsHtml = `
+                        <div style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">
+                            คุณได้อัปโหลดสลิปแล้ว เจ้าหน้าที่กำลังดำเนินการตรวจสอบยอดเงินเข้าบัญชี
+                        </div>
+                        ${b.payment_slip_url ? `<div style="margin-top: 6px;"><a href="${b.payment_slip_url}" target="_blank" class="slip-link">📄 ดูรูปสลิปที่แนบส่งไป</a></div>` : ''}
+                    `;
+                } else if (b.status === 'confirmed') {
+                    statusLabel = "การจองสำเร็จแล้ว";
+                    detailsHtml = `
+                        <div style="font-size: 13px; color: var(--primary-light); font-weight: bold; margin-top: 4px;">
+                            ที่พักตรวจสอบยอดเงินโอนเรียบร้อยแล้ว ยินดีต้อนรับสู่บ้านป่าเหมี้ยงครับ! 🎉
+                        </div>
+                    `;
+                } else if (b.status === 'rejected') {
+                    statusLabel = "การจองปฏิเสธ/ยกเลิก";
+                    detailsHtml = `
+                        <div style="font-size: 13px; color: #ff6b6b; margin-top: 4px;">
+                            การจองของท่านถูกยกเลิก/ปฏิเสธ หรือพบปัญหายอดสลิปไม่ตรง กรุณาติดต่อที่พักโดยตรง
+                        </div>
+                    `;
+                }
+
+                return `
+                    <div class="my-booking-card">
+                        <div class="booking-status-row">
+                            <span class="booking-title">${escapeHTML(b.location_name)}</span>
+                            <span class="status-badge ${statusClass}">${statusLabel}</span>
+                        </div>
+                        <div style="font-size: 13.5px; color: var(--text-muted);">
+                            <span>📅 วันที่เข้าพัก: <strong>${escapeHTML(b.travel_date)}</strong></span>
+                            <span style="margin-left: 15px;">👥 จำนวนผู้พัก: <strong>${b.guests_count}</strong> คน</span>
+                        </div>
+                        ${detailsHtml}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function uploadSlipForBooking(bookingId) {
+            const slipInput = document.getElementById(`slipInput_${bookingId}`);
+            const slipFile = slipInput ? slipInput.files[0] : null;
+
+            if (!slipFile) {
+                showToast("กรุณาเลือกไฟล์สลิปการโอนเงินก่อนครับ", "error");
+                return;
+            }
+
+            const uploadBtn = slipInput.nextElementSibling;
+            const originalText = uploadBtn.innerText;
+            uploadBtn.innerText = "กำลังอัปโหลดหลักฐาน...";
+            uploadBtn.disabled = true;
+
+            try {
+                const fileExt = slipFile.name.split('.').pop();
+                const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 8)}.${fileExt}`;
+                const { data: uploadData, error: uploadError } = await db.storage
+                    .from('slips')
+                    .upload(fileName, slipFile);
+
+                if (uploadError) {
+                    console.error("Upload slip error:", uploadError);
+                    showToast("อัปโหลดหลักฐานสลิปไม่สำเร็จ: " + uploadError.message, "error");
+                    uploadBtn.innerText = originalText;
+                    uploadBtn.disabled = false;
+                    return;
+                }
+
+                // ดึง public URL ของสลิป
+                const { data: publicUrlData } = db.storage
+                    .from('slips')
+                    .getPublicUrl(fileName);
+
+                const slipUrl = publicUrlData.publicUrl;
+
+                // อัปเดตตาราง booking
+                const { error: updateError } = await db
+                    .from('booking')
+                    .update({ 
+                        payment_slip_url: slipUrl,
+                        status: 'pending_verification'
+                    })
+                    .eq('id', bookingId);
+
+                if (updateError) {
+                    showToast("เกิดข้อผิดพลาดในการบันทึกสลิป: " + updateError.message, "error");
+                    uploadBtn.innerText = originalText;
+                    uploadBtn.disabled = false;
+                    return;
+                }
+
+                showToast("🎉 อัปโหลดสลิปสำเร็จ! รอการตรวจสอบและยืนยันจากที่พักครับ", "success");
+                await loadMyBookings(); // รีโหลดรายการจองใหม่
+            } catch (err) {
+                console.error("Upload slip exception:", err);
+                showToast("เกิดข้อผิดพลาดในการดำเนินงาน", "error");
+                uploadBtn.innerText = originalText;
+                uploadBtn.disabled = false;
+            }
+        }
+
+        // --- 7.5 ระบบจัดการการจองสำหรับแอดมิน (Admin Bookings Panel) ---
+        let adminBookings = [];
+
+        async function openAdminBookingsModal() {
+            document.getElementById('adminBookingsModal').style.display = 'flex';
+            await loadAdminBookings();
+        }
+
+        async function loadAdminBookings() {
+            const tbody = document.getElementById('adminBookingsTableBody');
+            tbody.innerHTML = `<tr><td colspan="8" style="text-align: center;">กำลังโหลดข้อมูล...</td></tr>`;
+
+            // ดึงข้อมูลการจองทั้งหมด
+            const { data, error } = await db
+                .from('booking')
+                .select('*')
+                .order('id', { ascending: false });
+
+            if (error) {
+                console.error("Load bookings error:", error);
+                showToast("ไม่สามารถดึงข้อมูลรายการจองได้: " + error.message, "error");
+                return;
+            }
+
+            adminBookings = data;
+
+            if (adminBookings.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted);">ไม่มีรายการจองห้องพักในขณะนี้</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = adminBookings.map(b => {
+                const statusClass = `status-${b.status}`;
+                let statusLabel = b.status;
+                if (b.status === 'pending_payment') statusLabel = "รอโอนเงิน";
+                else if (b.status === 'pending_verification') statusLabel = "รอตรวจสลิป";
+                else if (b.status === 'confirmed') statusLabel = "อนุมัติแล้ว";
+                else if (b.status === 'rejected') statusLabel = "ปฏิเสธแล้ว";
+
+                const slipHtml = b.payment_slip_url 
+                    ? `<a href="${b.payment_slip_url}" target="_blank" class="slip-link">📄 ดูสลิปโอน</a>`
+                    : `<span style="color: var(--text-muted); font-style: italic;">ไม่มีไฟล์</span>`;
+
+                let actionHtml = "";
+                if (b.status === 'pending_payment') {
+                    actionHtml = `<span style="color: #f59e0b; font-weight: bold; font-size: 12px;">รอโอนเงิน</span>`;
+                } else if (b.status === 'pending_verification') {
+                    actionHtml = `
+                        <button class="action-confirm-btn" onclick="confirmBooking(${b.id}, ${b.location_id})">ยืนยัน</button>
+                        <button class="action-reject-btn" onclick="rejectBooking(${b.id})">ปฏิเสธ</button>
+                    `;
+                } else if (b.status === 'confirmed') {
+                    actionHtml = `<span style="color: var(--primary-light); font-weight: bold; font-size: 12px;">อนุมัติแล้ว</span>`;
+                } else {
+                    actionHtml = `<span style="color: #ff6b6b; font-weight: bold; font-size: 12px;">ปฏิเสธแล้ว</span>`;
+                }
+
+                return `
+                    <tr>
+                        <td style="font-weight: 700; color: #ffffff;">${escapeHTML(b.location_name)}</td>
+                        <td>${escapeHTML(b.user_name)}</td>
+                        <td>
+                            <div>${escapeHTML(b.user_email)}</div>
+                            <div style="font-size: 12px; color: var(--text-muted);">${escapeHTML(b.user_phone)}</div>
+                        </td>
+                        <td>${escapeHTML(b.travel_date)}</td>
+                        <td style="text-align: center;">${b.guests_count}</td>
+                        <td>${slipHtml}</td>
+                        <td><span class="status-badge ${statusClass}">${b.status}</span></td>
+                        <td>${actionHtml}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        async function confirmBooking(bookingId, locationId) {
+            const confirmAction = confirm("ต้องการยืนยันการจองนี้ และปรับปรุงจำนวนห้องพักโดยอัตโนมัติ ใช่หรือไม่?");
+            if (!confirmAction) return;
+
+            // 1. อัปเดตสถานะการจองในฐานข้อมูล
+            const { error: updateError } = await db
+                .from('booking')
+                .update({ status: 'confirmed' })
+                .eq('id', bookingId);
+
+            if (updateError) {
+                showToast("เกิดข้อผิดพลาดในการยืนยัน: " + updateError.message, "error");
+                return;
+            }
+
+            // 2. ดึงข้อมูลห้องพักปัจจุบันของโฮมสเตย์
+            const { data: loc, error: fetchLocError } = await db
+                .from('locations')
+                .select('available_rooms, booked_rooms')
+                .eq('id', locationId)
+                .single();
+
+            if (!fetchLocError && loc) {
+                // ปรับปรุงจำนวนห้อง: ลดห้องว่างลง 1, เพิ่มห้องที่จองขึ้น 1
+                const newAvailable = Math.max(0, (loc.available_rooms || 0) - 1);
+                const newBooked = (loc.booked_rooms || 0) + 1;
+
+                await db.from('locations')
+                    .update({
+                        available_rooms: newAvailable,
+                        booked_rooms: newBooked
+                    })
+                    .eq('id', locationId);
+            }
+
+            showToast("🎉 ยืนยันการจองและอัปเดตจำนวนห้องพักเรียบร้อยแล้ว!", "success");
+            await loadAdminBookings();
+            await fetchLocations(); // รีเฟรชแผนที่ด้วย
+        }
+
+        async function rejectBooking(bookingId) {
+            const confirmAction = confirm("ต้องการปฏิเสธการจองนี้ ใช่หรือไม่?");
+            if (!confirmAction) return;
+
+            const { error } = await db
+                .from('booking')
+                .update({ status: 'rejected' })
+                .eq('id', bookingId);
+
+            if (error) {
+                showToast("เกิดข้อผิดพลาด: " + error.message, "error");
+            } else {
+                showToast("ปฏิเสธการจองเรียบร้อยแล้ว", "info");
+                await loadAdminBookings();
+            }
+        }
+
+        // Global Escape key event listener to close active modals
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal('loginModal');
+                closeModal('editModal');
+                closeModal('bookModal');
+                closeModal('updatePasswordModal');
+                closeModal('adminBookingsModal');
+            }
+        });
+
+    </script>
+</body>
+
+</html>

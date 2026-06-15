@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="สัมผัสเสน่ห์วิถีชีวิตคาร์บอนต่ำ โฮมสเตย์ ชาใบเหมี้ยง กาแฟป่า และธรรมชาติบริสุทธิ์ ณ ชุมชนบ้านป่าเหมี้ยง จังหวัดลำปาง">
+    <title>MIANG MAP - สัมผัสชุมชนบ้านป่าเหมี้ยง</title>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700;800&family=Sarabun:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #2b8a3e;
+            --primary-light: #40c057;
+            --primary-dark: #1b4332;
+            --accent: #d3f9d8;
+            --bg-dark: #0f1410;
+            --bg-light: #f4f6f5;
+            --text-light: #ffffff;
+            --text-dark: #2b2b2b;
+            --text-muted: #868e96;
+            --glass-bg: rgba(15, 20, 16, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Barlow', 'Sarabun', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Nav Bar Custom Glassmorphism */
+        .big-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 80px;
+            background-color: rgba(15, 20, 16, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            z-index: 2000;
+            border-bottom: 1px solid var(--glass-border);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .hamburger-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            z-index: 2100;
+        }
+
+        .hamburger-btn span {
+            display: block;
+            width: 24px;
+            height: 3px;
+            background: #fff;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger-btn.open span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 6px);
+        }
+
+        .hamburger-btn.open span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger-btn.open span:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -6px);
+        }
+
+        .hamburger-menu {
+            position: fixed;
+            top: 80px;
+            left: 0;
+            width: 260px;
+            background: #0f1410;
+            border-right: 1px solid var(--glass-border);
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.5);
+            z-index: 2050;
+            transform: translateX(-100%);
+            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 16px 0;
+            border-radius: 0 0 12px 0;
+        }
+
+        .hamburger-menu.open {
+            transform: translateX(0);
+        }
+
+        .hamburger-link {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 24px;
+            color: #bbb;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .hamburger-link:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+        }
+
+        .hamburger-link.active {
+            color: var(--primary-light);
+            background: linear-gradient(90deg, rgba(64, 192, 87, 0.15) 0%, transparent 100%);
+            border-left: 3px solid var(--primary-light);
+        }
+
+        .hamburger-icon {
+            font-size: 20px;
+            width: 28px;
+            text-align: center;
+        }
+
+        .hamburger-backdrop {
+            display: none;
+            position: fixed;
+            top: 80px;
+            left: 0;
+            width: 100%;
+            height: calc(100vh - 80px);
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2040;
+            backdrop-filter: blur(4px);
+        }
+
+        .hamburger-backdrop.open {
+            display: block;
+        }
+
+        .nav-brand {
+            color: white;
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-brand:hover {
+            color: var(--primary-light);
+            text-shadow: 0 0 10px rgba(64, 192, 87, 0.5);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .nav-btn {
+            background: none;
+            border: none;
+            color: #ccc;
+            font-family: 'Barlow', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            text-transform: uppercase;
+            cursor: pointer;
+            padding: 10px 15px;
+            transition: all 0.3s ease;
+            position: relative;
+            white-space: nowrap;
+            letter-spacing: 0.5px;
+            border-radius: 4px;
+        }
+
+        .nav-btn:hover {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-btn.active {
+            color: var(--primary-light);
+            font-weight: 700;
+        }
+
+        .nav-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: 2px;
+            left: 15px;
+            width: calc(100% - 30px);
+            height: 3px;
+            background-color: var(--primary-light);
+            border-radius: 2px;
+        }
+
+        /* Hero Section */
+        .hero {
+            position: relative;
+            height: 90vh;
+            min-height: 550px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 80px 20px 20px 20px;
+            background: linear-gradient(135deg, rgba(15, 20, 16, 0.55) 0%, rgba(27, 67, 50, 0.40) 100%),
+                url('images/village.jpg');
+            /* รูปหมู่บ้านจริง */
+            background-size: cover;
+            background-position: center top;
+            text-align: center;
+        }
+
+        /* Static shadow overlay for display readability */
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 20, 16, 0.35);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .hero-inner {
+            position: relative;
+            z-index: 10;
+            max-width: 900px;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: rgba(64, 192, 87, 0.2);
+            color: var(--accent);
+            border: 1px solid rgba(64, 192, 87, 0.4);
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .hero h1 {
+            font-family: 'Sarabun', 'Barlow', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.65;
+            margin-bottom: 20px;
+            letter-spacing: 0;
+            color: #ffffff;
+            text-shadow: 0 2px 16px rgba(0, 0, 0, 0.55);
+        }
+
+        .hero p {
+            font-family: 'Sarabun', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 300;
+            color: #d1d5db;
+            max-width: 700px;
+            margin: 0 auto 35px auto;
+            line-height: 1.7;
+        }
+
+        .hero-actions {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn-premium {
+            font-family: 'Barlow', 'Sarabun', sans-serif;
+            padding: 14px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .btn-primary-style {
+            background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+            color: white;
+            box-shadow: 0 8px 24px rgba(64, 192, 87, 0.3);
+            border: none;
+        }
+
+        .btn-primary-style:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(64, 192, 87, 0.5);
+            filter: brightness(1.1);
+        }
+
+        .btn-secondary-style {
+            background: rgba(255, 255, 255, 0.08);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(8px);
+        }
+
+        .btn-secondary-style:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-3px);
+        }
+
+        /* Info Section */
+        .info-section {
+            padding: 100px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-header h2 {
+            font-family: 'Barlow', 'Sarabun', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 15px;
+            letter-spacing: -0.5px;
+        }
+
+        .section-header p {
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto;
+            font-size: 1.1rem;
+        }
+
+        .story-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            align-items: center;
+            margin-bottom: 100px;
+        }
+
+        @media (max-width: 992px) {
+            .story-container {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+        }
+
+        .story-text h3 {
+            font-size: 1.8rem;
+            color: var(--primary-light);
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .story-text p {
+            color: #d1d5db;
+            margin-bottom: 20px;
+            font-size: 1.05rem;
+            line-height: 1.8;
+            font-weight: 300;
+        }
+
+        .story-highlights {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .highlight-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .highlight-icon {
+            background: rgba(64, 192, 87, 0.15);
+            color: var(--primary-light);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .highlight-desc h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 3px;
+        }
+
+        .highlight-desc p {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-bottom: 0;
+        }
+
+        .story-media {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            aspect-ratio: 4/3;
+            border: 1px solid var(--glass-border);
+        }
+
+        .story-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .story-media:hover .story-img {
+            transform: scale(1.05);
+        }
+
+        .story-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(to top, rgba(15, 20, 16, 0.9) 0%, transparent 100%);
+            padding: 30px;
+            color: white;
+        }
+
+        .story-overlay h4 {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        /* Card Grid Section */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 30px;
+            margin-bottom: 100px;
+        }
+
+        .sight-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 30px;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sight-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-light), var(--primary));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .sight-card:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(64, 192, 87, 0.3);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+        }
+
+        .sight-card:hover::before {
+            opacity: 1;
+        }
+
+        .card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .sight-card h3 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 12px;
+        }
+
+        .sight-card p {
+            color: #ced4da;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            font-weight: 300;
+        }
+
+        /* Carbon neutral feature box */
+        .carbon-box {
+            background: linear-gradient(135deg, rgba(43, 138, 62, 0.15) 0%, rgba(27, 67, 50, 0.05) 100%);
+            border: 1px solid rgba(64, 192, 87, 0.2);
+            border-radius: 20px;
+            padding: 50px;
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 40px;
+            align-items: center;
+            margin-bottom: 80px;
+        }
+
+        @media (max-width: 992px) {
+            .carbon-box {
+                grid-template-columns: 1fr;
+                padding: 30px;
+            }
+        }
+
+        .carbon-content h3 {
+            font-size: 2rem;
+            color: white;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .carbon-content p {
+            color: #e9ecef;
+            font-size: 1.05rem;
+            margin-bottom: 25px;
+            font-weight: 300;
+        }
+
+        .carbon-points {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .carbon-point {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1rem;
+            color: var(--accent);
+            font-weight: 500;
+        }
+
+        .carbon-point-icon {
+            color: var(--primary-light);
+            font-size: 1.2rem;
+        }
+
+        .carbon-stats {
+            background: rgba(15, 20, 16, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 16px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-value {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: var(--primary-light);
+            line-height: 1;
+            margin-bottom: 5px;
+            letter-spacing: -1px;
+        }
+
+        .stat-label {
+            font-size: 0.95rem;
+            color: #ced4da;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Call To Action */
+        .cta-section {
+            background: radial-gradient(circle at center, rgba(27, 67, 50, 0.6) 0%, rgba(15, 20, 16, 0.9) 100%);
+            border-top: 1px solid var(--glass-border);
+            padding: 80px 20px;
+            text-align: center;
+        }
+
+        .cta-inner {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .cta-inner h2 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 20px;
+            letter-spacing: -0.5px;
+        }
+
+        .cta-inner p {
+            color: #ced4da;
+            font-size: 1.15rem;
+            margin-bottom: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            font-weight: 300;
+        }
+
+        .cta-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #0b0d0c;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 40px 20px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .footer-logo {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary-light);
+        }
+
+        /* Animations */
+        @keyframes float-slow {
+            0% {
+                transform: translateY(0) scale(1);
+            }
+
+            100% {
+                transform: translateY(-30px) scale(1.05);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive Layouts */
+        @media (max-width: 768px) {
+            .big-nav {
+                flex-direction: column;
+                height: auto;
+                padding: 15px 0;
+                align-items: flex-start;
+            }
+
+            .nav-left {
+                margin-left: 20px;
+                margin-bottom: 5px;
+            }
+
+            .nav-brand {
+                font-size: 22px;
+            }
+
+            .nav-links {
+                width: 100%;
+                overflow-x: auto;
+                white-space: nowrap;
+                padding-left: 20px;
+                padding-bottom: 10px;
+                gap: 10px;
+            }
+
+            .nav-links::-webkit-scrollbar {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+
+            .hero p {
+                font-size: 1.05rem;
+            }
+
+            .info-section {
+                padding: 60px 20px;
+            }
+
+            .section-header h2 {
+                font-size: 2rem;
+            }
+
+            .cta-inner h2 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="big-nav">
+        <div class="nav-left">
+            <button class="hamburger-btn" onclick="toggleHamburger()" id="hamburgerBtn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <div class="nav-brand" style="cursor: pointer;" onclick="window.location.reload()">MIANG MAP</div>
+        </div>
+
+        <div class="hamburger-menu" id="hamburgerMenu">
+            <a href="index.html" class="hamburger-link active">
+                <span class="hamburger-icon">🏠</span>
+                <span>Home</span>
+            </a>
+            <a href="../map/index.html" class="hamburger-link">
+                <span class="hamburger-icon">🗺️</span>
+                <span>Map</span>
+            </a>
+            <a href="../travel_package/index.html" class="hamburger-link">
+                <span class="hamburger-icon">📦</span>
+                <span>Package</span>
+            </a>
+        </div>
+        <div class="hamburger-backdrop" id="hamburgerBackdrop" onclick="toggleHamburger()"></div>
+
+        <div class="nav-links">
+            <button onclick="window.location.reload()" class="nav-btn active">Home</button>
+            <button onclick="window.location.href='../map/index.html'" class="nav-btn">🗺️ Interactive Map</button>
+            <button onclick="window.location.href='../travel_package/index.html'" class="nav-btn">📦 Travel
+                Packages</button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero">
+        <div class="hero-inner">
+            <div class="hero-badge">Low Carbon Community Tourism</div>
+            <h1>สัมผัสวิถีชีวิตคาร์บอนต่ำ<br>ณ ชุมชนบ้านป่าเหมี้ยง</h1>
+            <p>หมู่บ้านกลางผืนป่าดิบเขา สูงเหนือระดับน้ำทะเลกว่า 1,000 เมตร ที่สืบทอดวิถีคนอยู่กับป่า
+                ปลูกชากาแฟออร์แกนิกใต้ร่มไม้ใหญ่อย่างยั่งยืน</p>
+            <div class="hero-actions">
+                <a href="../map/index.html" class="btn-premium btn-primary-style">🗺️ เริ่มเดินทางสำรวจแผนที่</a>
+                <a href="../travel_package/index.html" class="btn-premium btn-secondary-style">🌿
+                    ดูแพ็กเกจคาร์บอนต่ำ</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Content Sections -->
+    <main class="info-section">
+
+        <!-- Story section -->
+        <section class="story-container">
+            <div class="story-text">
+                <h3>เรื่องราวแห่งป่าและคน "บ้านป่าเหมี้ยง"</h3>
+                <p>"บ้านป่าเหมี้ยง"
+                    คือชุมชนท่องเที่ยวเชิงอนุรักษ์ที่ซ่อนตัวอยู่ในเขต<strong>อุทยานแห่งชาติแจ้ซ้อน</strong>
+                    ตำบลแจ้ซ้อน อำเภอเมืองปาน จังหวัดลำปาง ตัวหมู่บ้านตั้งอยู่ในหุบเขาสูงประมาณ 1,200
+                    เมตรจากระดับน้ำทะเล
+                    มีเส้นทาง ลป.4030 เชื่อมต่อไปยังหมู่บ้านแม่กำปอง จังหวัดเชียงใหม่ ห่างกันเพียง 5–6 กิโลเมตร
+                    ที่นี่อากาศเย็นสบายตลอดทั้งปี โดยเฉพาะฤดูหนาวที่อุณหภูมิอาจต่ำกว่า 10 องศาเซลเซียส</p>
+                <p>หมู่บ้านแห่งนี้มีประวัติศาสตร์<strong>ยาวนานกว่า 200 ปี</strong>
+                    บรรพบุรุษของชาวบ้านอพยพมาจากเชียงใหม่
+                    เชียงราย และลำพูน เพื่อบุกเบิกทำมาหากินในป่าแห่งนี้ โดยยึดอาชีพ<strong>เก็บใบเหมี้ยง</strong>
+                    (ชาอัสสัมป่าที่ขึ้นตามธรรมชาติอย่างหนาแน่น) นำมานึ่งและหมักเป็น "เมี่ยง"
+                    ของว่างพื้นบ้านภูมิปัญญาล้านนาที่ใช้เคี้ยวหลังมื้ออาหารและต้อนรับแขก
+                    วิถีชีวิต เศรษฐกิจ และความผูกพันของคนที่นี่จึงเติบโตมาพร้อมกับป่าเหมี้ยงอย่างเกื้อกูลกัน</p>
+
+                <div class="story-highlights">
+                    <div class="highlight-item">
+                        <div class="highlight-icon">🍃</div>
+                        <div class="highlight-desc">
+                            <h4>วิถีใบเหมี้ยงแบบยั่งยืน</h4>
+                            <p>สืบทอดการเก็บใบเหมี้ยงด้วยมือจากต้น นึ่งด้วยไอน้ำร้อนๆ และหมักแบบดั้งเดิม
+                                แปรรูปเป็นเมี่ยงหมักและชาคั่ว รวมถึงเมนูสุด Unseen อย่าง "ยำใบเหมี้ยง"
+                                และ "หมอนใบชาเพื่อสุขภาพ" ที่ส่งกลิ่นหอมผ่อนคลายเวลานอน</p>
+                        </div>
+                    </div>
+                    <div class="highlight-item">
+                        <div class="highlight-icon">☕</div>
+                        <div class="highlight-desc">
+                            <h4>กาแฟออร์แกนิกใต้ร่มเงาป่า</h4>
+                            <p>กาแฟอาราบิก้าที่เติบโตแบบธรรมชาติใต้ต้นไม้ใหญ่ในป่าเหมี้ยง ออร์แกนิก 100%
+                                ให้รสชาติที่เป็นเอกลักษณ์เฉพาะพื้นที่ เป็นมิตรกับสิ่งแวดล้อม
+                                และช่วยรักษาความสมบูรณ์ของป่าไม้ได้อย่างยั่งยืน</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="story-media">
+                <img src="images/pamiangview.jpg" alt="วิวหมู่บ้านบ้านป่าเหมี้ยง" class="story-img">
+                <div class="story-overlay">
+                    <h4>วิถีคนอยู่กับป่า</h4>
+                    <p>ธรรมชาติร่มรื่น ท่ามกลางอ้อมกอดของหุบเขาและลำธารใส</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Highlights section -->
+        <section>
+            <div class="section-header">
+                <h2>สถานที่และกิจกรรมห้ามพลาด</h2>
+                <p>สถานที่ท่องเที่ยวและกิจกรรมที่จะเปิดมุมมองใหม่ในการเดินทางแบบยั่งยืนของคุณ</p>
+            </div>
+
+            <div class="card-grid">
+                <div class="sight-card">
+                    <div class="card-icon">🌅</div>
+                    <h3>กิ่วฝิ่น (Kiu Fin)</h3>
+                    <p>จุดชมวิวที่สูงจากระดับน้ำทะเล 1,517 เมตร ตั้งอยู่บนเขตแดนระหว่างลำปางและเชียงใหม่
+                        ชมความงดงามของพระอาทิตย์ขึ้น ทะเลหมอก และวิวทิวเขาแบบ 360 องศา สัมผัสลมหนาวตลอดทั้งปี</p>
+                </div>
+
+                <div class="sight-card">
+                    <div class="card-icon">☕</div>
+                    <h3>กาแฟป่าเหมี้ยง</h3>
+                    <p>ลิ้มรสกาแฟอาราบิก้าชั้นเลิศที่ปลูกในผืนป่า ร่วมกิจกรรมเวิร์กช็อปตั้งแต่กระบวนการดริป ชง ดื่ม
+                        ดื่มด่ำรสชาติที่กลมกล่อมท่ามกลางอุณหภูมิที่เย็นสบาย</p>
+                </div>
+
+                <div class="sight-card">
+                    <div class="card-icon">🌊</div>
+                    <h3>น้ำตกแม่ก๋า (Mae Ka Waterfall)</h3>
+                    <p>น้ำตกขนาดเล็กที่ซ่อนตัวอยู่อย่างเงียบสงบในป่าลึก สายน้ำไหลผ่านโขดหินลดหลั่นลงมาอย่างสวยงาม
+                        เป็นสถานที่ที่อุดมสมบูรณ์และเงียบสงบเหมาะแก่การพักผ่อนหย่อนใจ</p>
+                </div>
+
+                <div class="sight-card">
+                    <div class="card-icon">🏡</div>
+                    <h3>โฮมสเตย์ชุมชน</h3>
+                    <p>พักผ่อนกับโฮมสเตย์ที่อบอุ่นของชาวบ้านริมธารน้ำใส สัมผัสความเรียบง่าย
+                        ไม่มีเครื่องปรับอากาศแต่เย็นสบายด้วยลมธรรมชาติ ฟังเสียงน้ำไหลและลมป่าพัดโชยตลอดคืน</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Low Carbon features -->
+        <section class="carbon-box">
+            <div class="carbon-content">
+                <h3>การท่องเที่ยวคาร์บอนต่ำ (Low Carbon Tourism)</h3>
+                <p>เรามุ่งเน้นการท่องเที่ยวที่เป็นมิตรกับโลก เพื่อรักษาชุมชนบ้านป่าเหมี้ยงให้งดงามยั่งยืน
+                    การเดินทางที่นี่จะช่วยลดการปล่อยคาร์บอนในทุกๆ กิจกรรม:</p>
+                <div class="carbon-points">
+                    <div class="carbon-point">
+                        <span class="carbon-point-icon">🚶</span>
+                        <span>เน้นการเดินเท้าและขี่จักรยานในหมู่บ้าน แทนการใช้ยานพาหนะขับเคลื่อนด้วยเชื้อเพลิง</span>
+                    </div>
+                    <div class="carbon-point">
+                        <span class="carbon-point-icon">🍲</span>
+                        <span>รับประทานอาหารที่ปรุงจากวัตถุดิบท้องถิ่นแท้ๆ ในรัศมี 0 กิโลเมตร ช่วยลด Food Miles</span>
+                    </div>
+                    <div class="carbon-point">
+                        <span class="carbon-point-icon">❄️</span>
+                        <span>พักผ่อนด้วยพลังธรรมชาติ โฮมสเตย์ใช้ลมธรรมชาติที่เย็นสบายแทนเครื่องปรับอากาศ</span>
+                    </div>
+                    <div class="carbon-point">
+                        <span class="carbon-point-icon">🚮</span>
+                        <span>รณรงค์ลดขยะพลาสติกพกพา และสนับสนุนกิจกรรม Plogging เก็บขยะระหว่างเดินป่า</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="carbon-journal">
+                <div class="carbon-journal-title">บันทึกของผู้นำทางสิ่งแวดล้อม</div>
+                <p>
+                    "ทุกรอยเท้าที่เราย่ำผ่านผืนป่าเหมี้ยงล้วนทิ้งผลกระทบไว้ข้างหลัง จากการประเมินวิถีการเดินทางและกิจกรรมท่องเที่ยวของชุมชน พบว่าการเลือกใช้โฮมสเตย์พลังงานธรรมชาติ การสัญจรด้วยการเดินเท้า และการรับประทานอาหารจากวัตถุดิบป่าและสวนในท้องถิ่น สามารถช่วย <span class="highlight-text">ลดการปล่อยคาร์บอนลงได้ถึง 50%</span> เมื่อเทียบกับการท่องเที่ยวในรูปแบบปกติ... การมาเยือนของท่านจึงมิใช่เพียงการพักผ่อน แต่เป็นการร่วมปกป้องผืนป่าต้นน้ำให้คงอยู่อย่างสมบูรณ์และยั่งยืน"
+                </p>
+                <div style="margin-top: 20px; font-size: 0.8rem; color: var(--text-muted); text-align: right;">
+                    — ชุมชนบ้านป่าเหมี้ยง, ลำปาง
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Call to Action -->
+    <section class="cta-section">
+        <div class="cta-inner">
+            <h2>พร้อมที่จะสัมผัสวิถีชีวิตบ้านป่าเหมี้ยงแล้วหรือยัง?</h2>
+            <p>ร่วมเดินทางอย่างรับผิดชอบ สำรวจพิกัดร้านค้า โฮมสเตย์ ที่เที่ยว ในแผนที่นำทางแบบโต้ตอบได้
+                หรือเลือกจองแพ็กเกจคาร์บอนต่ำที่เราคัดสรรมาให้คุณ</p>
+            <div class="cta-buttons">
+                <a href="../map/index.html" class="btn-premium btn-primary-style">🗺️ เปิดแผนที่นำทางเชิงลึก</a>
+                <a href="../travel_package/index.html" class="btn-premium btn-secondary-style">🌿
+                    สำรวจแพ็กเกจท่องเที่ยว</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-logo">MIANG MAP</div>
+        <div class="footer-links">
+            <a href="index.html">Home</a>
+            <a href="../map/index.html">Map</a>
+            <a href="../travel_package/index.html">Package</a>
+        </div>
+        <p>&copy; 2026 MIANG MAP - โครงการส่งเสริมการท่องเที่ยวคาร์บอนต่ำชุมชนบ้านป่าเหมี้ยง. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        function toggleHamburger() {
+            document.getElementById('hamburgerBtn').classList.toggle('open');
+            document.getElementById('hamburgerMenu').classList.toggle('open');
+            document.getElementById('hamburgerBackdrop').classList.toggle('open');
+        }
+    </script>
+</body>
+
+</html>
