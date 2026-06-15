@@ -1981,6 +1981,7 @@
                 .from('booking')
                 .select('*')
                 .eq('user_email', currentUserEmail)
+                .neq('status', 'cancelled')
                 .order('id', { ascending: false });
 
             if (error) {
@@ -2128,12 +2129,12 @@
         }
 
         async function deleteBooking(bookingId) {
-            const confirmDel = confirm("คุณต้องการยกเลิกและลบคำสั่งจองที่พักนี้ใช่หรือไม่?");
+            const confirmDel = confirm("คุณต้องการยกเลิกคำสั่งจองที่พักนี้ใช่หรือไม่?");
             if (!confirmDel) return;
 
             const { error } = await db
                 .from('booking')
-                .delete()
+                .update({ status: 'cancelled' })
                 .eq('id', bookingId);
 
             if (error) {
@@ -2161,6 +2162,7 @@
             const { data, error } = await db
                 .from('booking')
                 .select('*')
+                .neq('status', 'cancelled')
                 .order('id', { ascending: false });
 
             if (error) {
