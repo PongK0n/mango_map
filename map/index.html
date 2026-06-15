@@ -384,6 +384,78 @@
             border: 1px solid rgba(255, 255, 255, 0.05) !important;
         }
 
+        /* Counter widget styles */
+        .counter-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .counter-row:last-child {
+            border-bottom: none;
+        }
+        .counter-info {
+            display: flex;
+            flex-direction: column;
+        }
+        .counter-label {
+            font-size: 15px;
+            font-weight: 600;
+            color: #ffffff;
+            font-family: 'Sarabun', sans-serif;
+        }
+        .counter-sublabel {
+            font-size: 11.5px;
+            color: var(--text-muted);
+            margin-top: 2px;
+            font-family: 'Sarabun', sans-serif;
+        }
+        .counter-controls {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .counter-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            background: transparent;
+            color: var(--primary-light);
+            font-size: 20px;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+            padding: 0;
+        }
+        .counter-btn:hover:not(:disabled) {
+            border-color: var(--primary-light);
+            background: rgba(64, 192, 87, 0.1);
+            transform: scale(1.05);
+        }
+        .counter-btn:active:not(:disabled) {
+            transform: scale(0.95);
+        }
+        .counter-btn:disabled {
+            border-color: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.2);
+            cursor: not-allowed;
+            background: transparent;
+        }
+        .counter-value {
+            font-size: 19px;
+            font-weight: 700;
+            color: #ffffff;
+            min-width: 24px;
+            text-align: center;
+            font-family: 'Barlow', sans-serif;
+        }
+
         .modal-actions {
             display: flex;
             gap: 12px;
@@ -1176,14 +1248,51 @@
                 <input type="date" id="bookDateInput">
             </div>
 
-            <div class="form-group">
-                <label>Rooms Count (จำนวนห้องพัก)</label>
-                <input type="number" id="bookRoomsInput" min="1" placeholder="ระบุจำนวนห้องพัก" oninput="adjustGuestsMin()" onchange="adjustGuestsMin()">
-            </div>
+            <input type="hidden" id="bookRoomsInput" value="0">
+            <input type="hidden" id="bookGuestsInput" value="0">
 
             <div class="form-group">
-                <label>Guests Count (จำนวนผู้เข้าพัก)</label>
-                <input type="number" id="bookGuestsInput" min="1" placeholder="กรุณาระบุจำนวนห้องพักก่อน" disabled oninput="validateGuestsCount()" onchange="validateGuestsCount()">
+                <label>Rooms & Guests (จำนวนห้องและผู้เข้าพัก)</label>
+                <div style="background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 4px 16px; margin-top: 6px;">
+                    <!-- Rooms Row -->
+                    <div class="counter-row">
+                        <div class="counter-info">
+                            <span class="counter-label">ห้อง</span>
+                            <span class="counter-sublabel">จำนวนห้องพัก</span>
+                        </div>
+                        <div class="counter-controls">
+                            <button type="button" class="counter-btn" id="btn-sub-rooms" onclick="changeCount('rooms', -1)" disabled>−</button>
+                            <span id="count-rooms" class="counter-value">0</span>
+                            <button type="button" class="counter-btn" id="btn-add-rooms" onclick="changeCount('rooms', 1)">+</button>
+                        </div>
+                    </div>
+
+                    <!-- Adults Row -->
+                    <div class="counter-row">
+                        <div class="counter-info">
+                            <span class="counter-label">ผู้ใหญ่</span>
+                            <span class="counter-sublabel">อายุ 18 ขึ้นไป</span>
+                        </div>
+                        <div class="counter-controls">
+                            <button type="button" class="counter-btn" id="btn-sub-adults" onclick="changeCount('adults', -1)" disabled>−</button>
+                            <span id="count-adults" class="counter-value">0</span>
+                            <button type="button" class="counter-btn" id="btn-add-adults" onclick="changeCount('adults', 1)" disabled>+</button>
+                        </div>
+                    </div>
+
+                    <!-- Children Row -->
+                    <div class="counter-row">
+                        <div class="counter-info">
+                            <span class="counter-label">เด็ก</span>
+                            <span class="counter-sublabel">อายุ 0-17</span>
+                        </div>
+                        <div class="counter-controls">
+                            <button type="button" class="counter-btn" id="btn-sub-children" onclick="changeCount('children', -1)" disabled>−</button>
+                            <span id="count-children" class="counter-value">0</span>
+                            <button type="button" class="counter-btn" id="btn-add-children" onclick="changeCount('children', 1)" disabled>+</button>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="modal-actions">
@@ -1284,6 +1393,9 @@
         let currentUserEmail = "";
         let currentUserProfile = {};
         let currentFilter = 'all';
+        let bookingRooms = 0;
+        let bookingAdults = 0;
+        let bookingChildren = 0;
 
         function toggleHamburger() {
             document.getElementById('hamburgerBtn').classList.toggle('open');
@@ -1656,10 +1768,10 @@
 
             // ล้างค่าเก่า
             document.getElementById('bookDateInput').value = '';
-            document.getElementById('bookRoomsInput').value = '';
-            document.getElementById('bookGuestsInput').value = '';
-            document.getElementById('bookGuestsInput').disabled = true;
-            document.getElementById('bookGuestsInput').min = 1;
+            bookingRooms = 0;
+            bookingAdults = 0;
+            bookingChildren = 0;
+            updateCounterUI();
 
             document.getElementById('bookModal').style.display = "flex";
             map.closePopup();
@@ -2155,42 +2267,75 @@
             }
         })();
 
-        // Booking validation helpers
-        function adjustGuestsMin() {
-            const roomsInput = document.getElementById('bookRoomsInput');
-            const guestsInput = document.getElementById('bookGuestsInput');
-            if (roomsInput && guestsInput) {
-                const roomsVal = parseInt(roomsInput.value) || 0;
-                if (roomsVal > 0) {
-                    guestsInput.disabled = false;
-                    guestsInput.min = roomsVal;
-                    const guestsVal = parseInt(guestsInput.value) || 0;
-                    if (guestsVal < roomsVal) {
-                        guestsInput.value = roomsVal;
-                    }
+        // Counter logic for booking
+        function changeCount(type, delta) {
+            if (type === 'rooms') {
+                const newVal = Math.max(0, bookingRooms + delta);
+                if (newVal === 0) {
+                    bookingRooms = 0;
+                    bookingAdults = 0;
+                    bookingChildren = 0;
                 } else {
-                    guestsInput.disabled = true;
-                    guestsInput.value = '';
+                    bookingRooms = newVal;
+                    // Enforce R <= A + C. If total guests < rooms, auto-increase adults
+                    if (bookingAdults + bookingChildren < bookingRooms) {
+                        bookingAdults = bookingRooms - bookingChildren;
+                    }
                 }
+            } else if (type === 'adults') {
+                if (bookingRooms === 0) return;
+                const newVal = Math.max(0, bookingAdults + delta);
+                const minAdults = bookingRooms >= 1 ? 1 : 0;
+                if (newVal < minAdults) return;
+                if (newVal + bookingChildren < bookingRooms) return;
+                bookingAdults = newVal;
+            } else if (type === 'children') {
+                if (bookingRooms === 0) return;
+                const newVal = Math.max(0, bookingChildren + delta);
+                if (bookingAdults + newVal < bookingRooms) return;
+                bookingChildren = newVal;
             }
+            updateCounterUI();
         }
 
-        function validateGuestsCount() {
+        function updateCounterUI() {
+            const countRoomsEl = document.getElementById('count-rooms');
+            const countAdultsEl = document.getElementById('count-adults');
+            const countChildrenEl = document.getElementById('count-children');
+            if (countRoomsEl) countRoomsEl.innerText = bookingRooms;
+            if (countAdultsEl) countAdultsEl.innerText = bookingAdults;
+            if (countChildrenEl) countChildrenEl.innerText = bookingChildren;
+
             const roomsInput = document.getElementById('bookRoomsInput');
             const guestsInput = document.getElementById('bookGuestsInput');
-            if (roomsInput && guestsInput) {
-                const roomsVal = parseInt(roomsInput.value) || 0;
-                const guestsVal = parseInt(guestsInput.value) || 0;
-                if (roomsVal <= 0) {
-                    showToast("กรุณาเลือกจำนวนห้องพักก่อนครับ", "info");
-                    guestsInput.value = '';
-                    guestsInput.disabled = true;
-                    return;
+            if (roomsInput) roomsInput.value = bookingRooms > 0 ? bookingRooms : '';
+            if (guestsInput) guestsInput.value = (bookingAdults + bookingChildren) > 0 ? (bookingAdults + bookingChildren) : '';
+
+            const btnSubRooms = document.getElementById('btn-sub-rooms');
+            const btnSubAdults = document.getElementById('btn-sub-adults');
+            const btnAddAdults = document.getElementById('btn-add-adults');
+            const btnSubChildren = document.getElementById('btn-sub-children');
+            const btnAddChildren = document.getElementById('btn-add-children');
+
+            if (bookingRooms === 0) {
+                if (btnSubRooms) btnSubRooms.disabled = true;
+                if (btnSubAdults) btnSubAdults.disabled = true;
+                if (btnAddAdults) btnAddAdults.disabled = true;
+                if (btnSubChildren) btnSubChildren.disabled = true;
+                if (btnAddChildren) btnAddChildren.disabled = true;
+            } else {
+                if (btnSubRooms) btnSubRooms.disabled = false;
+                
+                const minAdults = 1;
+                if (btnSubAdults) {
+                    btnSubAdults.disabled = (bookingAdults <= minAdults) || (bookingAdults - 1 + bookingChildren < bookingRooms);
                 }
-                if (guestsVal < roomsVal) {
-                    showToast("จำนวนผู้เข้าพักต้องไม่น้อยกว่าจำนวนห้องพักครับ", "info");
-                    guestsInput.value = roomsVal;
+                if (btnAddAdults) btnAddAdults.disabled = false;
+
+                if (btnSubChildren) {
+                    btnSubChildren.disabled = (bookingChildren <= 0) || (bookingAdults + bookingChildren - 1 < bookingRooms);
                 }
+                if (btnAddChildren) btnAddChildren.disabled = false;
             }
         }
 
