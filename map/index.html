@@ -677,6 +677,29 @@
             color: #ff6b6b;
         }
 
+        .btn-cancel-action {
+            padding: 3px 8px;
+            font-size: 11px;
+            background: rgba(224, 49, 49, 0.1);
+            border: 1px solid rgba(224, 49, 49, 0.25);
+            border-radius: 4px;
+            color: #ff6b6b;
+            cursor: pointer;
+            font-family: 'Sarabun', sans-serif;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .btn-cancel-action:hover {
+            background: rgba(224, 49, 49, 0.2);
+            border-color: rgba(224, 49, 49, 0.5);
+            transform: scale(1.05);
+        }
+
+        .btn-cancel-action:active {
+            transform: scale(0.95);
+        }
+
         .action-confirm-btn {
             background: var(--primary);
             color: #ffffff;
@@ -2024,7 +2047,12 @@
                     <div class="my-booking-card">
                         <div class="booking-status-row">
                             <span class="booking-title">${escapeHTML(b.location_name)}</span>
-                            <span class="status-badge ${statusClass}">${statusLabel}</span>
+                            <div style="display: flex; gap: 8px; align-items: center;">
+                                <span class="status-badge ${statusClass}">${statusLabel}</span>
+                                ${['pending_payment', 'pending_verification'].includes(b.status) ? `
+                                    <button type="button" class="btn-cancel-action" onclick="deleteBooking(${b.id})">ยกเลิกการจอง</button>
+                                ` : ''}
+                            </div>
                         </div>
                         <div style="font-size: 13.5px; color: var(--text-muted);">
                             <span>📅 วันที่เข้าพัก: <strong>${escapeHTML(b.travel_date)}</strong></span>
@@ -2096,6 +2124,24 @@
                 showToast("เกิดข้อผิดพลาดในการดำเนินงาน", "error");
                 uploadBtn.innerText = originalText;
                 uploadBtn.disabled = false;
+            }
+        }
+
+        async function deleteBooking(bookingId) {
+            const confirmDel = confirm("คุณต้องการยกเลิกและลบคำสั่งจองที่พักนี้ใช่หรือไม่?");
+            if (!confirmDel) return;
+
+            const { error } = await db
+                .from('booking')
+                .delete()
+                .eq('id', bookingId);
+
+            if (error) {
+                console.error("Delete booking error:", error);
+                showToast("ไม่สามารถยกเลิกการจองได้: " + error.message, "error");
+            } else {
+                showToast("ยกเลิกการจองเรียบร้อยแล้ว", "success");
+                await loadMyBookings(); // รีโหลดรายการจองใหม่
             }
         }
 
