@@ -1,0 +1,6 @@
+# macOS system files
+.DS_Store
+
+# AI coding assistant config & plugin directories
+.gemini/
+.impeccable/
