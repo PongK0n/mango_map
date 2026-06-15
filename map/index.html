@@ -2072,6 +2072,76 @@
             }
         });
 
+        // --- 8. GPS (เดิม) ---
+        var myLocationMarker = null;
+
+        function findMyLocation() {
+            map.locate({ setView: true, maxZoom: 16 });
+        }
+
+        map.on('locationfound', function (e) {
+            var radius = e.accuracy / 2;
+            if (myLocationMarker) map.removeLayer(myLocationMarker);
+            myLocationMarker = L.layerGroup([
+                L.marker(e.latlng).bindPopup("You are here (within " + radius.toFixed(0) + " m.)").openPopup(),
+                L.circle(e.latlng, radius)
+            ]).addTo(map);
+        });
+
+        map.on('locationerror', function (e) {
+            showToast("Cannot access location. Please enable GPS permissions.", "error");
+        });
+
+        // --- 9. โหลดข้อมูลเมื่อเปิดหน้าเว็บ ---
+        (async () => {
+            await fetchLocations();
+            const urlParams = new URLSearchParams(window.location.search);
+            const filter = urlParams.get('filter');
+            const locate = urlParams.get('locate');
+            
+            if (filter && ['stay', 'food', 'tour', 'other'].includes(filter)) {
+                filterMap(filter);
+            }
+            if (locate === 'true') {
+                findMyLocation();
+            }
+        })();
+
+        // Toast display utility
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            
+            const content = document.createElement('span');
+            content.innerText = message;
+            toast.appendChild(content);
+
+            const closeBtn = document.createElement('button');
+            closeBtn.className = 'toast-close';
+            closeBtn.innerHTML = '&times;';
+            closeBtn.onclick = () => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            };
+            toast.appendChild(closeBtn);
+
+            container.appendChild(toast);
+
+            // Trigger animation
+            setTimeout(() => toast.classList.add('show'), 10);
+
+            // Auto dismiss
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.classList.remove('show');
+                    setTimeout(() => toast.remove(), 300);
+                }
+            }, 4000);
+        }
+
     </script>
 </body>
 
