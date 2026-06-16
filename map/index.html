@@ -261,6 +261,29 @@
             transform: translateY(-1px);
         }
 
+        /* --- CSS ปุ่ม View Bookings (Admin) --- */
+        .admin-bookings-btn {
+            color: #e65100 !important;
+            border: none;
+            border-radius: 6px;
+            padding: 7px 16px;
+            background: #ffffff;
+            font-family: 'Barlow', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 8px rgba(255, 255, 255, 0.15);
+        }
+
+        .admin-bookings-btn:hover {
+            background: #ffa726;
+            color: white !important;
+            box-shadow: 0 4px 18px rgba(255, 167, 38, 0.35);
+            transform: translateY(-1px);
+        }
+
         /* --- CSS ส่วนที่เพิ่มใหม่สำหรับระบบ Admin --- */
         .admin-btn {
             color: var(--primary-light) !important;
@@ -1129,7 +1152,7 @@
             <button onclick="filterMap('other')" class="nav-btn">📌 Other</button>
             <button onclick="findMyLocation()" class="nav-btn gps-btn">📍 My Location</button>
             <button id="myBookingsBtn" onclick="openMyBookingsModal()" class="nav-btn my-bookings-btn" style="display: none;">📋 My Bookings</button>
-            <button id="adminBookingsBtn" onclick="openAdminBookingsModal()" class="nav-btn" style="display: none; color: #ffd43b;">📅 View Bookings</button>
+            <button id="adminBookingsBtn" onclick="openAdminBookingsModal()" class="nav-btn admin-bookings-btn" style="display: none;">📅 View Bookings</button>
 
             <button id="authBtn" onclick="toggleAuthModal()" class="nav-btn admin-btn">Login / Sign Up</button>
         </div>
