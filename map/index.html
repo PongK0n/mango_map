@@ -240,22 +240,25 @@
 
         /* --- CSS ปุ่มการจองของฉัน --- */
         .my-bookings-btn {
-            color: var(--primary-light) !important;
-            border: 1px solid var(--primary-light);
+            color: #1b5e20 !important;
+            border: none;
             border-radius: 6px;
-            padding: 6px 14px;
-            background: rgba(64, 192, 87, 0.08);
+            padding: 7px 16px;
+            background: #ffffff;
             font-family: 'Barlow', sans-serif;
             font-size: 15px;
-            font-weight: 600;
+            font-weight: 700;
             transition: all 0.3s ease;
-            text-transform: none;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 8px rgba(255, 255, 255, 0.15);
         }
 
         .my-bookings-btn:hover {
-            background-color: var(--primary-light);
+            background: var(--primary-light);
             color: white !important;
-            box-shadow: 0 4px 15px rgba(64, 192, 87, 0.25);
+            box-shadow: 0 4px 18px rgba(64, 192, 87, 0.35);
+            transform: translateY(-1px);
         }
 
         /* --- CSS ส่วนที่เพิ่มใหม่สำหรับระบบ Admin --- */
@@ -1125,7 +1128,7 @@
             <button onclick="filterMap('tour')" class="nav-btn">🌳 Attraction</button>
             <button onclick="filterMap('other')" class="nav-btn">📌 Other</button>
             <button onclick="findMyLocation()" class="nav-btn gps-btn">📍 My Location</button>
-            <button id="myBookingsBtn" onclick="openMyBookingsModal()" class="nav-btn my-bookings-btn" style="display: none;">📋 การจองของฉัน</button>
+            <button id="myBookingsBtn" onclick="openMyBookingsModal()" class="nav-btn my-bookings-btn" style="display: none;">📋 My Bookings</button>
             <button id="adminBookingsBtn" onclick="openAdminBookingsModal()" class="nav-btn" style="display: none; color: #ffd43b;">📅 View Bookings</button>
 
             <button id="authBtn" onclick="toggleAuthModal()" class="nav-btn admin-btn">Login / Sign Up</button>
