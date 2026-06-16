@@ -2132,18 +2132,29 @@
             const confirmDel = confirm("คุณต้องการยกเลิกคำสั่งจองที่พักนี้ใช่หรือไม่?");
             if (!confirmDel) return;
 
-            const { error } = await db
+            // ลองอัปเดตสถานะเป็น cancelled และใช้ .select() เพื่อตรวจสอบว่าอัปเดตสำเร็จจริง
+            const { data, error } = await db
                 .from('booking')
                 .update({ status: 'cancelled' })
-                .eq('id', bookingId);
+                .eq('id', bookingId)
+                .select();
 
             if (error) {
-                console.error("Delete booking error:", error);
+                console.error("Cancel booking error:", error);
                 showToast("ไม่สามารถยกเลิกการจองได้: " + error.message, "error");
-            } else {
-                showToast("ยกเลิกการจองเรียบร้อยแล้ว", "success");
-                await loadMyBookings(); // รีโหลดรายการจองใหม่
+                return;
             }
+
+            // Supabase RLS จะบล็อกแบบเงียบ (ไม่ส่ง error) แต่จะคืน data เป็น array ว่าง
+            if (!data || data.length === 0) {
+                console.warn("Cancel booking: RLS blocked the update (0 rows affected).");
+                // Fallback: ลองใช้ RPC หรือแจ้งผู้ใช้
+                showToast("ไม่สามารถยกเลิกการจองได้ กรุณาติดต่อแอดมินโดยตรงครับ", "error");
+                return;
+            }
+
+            showToast("ยกเลิกการจองเรียบร้อยแล้ว", "success");
+            await loadMyBookings();
         }
 
         // --- 7.5 ระบบจัดการการจองสำหรับแอดมิน (Admin Bookings Panel) ---
