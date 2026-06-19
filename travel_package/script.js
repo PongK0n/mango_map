@@ -437,11 +437,13 @@ db.auth.onAuthStateChange((event, session) => {
         document.getElementById('authBtn').innerText = "Login / Sign Up";
     }
 
-    // Toggle admin buttons in navbar
+    // Toggle admin buttons and user bookings button in navbar
     const bookingsBtn = document.getElementById('adminBookingsBtn');
     const managePkgBtn = document.getElementById('adminManagePackagesBtn');
+    const myBookingsBtn = document.getElementById('myBookingsBtn');
     if (bookingsBtn) bookingsBtn.style.display = isAdminLoggedIn ? 'inline-block' : 'none';
     if (managePkgBtn) managePkgBtn.style.display = isAdminLoggedIn ? 'inline-block' : 'none';
+    if (myBookingsBtn) myBookingsBtn.style.display = (isUserLoggedIn && !isAdminLoggedIn) ? 'inline-block' : 'none';
 
     if (event === 'PASSWORD_RECOVERY') {
         // เปิดหน้าต่างตั้งรหัสผ่านใหม่
@@ -497,6 +499,8 @@ window.addEventListener('keydown', (e) => {
         closeModal('adminPkgBookingsModal');
         closeModal('adminManagePackagesModal');
         closeModal('editPackageModal');
+        closeModal('userPkgBookingsModal');
+        closeModal('editPkgBookingModal');
     }
 });
 
@@ -710,5 +714,202 @@ async function savePackageEdit() {
 
     showToast("💾 บันทึกการแก้ไขข้อมูลแพ็กเกจสำเร็จ!", "success");
     closeModal('editPackageModal');
-    await loadAdminManagePackages(); // Refresh listing modal
+}
+
+// ==========================================
+// --- 7.6 ระบบการจองแพ็กเกจท่องเที่ยวสำหรับผู้ใช้ทั่วไป (User Bookings Panel) ---
+// ==========================================
+
+async function openUserPkgBookingsModal() {
+    if (!isUserLoggedIn) return;
+    const modal = document.getElementById('userPkgBookingsModal');
+    if (modal) modal.style.display = 'flex';
+    await loadUserPkgBookings();
+}
+
+async function loadUserPkgBookings() {
+    const tbody = document.getElementById('userPkgBookingsTableBody');
+    if (!tbody) return;
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align: center;">กำลังโหลดข้อมูล...</td></tr>`;
+
+    const { data, error } = await db
+        .from('package_bookings')
+        .select('*')
+        .eq('user_email', currentUserEmail)
+        .order('id', { ascending: false });
+
+    if (error) {
+        console.error("Load user package bookings error:", error);
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #ff6b6b;">ไม่สามารถโหลดข้อมูลได้: ${error.message}</td></tr>`;
+        return;
+    }
+
+    if (!data || data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 20px;">คุณยังไม่มีประวัติการจองแพ็กเกจในขณะนี้</td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = data.map(b => {
+        let statusLabel = "";
+        let statusClass = "";
+        if (b.status === 'pending') {
+            statusLabel = "รอตรวจสอบ";
+            statusClass = "status-pending";
+        } else if (b.status === 'confirmed') {
+            statusLabel = "อนุมัติแล้ว";
+            statusClass = "status-confirmed";
+        } else if (b.status === 'rejected') {
+            statusLabel = "ปฏิเสธ/ยกเลิก";
+            statusClass = "status-rejected";
+        }
+
+        const actionButtons = b.status === 'pending' ? `
+            <button class="btn-table-action btn-approve" onclick="openEditPkgBookingModal(${b.id}, '${escapeHTML(b.package_name)}', '${b.travel_date}', '${escapeHTML(b.user_name)}', '${escapeHTML(b.user_phone)}', ${b.guests_count})">✏️ แก้ไข</button>
+            <button class="btn-table-action btn-reject" onclick="cancelPkgBooking(${b.id})" style="margin-left: 5px;">ยกเลิก</button>
+        ` : `-`;
+
+        return `
+            <tr>
+                <td style="font-weight: 700; color: #ffffff;">${escapeHTML(b.package_name)}</td>
+                <td>${escapeHTML(b.user_name)}</td>
+                <td>
+                    <div>${escapeHTML(b.user_email)}</div>
+                    <div style="font-size: 12px; color: var(--text-muted);">${escapeHTML(b.user_phone)}</div>
+                </td>
+                <td>${escapeHTML(b.travel_date)}</td>
+                <td>${b.guests_count || 1} คน</td>
+                <td><span class="status-badge ${statusClass}">${statusLabel}</span></td>
+                <td>${actionButtons}</td>
+            </tr>
+        `;
+    }).join('');
+}
+
+async function cancelPkgBooking(bookingId) {
+    const confirmCancel = confirm("คุณต้องการยกเลิกคำสั่งจองแพ็กเกจนี้ใช่หรือไม่?");
+    if (!confirmCancel) return;
+
+    const { data, error } = await db
+        .from('package_bookings')
+        .update({ status: 'rejected' })
+        .eq('id', bookingId)
+        .select();
+
+    if (error) {
+        console.error("Cancel booking error:", error);
+        showToast("ไม่สามารถยกเลิกการจองได้: " + error.message, "error");
+        return;
+    }
+
+    if (!data || data.length === 0) {
+        showToast("ไม่สามารถยกเลิกการจองได้ กรุณาติดต่อแอดมินโดยตรงครับ", "error");
+        return;
+    }
+
+    showToast("ยกเลิกการจองแพ็กเกจเรียบร้อยแล้ว", "success");
+    await loadUserPkgBookings();
+}
+
+function openEditPkgBookingModal(bookingId, pkgName, travelDate, userName, userPhone, guestsCount) {
+    document.getElementById('editPkgBookingId').value = bookingId;
+    document.getElementById('editPkgBookingTitle').innerText = pkgName;
+    document.getElementById('editPkgBookingUserName').value = userName;
+    document.getElementById('editPkgBookingUserPhone').value = userPhone;
+    document.getElementById('editPkgBookingDateInput').value = travelDate;
+    
+    // กำหนดค่า min date เป็นวันพรุ่งนี้เป็นอย่างน้อย
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrowStr = tomorrow.toISOString().split('T')[0];
+    document.getElementById('editPkgBookingDateInput').setAttribute('min', tomorrowStr);
+
+    // ตั้งค่าจำนวนผู้เดินทาง
+    document.getElementById('editPkgBookingGuestsVal').value = guestsCount;
+    document.getElementById('count-edit-pkg-guests').innerText = guestsCount;
+    updateEditPkgGuestsUI();
+
+    document.getElementById('editPkgBookingModal').style.display = 'flex';
+}
+
+function changeEditPkgGuestsCount(delta) {
+    const hiddenInput = document.getElementById('editPkgBookingGuestsVal');
+    let count = parseInt(hiddenInput.value) || 1;
+    count = Math.max(1, Math.min(20, count + delta));
+    hiddenInput.value = count;
+    document.getElementById('count-edit-pkg-guests').innerText = count;
+    updateEditPkgGuestsUI();
+}
+
+function updateEditPkgGuestsUI() {
+    const count = parseInt(document.getElementById('editPkgBookingGuestsVal').value) || 1;
+    document.getElementById('btn-sub-edit-pkg-guests').disabled = (count <= 1);
+    document.getElementById('btn-add-edit-pkg-guests').disabled = (count >= 20);
+}
+
+async function savePkgBookingEdit() {
+    const bookingId = parseInt(document.getElementById('editPkgBookingId').value);
+    const userName = document.getElementById('editPkgBookingUserName').value.trim();
+    const userPhone = document.getElementById('editPkgBookingUserPhone').value.trim();
+    const dateVal = document.getElementById('editPkgBookingDateInput').value;
+    const guestsCount = parseInt(document.getElementById('editPkgBookingGuestsVal').value) || 1;
+    const btn = document.getElementById('confirmEditPkgBookingBtn');
+
+    if (!userName) {
+        showToast("กรุณาระบุชื่อผู้จอง", "error");
+        return;
+    }
+
+    if (!userPhone) {
+        showToast("กรุณาระบุเบอร์โทรศัพท์ติดต่อ", "error");
+        return;
+    }
+
+    const phoneRegex = /^0[0-9]{8,9}$/;
+    if (!phoneRegex.test(userPhone)) {
+        showToast("กรุณาระบุเบอร์โทรศัพท์ที่ถูกต้อง (เช่น 0857203538)", "error");
+        return;
+    }
+
+    if (!dateVal) {
+        showToast("กรุณาเลือกวันที่เดินทาง", "error");
+        return;
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (new Date(dateVal) < today) {
+        showToast("ไม่สามารถเลือกวันที่เดินทางในอดีตได้ครับ", "error");
+        return;
+    }
+
+    btn.innerText = "กำลังดำเนินการ...";
+
+    const { data, error } = await db
+        .from('package_bookings')
+        .update({
+            user_name: userName,
+            user_phone: userPhone,
+            travel_date: dateVal,
+            guests_count: guestsCount
+        })
+        .eq('id', bookingId)
+        .select();
+
+    btn.innerText = "Save Changes";
+
+    if (error) {
+        console.error("Save package booking edit error:", error);
+        showToast("ไม่สามารถบันทึกการแก้ไขได้: " + error.message, "error");
+        return;
+    }
+
+    if (!data || data.length === 0) {
+        showToast("ไม่สามารถบันทึกการแก้ไขได้ กรุณาติดต่อแอดมิน", "error");
+        return;
+    }
+
+    showToast("💾 แก้ไขข้อมูลการจองแพ็กเกจสำเร็จ!", "success");
+    closeModal('editPkgBookingModal');
+    await loadUserPkgBookings();
 }

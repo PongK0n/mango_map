@@ -45,6 +45,7 @@
             <button onclick="window.location.href='../home/index.html'" class="nav-btn">🏠 Home</button>
             <button onclick="window.location.href='../map/index.html'" class="nav-btn">🗺️ Map</button>
             <button onclick="openPackageMenu()" class="nav-btn active">📦 Package</button>
+            <button id="myBookingsBtn" onclick="openUserPkgBookingsModal()" class="nav-btn my-bookings-btn" style="display: none;">📋 My Bookings</button>
 
             <button id="adminBookingsBtn" onclick="openAdminPkgBookingsModal()" class="nav-btn admin-bookings-btn" style="display: none;">📅 View Bookings</button>
             <button id="adminManagePackagesBtn" onclick="openAdminManagePackagesModal()" class="nav-btn admin-manage-packages-btn" style="display: none;">🛠️ Manage Packages</button>
@@ -265,6 +266,79 @@
             <div class="modal-actions">
                 <button class="btn btn-cancel" onclick="closeModal('bookPackageModal')">Cancel</button>
                 <button class="btn btn-save" id="confirmBookPkgBtn" onclick="submitPackageBooking()">Confirm Booking</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Package Bookings Modal -->
+    <div id="userPkgBookingsModal" class="modal-overlay" onclick="if(event.target === this) closeModal('userPkgBookingsModal')">
+        <div class="modal-box" style="width: 90%; max-width: 800px;">
+            <h3>📋 My Bookings (การจองแพ็กเกจของฉัน)</h3>
+            <div class="admin-bookings-table-container">
+                <table class="admin-bookings-table">
+                    <thead>
+                        <tr>
+                            <th>Package Name</th>
+                            <th>Customer Name</th>
+                            <th>Contact Info</th>
+                            <th>Travel Date</th>
+                            <th>Guests</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="userPkgBookingsTableBody">
+                        <!-- User bookings load dynamically -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-cancel" onclick="closeModal('userPkgBookingsModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Edit Package Booking Modal -->
+    <div id="editPkgBookingModal" class="modal-overlay" onclick="if(event.target === this) closeModal('editPkgBookingModal')">
+        <div class="modal-box">
+            <h3>✏️ Edit Package Booking</h3>
+            <p id="editPkgBookingTitle" style="color: var(--primary-light); font-weight: bold; font-size: 16px; margin-top: -10px; text-align: center;"></p>
+            <input type="hidden" id="editPkgBookingId">
+
+            <div class="form-group">
+                <label>ชื่อผู้จอง</label>
+                <input type="text" id="editPkgBookingUserName" placeholder="ระบุชื่อ-นามสกุล">
+            </div>
+
+            <div class="form-group">
+                <label>เบอร์โทรศัพท์ติดต่อ</label>
+                <input type="text" id="editPkgBookingUserPhone" placeholder="ระบุเบอร์โทรศัพท์">
+            </div>
+
+            <div class="form-group">
+                <label>Travel Date (วันที่เดินทาง)</label>
+                <input type="date" id="editPkgBookingDateInput">
+            </div>
+
+            <div class="form-group">
+                <label>จำนวนผู้เดินทาง (Guests Count)</label>
+                <div class="counter-row" style="background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 14px 16px; margin-top: 6px;">
+                    <div class="counter-info">
+                        <span class="counter-label">ผู้เดินทางทั้งหมด</span>
+                        <span class="counter-sublabel">รวมผู้ใหญ่และเด็ก</span>
+                    </div>
+                    <div class="counter-controls">
+                        <button type="button" class="counter-btn" id="btn-sub-edit-pkg-guests" onclick="changeEditPkgGuestsCount(-1)">−</button>
+                        <span id="count-edit-pkg-guests" class="counter-value">1</span>
+                        <input type="hidden" id="editPkgBookingGuestsVal" value="1">
+                        <button type="button" class="counter-btn" id="btn-add-edit-pkg-guests" onclick="changeEditPkgGuestsCount(1)">+</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn btn-cancel" onclick="closeModal('editPkgBookingModal')">Cancel</button>
+                <button class="btn btn-save" id="confirmEditPkgBookingBtn" onclick="savePkgBookingEdit()">💾 Save Changes</button>
             </div>
         </div>
     </div>
