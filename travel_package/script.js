@@ -21,45 +21,69 @@ function escapeHTML(str) {
         .replace(/'/g, '&#039;');
 }
 
-const packageList = [
-    {
-        title: 'Adventure Package',
-        subtitle: 'สำหรับคนชอบ Adventure',
-        description: 'เน้นการใช้แรงขาแทนเครื่องยนต์เพื่อลดการปล่อยคาร์บอน และสัมผัสระบบนิเวศธรรมชาติ',
-        highlights: [
-            'ช่วงเวลาแนะนำ: พฤศจิกายน - กุมภาพันธ์',
-            'เส้นทางหมู่บ้าน - กิ่วฝิ่น: ระยะทางประมาณ 3 กม. ทางชันระดับปานกลาง',
-            'เส้นทางน้ำตกแม่ก๋า: เดินลัดเลาะลำธารและป่าดิบเขา',
-            'Low Carbon Tip: พกกระติกน้ำส่วนตัวและถุงเก็บขยะ (Plogging)'
-        ],
-        carbonSummary: 'รวม 14.1 kgCO2e',
-        details: ['รถส่วนตัว ลำปาง-ป่าเหมี้ยง 8.4 kgCO2e', 'อาหาร 3.2 kgCO2e', 'ที่พักแบบพัดลม 2.5 kgCO2e', 'กิจกรรมเดินป่า 0 kgCO2e']
-    },
-    {
-        title: 'Foodie Package',
-        subtitle: 'สำหรับคนชอบกิน',
-        description: 'เน้นอาหารตามฤดูกาลและของท้องถิ่น ลด Food Miles ด้วยวัตถุดิบภายในรัศมี 0 กิโลเมตร',
-        highlights: [
-            'ช่วงเวลาแนะนำ: มิถุนายน - กันยายน',
-            'เมนูห้ามพลาด: ยำใบเหมี้ยง, ไข่ป่าเหมี้ยง, เมนูประจำภาคเหนือ, กาแฟดริปมือ',
-            'Low Carbon Tip: เลือกทานอาหารที่โฮมสเตย์จัดให้ เพราะมาจากสวนหลังบ้านหรือป่ารอบๆ'
-        ],
-        carbonSummary: 'รวม 24.9 kgCO2e',
-        details: ['รถส่วนตัว ลำปาง-ป่าเหมี้ยง 8.4 kgCO2e', 'อาหาร 7.2 kgCO2e', 'ที่พักแบบพัดลม 2.5 kgCO2e', 'กิจกรรม workshop ทำกาแฟ 1.2 kgCO2e']
-    },
-    {
-        title: 'Scenic Package',
-        subtitle: 'สำหรับคนชอบวิว',
-        description: 'Slow Travel ดื่มด่ำกับวิวและแสงธรรมชาติ เหมาะสำหรับการหยุดพักชมบรรยากาศ',
-        highlights: [
-            'ช่วงเวลาแนะนำ: กุมภาพันธ์ (ดอกเสี้ยวบาน) และ สิงหาคม - ตุลาคม (นาขั้นบันไดและทะเลหมอก)',
-            'จุดชมวิว: กิ่วฝิ่น, ลานวัฒนธรรมหมู่บ้าน, เก็บกาแฟ-ชาและแปรรูปเมล็ดกาแฟ',
-            'Low Carbon Tip: เลือกพักโฮมสเตย์ที่มีวิวจากระเบียงห้อง เพื่อลดการเดินทางซ้ำซ้อน'
-        ],
-        carbonSummary: 'รวม 24.9 kgCO2e',
-        details: ['รถส่วนตัวและขับไปสถานที่ต่างๆ 16 kgCO2e', 'อาหาร 5.6 kgCO2e', 'ที่พักแบบพัดลม 2.5 kgCO2e', 'กิจกรรมชมวิว 0.8 kgCO2e']
+let packageList = [];
+
+async function fetchPackages() {
+    const { data, error } = await db
+        .from('packages')
+        .select('*')
+        .order('id', { ascending: true });
+
+    if (error) {
+        console.error("Fetch packages error:", error);
+        showToast("ไม่สามารถดึงข้อมูลแพ็กเกจได้: " + error.message, "error");
+        return;
     }
-];
+
+    packageList = data || [];
+    renderPackagesList();
+}
+
+function renderPackagesList() {
+    const content = document.getElementById('packageContent');
+    if (!content) return;
+
+    if (packageList.length === 0) {
+        content.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 20px; grid-column: 1/-1;">ไม่มีข้อมูลแพ็กเกจท่องเที่ยวในขณะนี้</div>`;
+        return;
+    }
+
+    content.innerHTML = packageList.map((pkg, index) => {
+        const highlightsArr = Array.isArray(pkg.highlights) ? pkg.highlights : [];
+        const detailsArr = Array.isArray(pkg.details) ? pkg.details : [];
+
+        const safeTitle = escapeHTML(pkg.title);
+        const safeSubtitle = escapeHTML(pkg.subtitle);
+        const safeDesc = escapeHTML(pkg.description);
+        const safeCarbon = escapeHTML(pkg.carbon_summary);
+
+        return `
+            <div class="package-card">
+                <div class="package-card-header" onclick="togglePackageDetails(${index})">
+                    <div>
+                        <div class="package-title">${safeTitle}</div>
+                        <div class="package-subtitle">${safeSubtitle}</div>
+                    </div>
+                </div>
+                <div class="package-summary">${safeDesc}</div>
+                <div class="package-details" id="packageDetails${index}">
+                    <div class="package-subheading">ไฮไลต์สำคัญ</div>
+                    ${highlightsArr.map(item => `<div class="package-highlight-item">• ${escapeHTML(item)}</div>`).join('')}
+                    <div class="package-subheading">รายละเอียด carbon footprint</div>
+                    <ul class="package-details-list">
+                        ${detailsArr.map(item => `<li>${escapeHTML(item)}</li>`).join('')}
+                    </ul>
+                    <div class="package-subheading">สรุปการปล่อยคาร์บอน</div>
+                    <p>${safeCarbon}</p>
+                </div>
+                <div class="package-action-row">
+                    <button type="button" class="package-view-btn" onclick="event.stopPropagation(); togglePackageDetails(${index})">ดูรายละเอียด</button>
+                    <button type="button" class="package-select-btn" onclick="event.stopPropagation(); selectPackage(${index})">เลือกแพ็กเกจนี้</button>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
 
 function toggleHamburger() {
     document.getElementById('hamburgerBtn').classList.toggle('open');
@@ -71,50 +95,45 @@ function goHome() {
     window.location.href = '../home/index.html';
 }
 
-function getPackageHtml(pkg, index) {
-    const safeTitle = escapeHTML(pkg.title);
-    const safeSubtitle = escapeHTML(pkg.subtitle);
-    const safeDesc = escapeHTML(pkg.description);
-    const safeCarbon = escapeHTML(pkg.carbonSummary);
-
-    return `
-        <div class="package-card">
-            <div class="package-card-header" onclick="togglePackageDetails(${index})">
-                <div>
-                    <div class="package-title">${safeTitle}</div>
-                    <div class="package-subtitle">${safeSubtitle}</div>
-                </div>
-            </div>
-            <div class="package-summary">${safeDesc}</div>
-            <div class="package-details" id="packageDetails${index}">
-                <div class="package-subheading">ไฮไลต์สำคัญ</div>
-                ${pkg.highlights.map(item => `<div class="package-highlight-item">• ${escapeHTML(item)}</div>`).join('')}
-                <div class="package-subheading">รายละเอียด carbon footprint</div>
-                <ul class="package-details-list">
-                    ${pkg.details.map(item => `<li>${escapeHTML(item)}</li>`).join('')}
-                </ul>
-                <div class="package-subheading">สรุปการปล่อยคาร์บอน</div>
-                <p>${safeCarbon}</p>
-            </div>
-            <div class="package-action-row">
-                <button type="button" class="package-view-btn" onclick="event.stopPropagation(); togglePackageDetails(${index})">ดูรายละเอียด</button>
-                <button type="button" class="package-select-btn" onclick="event.stopPropagation(); selectPackage(${index})">เลือกแพ็กเกจนี้</button>
-            </div>
-        </div>
-    `;
-}
-
 function openPackageMenu() {
     const section = document.getElementById('packageSection');
-    const content = document.getElementById('packageContent');
-    content.innerHTML = packageList.map(getPackageHtml).join('');
-    section.classList.add('active');
+    fetchPackages();
+    if (section) section.classList.add('active');
 }
 
 function togglePackageDetails(index) {
     const details = document.getElementById(`packageDetails${index}`);
     if (!details) return;
     details.classList.toggle('open');
+}
+
+let bookingPkgAdults = 1;
+let bookingPkgChildren = 0;
+
+function changePkgCount(type, delta) {
+    if (type === 'adults') {
+        bookingPkgAdults = Math.max(1, bookingPkgAdults + delta);
+    } else if (type === 'children') {
+        bookingPkgChildren = Math.max(0, bookingPkgChildren + delta);
+    }
+    updatePkgCounterUI();
+}
+
+function updatePkgCounterUI() {
+    const countAdultsEl = document.getElementById('count-pkg-adults');
+    const countChildrenEl = document.getElementById('count-pkg-children');
+    const hiddenAdultsInput = document.getElementById('bookPkgAdultsInput');
+    const hiddenChildrenInput = document.getElementById('bookPkgChildrenInput');
+    const btnSubAdults = document.getElementById('btn-sub-pkg-adults');
+    const btnSubChildren = document.getElementById('btn-sub-pkg-children');
+
+    if (countAdultsEl) countAdultsEl.innerText = bookingPkgAdults;
+    if (countChildrenEl) countChildrenEl.innerText = bookingPkgChildren;
+    if (hiddenAdultsInput) hiddenAdultsInput.value = bookingPkgAdults;
+    if (hiddenChildrenInput) hiddenChildrenInput.value = bookingPkgChildren;
+
+    if (btnSubAdults) btnSubAdults.disabled = (bookingPkgAdults <= 1);
+    if (btnSubChildren) btnSubChildren.disabled = (bookingPkgChildren <= 0);
 }
 
 function selectPackage(index) {
@@ -126,33 +145,71 @@ function selectPackage(index) {
         return;
     }
 
-    const userName = currentUserProfile.first_name ? `${currentUserProfile.first_name} ${currentUserProfile.last_name}` : "-";
-    const userPhone = currentUserProfile.phone || "-";
+    const userName = currentUserProfile.first_name ? `${currentUserProfile.first_name} ${currentUserProfile.last_name}` : "";
+    const userPhone = currentUserProfile.phone || "";
 
     document.getElementById('bookPkgId').value = index;
     document.getElementById('bookPkgName').innerText = selected.title;
-    document.getElementById('bookPkgUserName').innerText = userName;
-    document.getElementById('bookPkgUserPhone').innerText = "Tel: " + userPhone;
-    document.getElementById('bookPkgUserEmail').innerText = currentUserEmail;
+    document.getElementById('bookPkgUserName').value = userName;
+    document.getElementById('bookPkgUserPhone').value = userPhone;
+    document.getElementById('bookPkgUserEmail').value = currentUserEmail;
+    
+    // กำหนดค่า min date เป็นวันพรุ่งนี้เป็นอย่างน้อย
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrowStr = tomorrow.toISOString().split('T')[0];
+    document.getElementById('bookPkgDateInput').setAttribute('min', tomorrowStr);
     document.getElementById('bookPkgDateInput').value = '';
-    document.getElementById('bookPkgGuestsInput').value = 1;
+
+    // รีเซ็ตจำนวนผู้เดินทาง
+    bookingPkgAdults = 1;
+    bookingPkgChildren = 0;
+    updatePkgCounterUI();
+
     document.getElementById('bookPackageModal').style.display = "flex";
 }
 
 async function submitPackageBooking() {
     const dateVal = document.getElementById('bookPkgDateInput').value;
-    const guestsVal = document.getElementById('bookPkgGuestsInput').value;
     const btn = document.getElementById('confirmBookPkgBtn');
+    const userName = document.getElementById('bookPkgUserName').value.trim();
+    const userPhone = document.getElementById('bookPkgUserPhone').value.trim();
+
+    if (!userName) {
+        showToast("กรุณาระบุชื่อผู้จอง", "error");
+        return;
+    }
+
+    if (!userPhone) {
+        showToast("กรุณาระบุเบอร์โทรศัพท์ติดต่อ", "error");
+        return;
+    }
+
+    // ตรวจสอบความถูกต้องเบอร์โทรศัพท์ไทย (เช่น 9-10 หลัก เริ่มต้นด้วย 0)
+    const phoneRegex = /^0[0-9]{8,9}$/;
+    if (!phoneRegex.test(userPhone)) {
+        showToast("กรุณาระบุเบอร์โทรศัพท์ที่ถูกต้อง (เช่น 0857203538)", "error");
+        return;
+    }
 
     if (!dateVal) {
         showToast("กรุณาเลือกวันที่เดินทาง", "error");
         return;
     }
 
+    // ตรวจสอบวันในอดีต
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const selectedDate = new Date(dateVal);
+    selectedDate.setHours(0, 0, 0, 0);
+    if (selectedDate < today) {
+        showToast("ไม่สามารถเลือกวันที่เดินทางในอดีตได้ครับ", "error");
+        return;
+    }
+
     btn.innerText = "กำลังดำเนินการ...";
     const pkgName = document.getElementById('bookPkgName').innerText;
-    const userName = currentUserProfile.first_name ? `${currentUserProfile.first_name} ${currentUserProfile.last_name}` : currentUserEmail;
-    const userPhone = currentUserProfile.phone || '-';
 
     const payload = {
         package_name: pkgName,
@@ -160,7 +217,7 @@ async function submitPackageBooking() {
         user_name: userName,
         user_phone: userPhone,
         travel_date: dateVal,
-        guests_count: parseInt(guestsVal),
+        guests_count: bookingPkgAdults + bookingPkgChildren,
         status: 'pending'
     };
 
@@ -356,6 +413,12 @@ db.auth.onAuthStateChange((event, session) => {
         document.getElementById('authBtn').innerText = "Login / Sign Up";
     }
 
+    // Toggle admin buttons in navbar
+    const bookingsBtn = document.getElementById('adminBookingsBtn');
+    const managePkgBtn = document.getElementById('adminManagePackagesBtn');
+    if (bookingsBtn) bookingsBtn.style.display = isAdminLoggedIn ? 'inline-block' : 'none';
+    if (managePkgBtn) managePkgBtn.style.display = isAdminLoggedIn ? 'inline-block' : 'none';
+
     if (event === 'PASSWORD_RECOVERY') {
         // เปิดหน้าต่างตั้งรหัสผ่านใหม่
         document.getElementById('newPasswordInput').value = '';
@@ -405,9 +468,223 @@ function showToast(message, type = 'success') {
 window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
         closeModal('loginModal');
-        closeModal('editModal');
-        closeModal('bookModal');
         closeModal('bookPackageModal');
         closeModal('updatePasswordModal');
+        closeModal('adminPkgBookingsModal');
+        closeModal('adminManagePackagesModal');
+        closeModal('editPackageModal');
     }
 });
+
+// ==========================================
+// --- 7.5 ระบบแอดมินสำหรับการจองแพ็กเกจ (Admin Packages Management) ---
+// ==========================================
+
+async function openAdminPkgBookingsModal() {
+    if (!isAdminLoggedIn) return;
+    document.getElementById('adminPkgBookingsModal').style.display = 'flex';
+    await loadAdminPkgBookings();
+}
+
+async function loadAdminPkgBookings() {
+    const tbody = document.getElementById('adminPkgBookingsTableBody');
+    if (!tbody) return;
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align: center;">กำลังโหลดข้อมูล...</td></tr>`;
+
+    const { data, error } = await db
+        .from('package_bookings')
+        .select('*')
+        .order('id', { ascending: false });
+
+    if (error) {
+        console.error("Load admin package bookings error:", error);
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #ff6b6b;">ไม่สามารถดึงข้อมูลได้: ${error.message}</td></tr>`;
+        return;
+    }
+
+    if (!data || data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted);">ไม่มีประวัติการจองแพ็กเกจในขณะนี้</td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = data.map(b => {
+        let statusLabel = "";
+        let statusClass = "";
+        if (b.status === 'pending') {
+            statusLabel = "รอตรวจสอบ";
+            statusClass = "status-pending";
+        } else if (b.status === 'confirmed') {
+            statusLabel = "อนุมัติแล้ว";
+            statusClass = "status-confirmed";
+        } else if (b.status === 'rejected') {
+            statusLabel = "ปฏิเสธ/ยกเลิก";
+            statusClass = "status-rejected";
+        }
+
+        const actionButtons = b.status === 'pending' ? `
+            <button class="btn-table-action btn-approve" onclick="approvePkgBooking(${b.id})">อนุมัติ</button>
+            <button class="btn-table-action btn-reject" onclick="rejectPkgBooking(${b.id})" style="margin-left: 5px;">ปฏิเสธ</button>
+        ` : `-`;
+
+        return `
+            <tr>
+                <td style="font-weight: 700; color: #ffffff;">${escapeHTML(b.package_name)}</td>
+                <td>${escapeHTML(b.user_name)}</td>
+                <td>
+                    <div>${escapeHTML(b.user_email)}</div>
+                    <div style="font-size: 12px; color: var(--text-muted);">${escapeHTML(b.user_phone)}</div>
+                </td>
+                <td>${escapeHTML(b.travel_date)}</td>
+                <td>${b.guests_count || 1} คน</td>
+                <td><span class="status-badge ${statusClass}">${statusLabel}</span></td>
+                <td>${actionButtons}</td>
+            </tr>
+        `;
+    }).join('');
+}
+
+async function approvePkgBooking(bookingId) {
+    if (!isAdminLoggedIn) return;
+
+    const { error } = await db
+        .from('package_bookings')
+        .update({ status: 'confirmed' })
+        .eq('id', bookingId);
+
+    if (error) {
+        console.error("Approve booking error:", error);
+        showToast("ไม่สามารถยืนยันการจองได้: " + error.message, "error");
+        return;
+    }
+
+    showToast("🎉 ยืนยันการจองแพ็กเกจเรียบร้อยแล้ว!", "success");
+    await loadAdminPkgBookings();
+}
+
+async function rejectPkgBooking(bookingId) {
+    if (!isAdminLoggedIn) return;
+
+    const { error } = await db
+        .from('package_bookings')
+        .update({ status: 'rejected' })
+        .eq('id', bookingId);
+
+    if (error) {
+        console.error("Reject booking error:", error);
+        showToast("ไม่สามารถปฏิเสธการจองได้: " + error.message, "error");
+        return;
+    }
+
+    showToast("ยกเลิกการจองแพ็กเกจแล้ว", "success");
+    await loadAdminPkgBookings();
+}
+
+async function openAdminManagePackagesModal() {
+    if (!isAdminLoggedIn) return;
+    document.getElementById('adminManagePackagesModal').style.display = 'flex';
+    await loadAdminManagePackages();
+}
+
+async function loadAdminManagePackages() {
+    const tbody = document.getElementById('adminPackagesTableBody');
+    if (!tbody) return;
+    tbody.innerHTML = `<tr><td colspan="4" style="text-align: center;">กำลังโหลดข้อมูล...</td></tr>`;
+
+    // Fetch fresh packages from DB
+    const { data, error } = await db
+        .from('packages')
+        .select('*')
+        .order('id', { ascending: true });
+
+    if (error) {
+        console.error("Load manage packages error:", error);
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: #ff6b6b;">ไม่สามารถดึงข้อมูลได้: ${error.message}</td></tr>`;
+        return;
+    }
+
+    packageList = data || [];
+    renderPackagesList(); // Refresh home grid too
+
+    if (packageList.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">ไม่มีรายการแพ็กเกจในขณะนี้</td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = packageList.map(pkg => {
+        return `
+            <tr>
+                <td style="font-weight: 700; color: #ffffff;">${escapeHTML(pkg.title)}</td>
+                <td>${escapeHTML(pkg.subtitle)}</td>
+                <td>${escapeHTML(pkg.carbon_summary)}</td>
+                <td>
+                    <button class="btn-table-action btn-approve" onclick="openEditPackageModal(${pkg.id})">✏️ แก้ไข</button>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+function openEditPackageModal(pkgId) {
+    const pkg = packageList.find(p => p.id === pkgId);
+    if (!pkg) return;
+
+    document.getElementById('editPkgIdVal').value = pkg.id;
+    document.getElementById('editPkgTitle').value = pkg.title;
+    document.getElementById('editPkgSubtitle').value = pkg.subtitle || '';
+    document.getElementById('editPkgDesc').value = pkg.description || '';
+    document.getElementById('editPkgCarbonSummary').value = pkg.carbon_summary || '';
+
+    // highlights and details arrays to newline-separated strings
+    const highlightsStr = Array.isArray(pkg.highlights) ? pkg.highlights.join('\n') : '';
+    const detailsStr = Array.isArray(pkg.details) ? pkg.details.join('\n') : '';
+
+    document.getElementById('editPkgHighlights').value = highlightsStr;
+    document.getElementById('editPkgDetails').value = detailsStr;
+
+    // Set placeholders
+    document.getElementById('editPkgHighlights').placeholder = "ระบุคำไฮไลท์บรรทัดละ 1 เรื่อง\nเช่น:\nเส้นทางน้ำตกแม่ก๋า\nช่วงเวลาแนะนำ: กุมภาพันธ์";
+    document.getElementById('editPkgDetails').placeholder = "ระบุดีเทลการปล่อยคาร์บอนบรรทัดละ 1 เรื่อง\nเช่น:\nอาหาร 7.2 kgCO2e\nที่พัก 2.5 kgCO2e";
+
+    document.getElementById('editPackageModal').style.display = 'flex';
+}
+
+async function savePackageEdit() {
+    const pkgId = parseInt(document.getElementById('editPkgIdVal').value);
+    const title = document.getElementById('editPkgTitle').value.trim();
+    const subtitle = document.getElementById('editPkgSubtitle').value.trim();
+    const description = document.getElementById('editPkgDesc').value.trim();
+    const carbonSummary = document.getElementById('editPkgCarbonSummary').value.trim();
+    
+    const highlightsStr = document.getElementById('editPkgHighlights').value;
+    const detailsStr = document.getElementById('editPkgDetails').value;
+
+    const highlights = highlightsStr.split('\n').map(s => s.trim()).filter(s => s.length > 0);
+    const details = detailsStr.split('\n').map(s => s.trim()).filter(s => s.length > 0);
+
+    if (!title) {
+        showToast("กรุณาระบุชื่อแพ็กเกจ", "error");
+        return;
+    }
+
+    const { error } = await db
+        .from('packages')
+        .update({
+            title,
+            subtitle,
+            description,
+            carbon_summary: carbonSummary,
+            highlights,
+            details
+        })
+        .eq('id', pkgId);
+
+    if (error) {
+        console.error("Save package edit error:", error);
+        showToast("ไม่สามารถบันทึกข้อมูลแพ็กเกจได้: " + error.message, "error");
+        return;
+    }
+
+    showToast("💾 บันทึกการแก้ไขข้อมูลแพ็กเกจสำเร็จ!", "success");
+    closeModal('editPackageModal');
+    await loadAdminManagePackages(); // Refresh listing modal
+}

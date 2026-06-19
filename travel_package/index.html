@@ -51,6 +51,9 @@
             <button onclick="filterMap('other')" class="nav-btn">📌 Other</button>
             <button onclick="findMyLocation()" class="nav-btn gps-btn">📍 My Location</button>
 
+            <button id="adminBookingsBtn" onclick="openAdminPkgBookingsModal()" class="nav-btn admin-bookings-btn" style="display: none;">📅 View Bookings</button>
+            <button id="adminManagePackagesBtn" onclick="openAdminManagePackagesModal()" class="nav-btn admin-manage-packages-btn" style="display: none;">🛠️ Manage Packages</button>
+
             <button id="authBtn" onclick="toggleAuthModal()" class="nav-btn admin-btn">Login / Sign Up</button>
         </div>
     </nav>
@@ -110,81 +113,98 @@
         </div>
     </div>
 
-    <div id="editModal" class="modal-overlay" onclick="if(event.target === this) closeModal('editModal')">
-        <div class="modal-box">
-            <h3>Edit Location</h3>
-            <input type="hidden" id="editId">
-            <div class="form-group">
-                <label>Name</label>
-                <input type="text" id="editName">
-            </div>
-
-            <div class="form-group" style="display: flex; gap: 10px;">
-                <div style="flex: 1;">
-                    <label>Latitude</label>
-                    <input type="text" id="editLat">
-                </div>
-                <div style="flex: 1;">
-                    <label>Longitude</label>
-                    <input type="text" id="editLng">
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Category</label>
-                <select id="editCat">
-                    <option value="stay">Home Stay</option>
-                    <option value="food">Eatery</option>
-                    <option value="tour">Attraction</option>
-                    <option value="other">Other</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Phone</label>
-                <input type="text" id="editPhone">
-            </div>
-            <div class="form-group">
-                <label>Facebook Link URL</label>
-                <input type="text" id="editFacebook">
-            </div>
-            <div class="form-group">
-                <label>Rating (e.g. 5.0)</label>
-                <input type="text" id="editRating">
+    <!-- Admin Package Bookings Modal -->
+    <div id="adminPkgBookingsModal" class="modal-overlay" onclick="if(event.target === this) closeModal('adminPkgBookingsModal')">
+        <div class="modal-box" style="width: 90%; max-width: 800px;">
+            <h3>📅 Booking List (รายการจองแพ็กเกจ)</h3>
+            <div class="admin-bookings-table-container">
+                <table class="admin-bookings-table">
+                    <thead>
+                        <tr>
+                            <th>Package Name</th>
+                            <th>Customer Name</th>
+                            <th>Contact Info</th>
+                            <th>Travel Date</th>
+                            <th>Guests</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminPkgBookingsTableBody">
+                        <!-- Bookings load dynamically -->
+                    </tbody>
+                </table>
             </div>
             <div class="modal-actions">
-                <button class="btn btn-cancel" onclick="closeModal('editModal')">Cancel</button>
-                <button class="btn btn-save" onclick="saveLocationEdit()">Save Changes</button>
+                <button class="btn btn-cancel" onclick="closeModal('adminPkgBookingsModal')">Close</button>
             </div>
         </div>
     </div>
 
-    <div id="bookModal" class="modal-overlay" onclick="if(event.target === this) closeModal('bookModal')">
-        <div class="modal-box">
-            <h3>Book Home Stay</h3>
-            <p id="bookLocName" style="color: #1a73e8; font-weight: bold; font-size: 16px; margin-top: -10px;"></p>
-            <input type="hidden" id="bookLocId">
+    <!-- Admin Manage Packages Modal -->
+    <div id="adminManagePackagesModal" class="modal-overlay" onclick="if(event.target === this) closeModal('adminManagePackagesModal')">
+        <div class="modal-box" style="width: 90%; max-width: 700px;">
+            <h3>🛠️ Manage Travel Packages</h3>
+            <div class="admin-bookings-table-container">
+                <table class="admin-bookings-table">
+                    <thead>
+                        <tr>
+                            <th>Package Title</th>
+                            <th>Subtitle</th>
+                            <th>Carbon Summary</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminPackagesTableBody">
+                        <!-- Packages load dynamically -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-cancel" onclick="closeModal('adminManagePackagesModal')">Close</button>
+            </div>
+        </div>
+    </div>
 
-            <div class="form-group"
-                style="background: #f1f3f4; padding: 10px; border-radius: 4px; margin-bottom: 15px;">
-                <div style="font-size: 12px; color: #555;">Contact Info</div>
-                <div id="bookUserName" style="font-weight: bold;"></div>
-                <div id="bookUserPhone" style="font-size: 14px;"></div>
-                <div id="bookUserEmail" style="font-size: 14px; color: #666;"></div>
+    <!-- Edit Package Modal -->
+    <div id="editPackageModal" class="modal-overlay" onclick="if(event.target === this) closeModal('editPackageModal')">
+        <div class="modal-box" style="width: 90%; max-width: 500px;">
+            <h3>✏️ Edit Package Details</h3>
+            <input type="hidden" id="editPkgIdVal">
+
+            <div class="form-group">
+                <label>Package Title (ชื่อแพ็กเกจ)</label>
+                <input type="text" id="editPkgTitle" placeholder="e.g. Adventure Package">
             </div>
 
             <div class="form-group">
-                <label>Travel Date (วันที่เข้าพัก)</label>
-                <input type="date" id="bookDateInput">
+                <label>Subtitle (คำโปรยรอง)</label>
+                <input type="text" id="editPkgSubtitle" placeholder="e.g. สำหรับคนชอบ Adventure">
             </div>
 
             <div class="form-group">
-                <label>Guests Count (จำนวนผู้เข้าพัก)</label>
-                <input type="number" id="bookGuestsInput" min="1" value="1">
+                <label>Description (รายละเอียด)</label>
+                <textarea id="editPkgDesc" rows="3" style="width: 100%; box-sizing: border-box; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; color: #ffffff; padding: 10px; font-family: 'Sarabun', sans-serif; font-size: 14.5px; resize: vertical;"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Carbon Summary (สรุปคาร์บอน)</label>
+                <input type="text" id="editPkgCarbonSummary" placeholder="e.g. รวม 14.1 kgCO2e">
+            </div>
+
+            <div class="form-group">
+                <label>Highlights (ไฮไลท์ - คั่นด้วยเครื่องหมายจุลภาค ,)</label>
+                <textarea id="editPkgHighlights" rows="4" placeholder="ระบุแต่ละไฮไลท์คั่นด้วยเครื่องหมายจุลภาค" style="width: 100%; box-sizing: border-box; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; color: #ffffff; padding: 10px; font-family: 'Sarabun', sans-serif; font-size: 14.5px; resize: vertical;"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Carbon Details (ดีเทลคาร์บอน - คั่นด้วยเครื่องหมายจุลภาค ,)</label>
+                <textarea id="editPkgDetails" rows="4" placeholder="ระบุแต่ละดีเทลคาร์บอนคั่นด้วยเครื่องหมายจุลภาค" style="width: 100%; box-sizing: border-box; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; color: #ffffff; padding: 10px; font-family: 'Sarabun', sans-serif; font-size: 14.5px; resize: vertical;"></textarea>
             </div>
 
             <div class="modal-actions">
-                <button class="btn btn-cancel" onclick="closeModal('bookModal')">Cancel</button>
-                <button class="btn btn-save" id="confirmBookBtn" onclick="submitBooking()">Confirm Booking</button>
+                <button class="btn btn-cancel" onclick="closeModal('editPackageModal')">Cancel</button>
+                <button class="btn btn-save" onclick="savePackageEdit()">💾 Save Changes</button>
             </div>
         </div>
     </div>
@@ -192,15 +212,24 @@
     <div id="bookPackageModal" class="modal-overlay" onclick="if(event.target === this) closeModal('bookPackageModal')">
         <div class="modal-box">
             <h3>Book Travel Package</h3>
-            <p id="bookPkgName" style="color: #1a73e8; font-weight: bold; font-size: 16px; margin-top: -10px;"></p>
+            <p id="bookPkgName" style="color: var(--primary-light); font-weight: bold; font-size: 16px; margin-top: -10px; text-align: center;"></p>
             <input type="hidden" id="bookPkgId">
+            <input type="hidden" id="bookPkgAdultsInput" value="1">
+            <input type="hidden" id="bookPkgChildrenInput" value="0">
 
-            <div class="form-group"
-                style="background: #f1f3f4; padding: 10px; border-radius: 4px; margin-bottom: 15px;">
-                <div style="font-size: 12px; color: #555;">Contact Info</div>
-                <div id="bookPkgUserName" style="font-weight: bold;"></div>
-                <div id="bookPkgUserPhone" style="font-size: 14px;"></div>
-                <div id="bookPkgUserEmail" style="font-size: 14px; color: #666;"></div>
+            <div class="form-group">
+                <label>ชื่อผู้จอง</label>
+                <input type="text" id="bookPkgUserName" placeholder="ระบุชื่อ-นามสกุล">
+            </div>
+
+            <div class="form-group">
+                <label>เบอร์โทรศัพท์ติดต่อ</label>
+                <input type="text" id="bookPkgUserPhone" placeholder="ระบุเบอร์โทรศัพท์">
+            </div>
+
+            <div class="form-group">
+                <label>อีเมลผู้จอง (Email)</label>
+                <input type="email" id="bookPkgUserEmail" readonly style="opacity: 0.6; cursor: not-allowed;">
             </div>
 
             <div class="form-group">
@@ -209,8 +238,33 @@
             </div>
 
             <div class="form-group">
-                <label>Guests Count (จำนวนผู้เดินทาง)</label>
-                <input type="number" id="bookPkgGuestsInput" min="1" value="1">
+                <label>จำนวนผู้เดินทาง (Guests Count)</label>
+                <div style="background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 4px 16px; margin-top: 6px;">
+                    <!-- Adults Row -->
+                    <div class="counter-row">
+                        <div class="counter-info">
+                            <span class="counter-label">ผู้ใหญ่</span>
+                            <span class="counter-sublabel">อายุ 18 ขึ้นไป</span>
+                        </div>
+                        <div class="counter-controls">
+                            <button type="button" class="counter-btn" id="btn-sub-pkg-adults" onclick="changePkgCount('adults', -1)" disabled>−</button>
+                            <span id="count-pkg-adults" class="counter-value">1</span>
+                            <button type="button" class="counter-btn" id="btn-add-pkg-adults" onclick="changePkgCount('adults', 1)">+</button>
+                        </div>
+                    </div>
+                    <!-- Children Row -->
+                    <div class="counter-row">
+                        <div class="counter-info">
+                            <span class="counter-label">เด็ก</span>
+                            <span class="counter-sublabel">อายุ 0-17</span>
+                        </div>
+                        <div class="counter-controls">
+                            <button type="button" class="counter-btn" id="btn-sub-pkg-children" onclick="changePkgCount('children', -1)" disabled>−</button>
+                            <span id="count-pkg-children" class="counter-value">0</span>
+                            <button type="button" class="counter-btn" id="btn-add-pkg-children" onclick="changePkgCount('children', 1)">+</button>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="modal-actions">
