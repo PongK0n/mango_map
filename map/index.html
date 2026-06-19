@@ -723,6 +723,29 @@
             color: #ff6b6b;
         }
 
+        .btn-edit-action {
+            padding: 3px 8px;
+            font-size: 11px;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.25);
+            border-radius: 4px;
+            color: #60a5fa;
+            cursor: pointer;
+            font-family: 'Sarabun', sans-serif;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .btn-edit-action:hover {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: rgba(59, 130, 246, 0.5);
+            transform: scale(1.05);
+        }
+
+        .btn-edit-action:active {
+            transform: scale(0.95);
+        }
+
         .btn-cancel-action {
             padding: 3px 8px;
             font-size: 11px;
@@ -1411,6 +1434,67 @@
         </div>
     </div>
 
+    <!-- Edit Booking Modal -->
+    <div id="editBookingModal" class="modal-overlay" onclick="if(event.target === this) closeModal('editBookingModal')">
+        <div class="modal-box" style="width: 350px;">
+            <h3>✏️ แก้ไขการจอง</h3>
+            <input type="hidden" id="editBookingId">
+            <input type="hidden" id="editBookingLocId">
+            <input type="hidden" id="editBookingRoomsVal" value="1">
+            <input type="hidden" id="editBookingGuestsVal" value="1">
+
+            <div class="form-group">
+                <label>ชื่อผู้จอง</label>
+                <input type="text" id="editBookingName" placeholder="ระบุชื่อ-นามสกุล">
+            </div>
+
+            <div class="form-group">
+                <label>เบอร์โทรศัพท์ติดต่อ</label>
+                <input type="text" id="editBookingPhone" placeholder="ระบุเบอร์โทรศัพท์">
+            </div>
+
+            <div class="form-group">
+                <label>วันที่เข้าพัก</label>
+                <input type="date" id="editBookingDate">
+            </div>
+
+            <div class="form-group">
+                <label>จำนวนห้องและผู้เข้าพัก</label>
+                <div style="background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 4px 16px; margin-top: 6px;">
+                    <!-- Rooms Row -->
+                    <div class="counter-row">
+                        <div class="counter-info">
+                            <span class="counter-label">ห้อง</span>
+                            <span class="counter-sublabel">จำนวนห้องพัก</span>
+                        </div>
+                        <div class="counter-controls">
+                            <button type="button" class="counter-btn" id="btn-sub-edit-rooms" onclick="changeEditCount('rooms', -1)">−</button>
+                            <span id="edit-count-rooms" class="counter-value">1</span>
+                            <button type="button" class="counter-btn" id="btn-add-edit-rooms" onclick="changeEditCount('rooms', 1)">+</button>
+                        </div>
+                    </div>
+                    <!-- Guests Row -->
+                    <div class="counter-row">
+                        <div class="counter-info">
+                            <span class="counter-label">ผู้เข้าพัก</span>
+                            <span class="counter-sublabel">จำนวนผู้เข้าพักทั้งหมด</span>
+                        </div>
+                        <div class="counter-controls">
+                            <button type="button" class="counter-btn" id="btn-sub-edit-guests" onclick="changeEditCount('guests', -1)">−</button>
+                            <span id="edit-count-guests" class="counter-value">1</span>
+                            <button type="button" class="counter-btn" id="btn-add-edit-guests" onclick="changeEditCount('guests', 1)">+</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn btn-cancel" onclick="closeModal('editBookingModal')">ยกเลิก</button>
+                <button class="btn btn-save" onclick="saveBookingEdit()">💾 บันทึกการแก้ไข</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Admin Bookings Modal -->
     <div id="adminBookingsModal" class="modal-overlay" onclick="if(event.target === this) closeModal('adminBookingsModal')">
         <div class="modal-box" style="width: 90%; max-width: 850px;">
@@ -2094,8 +2178,11 @@
                     <div class="my-booking-card">
                         <div class="booking-status-row">
                             <span class="booking-title">${escapeHTML(b.location_name)}</span>
-                            <div style="display: flex; gap: 8px; align-items: center;">
+                            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
                                 <span class="status-badge ${statusClass}">${statusLabel}</span>
+                                ${b.status === 'pending_payment' ? `
+                                    <button type="button" class="btn-edit-action" onclick="openEditBookingModal(${b.id}, '${escapeHTML(b.travel_date)}', ${b.rooms_count || 1}, ${b.guests_count}, ${b.location_id}, '${escapeHTML(b.user_name || '')}', '${escapeHTML(b.user_phone || '')}')">✏️ แก้ไข</button>
+                                ` : ''}
                                 ${['pending_payment', 'pending_verification'].includes(b.status) ? `
                                     <button type="button" class="btn-cancel-action" onclick="deleteBooking(${b.id})">ยกเลิกการจอง</button>
                                 ` : ''}
@@ -2200,6 +2287,151 @@
             }
 
             showToast("ยกเลิกการจองเรียบร้อยแล้ว", "success");
+            await loadMyBookings();
+        }
+
+        // --- 7.4 ระบบแก้ไขการจอง (Edit Booking) ---
+        function openEditBookingModal(bookingId, travelDate, roomsCount, guestsCount, locationId, userName, userPhone) {
+            document.getElementById('editBookingId').value = bookingId;
+            document.getElementById('editBookingLocId').value = locationId;
+            document.getElementById('editBookingDate').value = travelDate;
+            document.getElementById('editBookingName').value = userName || '';
+            document.getElementById('editBookingPhone').value = userPhone || '';
+
+            // กำหนดค่า min date เป็นวันนี้
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('editBookingDate').setAttribute('min', today);
+
+            // ตั้งค่าจำนวนห้องและผู้เข้าพัก
+            document.getElementById('editBookingRoomsVal').value = roomsCount;
+            document.getElementById('editBookingGuestsVal').value = guestsCount;
+            document.getElementById('edit-count-rooms').textContent = roomsCount;
+            document.getElementById('edit-count-guests').textContent = guestsCount;
+
+            // อัปเดตสถานะปุ่ม +/-
+            updateEditCounterButtons();
+
+            document.getElementById('editBookingModal').style.display = 'flex';
+        }
+
+        function changeEditCount(type, delta) {
+            const roomsEl = document.getElementById('edit-count-rooms');
+            const guestsEl = document.getElementById('edit-count-guests');
+            const roomsHidden = document.getElementById('editBookingRoomsVal');
+            const guestsHidden = document.getElementById('editBookingGuestsVal');
+
+            let rooms = parseInt(roomsEl.textContent);
+            let guests = parseInt(guestsEl.textContent);
+
+            if (type === 'rooms') {
+                rooms = Math.max(1, rooms + delta);
+                // จำนวนห้องต้องไม่เกินจำนวนผู้เข้าพัก
+                if (rooms > guests) rooms = guests;
+                roomsEl.textContent = rooms;
+                roomsHidden.value = rooms;
+            } else if (type === 'guests') {
+                guests = Math.max(1, guests + delta);
+                guestsEl.textContent = guests;
+                guestsHidden.value = guests;
+                // ถ้าห้องมากกว่าผู้เข้าพัก ให้ลดห้องลง
+                if (rooms > guests) {
+                    rooms = guests;
+                    roomsEl.textContent = rooms;
+                    roomsHidden.value = rooms;
+                }
+            }
+
+            updateEditCounterButtons();
+        }
+
+        function updateEditCounterButtons() {
+            const rooms = parseInt(document.getElementById('edit-count-rooms').textContent);
+            const guests = parseInt(document.getElementById('edit-count-guests').textContent);
+
+            // ตรวจสอบจำนวนห้องว่างจาก location
+            const locId = parseInt(document.getElementById('editBookingLocId').value);
+            const loc = locations.find(l => l.id === locId);
+            const maxRooms = loc ? (loc.available_rooms || 10) : 10;
+
+            document.getElementById('btn-sub-edit-rooms').disabled = (rooms <= 1);
+            document.getElementById('btn-add-edit-rooms').disabled = (rooms >= guests || rooms >= maxRooms);
+            document.getElementById('btn-sub-edit-guests').disabled = (guests <= 1 || guests <= rooms);
+            document.getElementById('btn-add-edit-guests').disabled = (guests >= 20);
+        }
+
+        async function saveBookingEdit() {
+            const bookingId = parseInt(document.getElementById('editBookingId').value);
+            const travelDate = document.getElementById('editBookingDate').value;
+            const roomsCount = parseInt(document.getElementById('editBookingRoomsVal').value);
+            const guestsCount = parseInt(document.getElementById('editBookingGuestsVal').value);
+            const userName = document.getElementById('editBookingName').value.trim();
+            const userPhone = document.getElementById('editBookingPhone').value.trim();
+
+            if (!userName) {
+                showToast("กรุณาระบุชื่อผู้จอง", "error");
+                return;
+            }
+
+            if (!userPhone) {
+                showToast("กรุณาระบุเบอร์โทรศัพท์ติดต่อ", "error");
+                return;
+            }
+
+            // ตรวจสอบเบอร์โทรศัพท์เบื้องต้น (เช่น 9-10 หลัก เริ่มต้นด้วย 0)
+            const phoneRegex = /^0[0-9]{8,9}$/;
+            if (!phoneRegex.test(userPhone)) {
+                showToast("กรุณาระบุเบอร์โทรศัพท์ที่ถูกต้อง (เช่น 0857203538)", "error");
+                return;
+            }
+
+            if (!travelDate) {
+                showToast("กรุณาเลือกวันที่เข้าพัก", "error");
+                return;
+            }
+
+            // ตรวจสอบวันในอดีต
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            if (new Date(travelDate) < today) {
+                showToast("ไม่สามารถเลือกวันที่ในอดีตได้", "error");
+                return;
+            }
+
+            if (roomsCount < 1 || guestsCount < 1) {
+                showToast("กรุณาระบุจำนวนห้องและผู้เข้าพักอย่างน้อย 1", "error");
+                return;
+            }
+
+            if (roomsCount > guestsCount) {
+                showToast("จำนวนห้องต้องไม่มากกว่าจำนวนผู้เข้าพัก", "error");
+                return;
+            }
+
+            const { data, error } = await db
+                .from('booking')
+                .update({
+                    user_name: userName,
+                    user_phone: userPhone,
+                    travel_date: travelDate,
+                    rooms_count: roomsCount,
+                    guests_count: guestsCount
+                })
+                .eq('id', bookingId)
+                .select();
+
+            if (error) {
+                console.error("Edit booking error:", error);
+                showToast("ไม่สามารถแก้ไขการจองได้: " + error.message, "error");
+                return;
+            }
+
+            if (!data || data.length === 0) {
+                showToast("ไม่สามารถแก้ไขการจองได้ กรุณาติดต่อแอดมิน", "error");
+                return;
+            }
+
+            showToast("แก้ไขการจองเรียบร้อยแล้ว ✅", "success");
+            closeModal('editBookingModal');
             await loadMyBookings();
         }
 
