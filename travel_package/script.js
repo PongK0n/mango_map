@@ -265,14 +265,6 @@ async function submitPackageBooking() {
     }
 }
 
-// Redirect navbar category buttons to the real Map page
-function filterMap(category) {
-    window.location.href = `../map/index.html?filter=${category}`;
-}
-
-function findMyLocation() {
-    window.location.href = '../map/index.html?locate=true';
-}
 
 // Auth modal handlers
 let authMode = 'login'; // 'login', 'signup', 'forgot'
