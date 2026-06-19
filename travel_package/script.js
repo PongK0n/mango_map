@@ -137,37 +137,69 @@ function updatePkgCounterUI() {
 }
 
 function selectPackage(index) {
-    const selected = packageList[index];
+    try {
+        const selected = packageList[index];
+        if (!selected) {
+            console.error("No package found at index:", index);
+            showToast("ไม่พบข้อมูลแพ็กเกจที่เลือก", "error");
+            return;
+        }
 
-    if (!isUserLoggedIn) {
-        showToast("กรุณาเข้าสู่ระบบ (Login) หรือสมัครสมาชิกใหม่ก่อน จึงจะสามารถจองแพ็กเกจได้ครับ", "info");
-        toggleAuthModal();
-        return;
+        if (!isUserLoggedIn) {
+            showToast("กรุณาเข้าสู่ระบบ (Login) หรือสมัครสมาชิกใหม่ก่อน จึงจะสามารถจองแพ็กเกจได้ครับ", "info");
+            toggleAuthModal();
+            return;
+        }
+
+        const profile = currentUserProfile || {};
+        const userName = profile.first_name ? `${profile.first_name} ${profile.last_name || ''}`.trim() : "";
+        const userPhone = profile.phone || "";
+
+        const bookPkgIdEl = document.getElementById('bookPkgId');
+        const bookPkgNameEl = document.getElementById('bookPkgName');
+        const bookPkgUserNameEl = document.getElementById('bookPkgUserName');
+        const bookPkgUserPhoneEl = document.getElementById('bookPkgUserPhone');
+        const bookPkgUserEmailEl = document.getElementById('bookPkgUserEmail');
+
+        if (!bookPkgIdEl || !bookPkgNameEl || !bookPkgUserNameEl || !bookPkgUserPhoneEl || !bookPkgUserEmailEl) {
+            console.error("Missing modal elements");
+            showToast("ไม่พบหน้าต่างหรือแบบฟอร์มการจองในหน้าเว็บ กรุณารีเฟรชหน้าต่าง", "error");
+            return;
+        }
+
+        bookPkgIdEl.value = index;
+        bookPkgNameEl.innerText = selected.title;
+        bookPkgUserNameEl.value = userName;
+        bookPkgUserPhoneEl.value = userPhone;
+        bookPkgUserEmailEl.value = currentUserEmail || "";
+        
+        // กำหนดค่า min date เป็นวันพรุ่งนี้เป็นอย่างน้อย
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const tomorrowStr = tomorrow.toISOString().split('T')[0];
+        
+        const dateInputEl = document.getElementById('bookPkgDateInput');
+        if (dateInputEl) {
+            dateInputEl.setAttribute('min', tomorrowStr);
+            dateInputEl.value = '';
+        }
+
+        // รีเซ็ตจำนวนผู้เดินทาง
+        bookingPkgAdults = 1;
+        bookingPkgChildren = 0;
+        updatePkgCounterUI();
+
+        const modal = document.getElementById('bookPackageModal');
+        if (modal) {
+            modal.style.display = "flex";
+        } else {
+            showToast("ไม่พบหน้าต่างการจอง (Modal) กรุณารีเฟรชหน้าต่าง", "error");
+        }
+    } catch (err) {
+        console.error("Error in selectPackage:", err);
+        showToast("เกิดข้อผิดพลาด: " + err.message, "error");
     }
-
-    const userName = currentUserProfile.first_name ? `${currentUserProfile.first_name} ${currentUserProfile.last_name}` : "";
-    const userPhone = currentUserProfile.phone || "";
-
-    document.getElementById('bookPkgId').value = index;
-    document.getElementById('bookPkgName').innerText = selected.title;
-    document.getElementById('bookPkgUserName').value = userName;
-    document.getElementById('bookPkgUserPhone').value = userPhone;
-    document.getElementById('bookPkgUserEmail').value = currentUserEmail;
-    
-    // กำหนดค่า min date เป็นวันพรุ่งนี้เป็นอย่างน้อย
-    const today = new Date();
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const tomorrowStr = tomorrow.toISOString().split('T')[0];
-    document.getElementById('bookPkgDateInput').setAttribute('min', tomorrowStr);
-    document.getElementById('bookPkgDateInput').value = '';
-
-    // รีเซ็ตจำนวนผู้เดินทาง
-    bookingPkgAdults = 1;
-    bookingPkgChildren = 0;
-    updatePkgCounterUI();
-
-    document.getElementById('bookPackageModal').style.display = "flex";
 }
 
 async function submitPackageBooking() {

@@ -347,13 +347,13 @@ body {
 }
 
 .btn-save {
-    background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+    background: linear-gradient(135deg, #339af0 0%, #1c7ed6 100%);
     color: white;
-    box-shadow: 0 4px 12px rgba(64, 192, 87, 0.2);
+    box-shadow: 0 4px 12px rgba(28, 126, 214, 0.2);
 }
 
 .btn-save:hover {
-    box-shadow: 0 6px 16px rgba(64, 192, 87, 0.4);
+    box-shadow: 0 6px 16px rgba(28, 126, 214, 0.4);
     filter: brightness(1.1);
 }
 
@@ -535,14 +535,14 @@ body {
 }
 
 .package-select-btn {
-    background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+    background: linear-gradient(135deg, #339af0 0%, #1c7ed6 100%);
     color: white;
     flex: 1;
     min-height: 44px;
 }
 
 .package-select-btn:hover {
-    box-shadow: 0 6px 16px rgba(64, 192, 87, 0.35);
+    box-shadow: 0 6px 16px rgba(28, 126, 214, 0.35);
     filter: brightness(1.1);
 }
 
@@ -997,14 +997,14 @@ body {
 }
 
 .btn-table-action.btn-approve {
-    background: rgba(64, 192, 87, 0.1);
-    border-color: rgba(64, 192, 87, 0.25);
-    color: var(--primary-light);
+    background: rgba(28, 126, 214, 0.1);
+    border-color: rgba(28, 126, 214, 0.25);
+    color: #339af0;
 }
 
 .btn-table-action.btn-approve:hover {
-    background: rgba(64, 192, 87, 0.2);
-    border-color: rgba(64, 192, 87, 0.5);
+    background: rgba(28, 126, 214, 0.2);
+    border-color: rgba(28, 126, 214, 0.5);
     transform: scale(1.05);
 }
 
