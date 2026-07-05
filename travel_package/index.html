@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="เลือกแพ็กเกจท่องเที่ยวคาร์บอนต่ำ (Low Carbon Packages) ณ ชุมชนบ้านป่าเหมี้ยง สัมผัสธรรมชาติและการเดินทางที่เป็นมิตรต่อโลก">
-    <title>MIANG MAP - Travel Packages</title>
+    <meta name="description" content="เลือกแผนแนะนำเส้นทางท่องเที่ยวคาร์บอนต่ำ (Low Carbon Trip) ณ ชุมชนบ้านป่าเหมี้ยง สัมผัสธรรมชาติและการเดินทางที่เป็นมิตรต่อโลกด้วยตัวเอง">
+    <title>MIANG MAP - Low Carbon Trip</title>
 
     <link
         href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700;800&family=Sarabun:wght@300;400;600&display=swap"
@@ -36,19 +36,16 @@
             </a>
             <a href="../travel_package/index.html" class="hamburger-link active">
                 <span class="hamburger-icon">📦</span>
-                <span>Package</span>
+                <span>Low Carbon Trip</span>
             </a>
         </div>
         <div class="hamburger-backdrop" id="hamburgerBackdrop" onclick="toggleHamburger()"></div>
 
         <div class="nav-links">
-            <button onclick="window.location.href='../home/index.html'" class="nav-btn">🏠 Home</button>
-            <button onclick="window.location.href='../map/index.html'" class="nav-btn">🗺️ Map</button>
-            <button onclick="openPackageMenu()" class="nav-btn active">📦 Package</button>
-            <button id="myBookingsBtn" onclick="openUserPkgBookingsModal()" class="nav-btn my-bookings-btn" style="display: none;">📋 My Bookings</button>
+            <button id="myBookingsBtn" onclick="openUserPkgBookingsModal()" class="nav-btn my-bookings-btn" style="display: none;">📋 My Registered Plans</button>
 
-            <button id="adminBookingsBtn" onclick="openAdminPkgBookingsModal()" class="nav-btn admin-bookings-btn" style="display: none;">📅 View Bookings</button>
-            <button id="adminManagePackagesBtn" onclick="openAdminManagePackagesModal()" class="nav-btn admin-manage-packages-btn" style="display: none;">🛠️ Manage Packages</button>
+            <button id="adminBookingsBtn" onclick="openAdminPkgBookingsModal()" class="nav-btn admin-bookings-btn" style="display: none;">📅 View Plans</button>
+            <button id="adminManagePackagesBtn" onclick="openAdminManagePackagesModal()" class="nav-btn admin-manage-packages-btn" style="display: none;">🛠️ Manage Low Carbon Trips</button>
 
             <button id="authBtn" onclick="toggleAuthModal()" class="nav-btn admin-btn">Login / Sign Up</button>
         </div>
@@ -57,6 +54,21 @@
     <div id="loginModal" class="modal-overlay" onclick="if(event.target === this) closeModal('loginModal')">
         <div class="modal-box">
             <h3 id="authModalTitle">Login</h3>
+
+            <div id="googleAuthContainer">
+                <button class="google-btn" onclick="handleGoogleLogin()">
+                    <svg viewBox="0 0 24 24" width="20" height="20">
+                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                    </svg>
+                    <span>Sign in with Google</span>
+                </button>
+                <div class="auth-divider">
+                    <span>OR</span>
+                </div>
+            </div>
 
             <div id="signupFields" style="display: none;">
                 <div class="form-group">
@@ -112,12 +124,12 @@
     <!-- Admin Package Bookings Modal -->
     <div id="adminPkgBookingsModal" class="modal-overlay" onclick="if(event.target === this) closeModal('adminPkgBookingsModal')">
         <div class="modal-box" style="width: 90%; max-width: 800px;">
-            <h3>📅 Booking List (รายการจองแพ็กเกจ)</h3>
+            <h3>📅 Registered Low Carbon Trips (แผนการเดินทางท่องเที่ยวที่ลงทะเบียน)</h3>
             <div class="admin-bookings-table-container">
                 <table class="admin-bookings-table">
                     <thead>
                         <tr>
-                            <th>Package Name</th>
+                            <th>Low Carbon Trip Name</th>
                             <th>Customer Name</th>
                             <th>Contact Info</th>
                             <th>Travel Date</th>
@@ -140,12 +152,12 @@
     <!-- Admin Manage Packages Modal -->
     <div id="adminManagePackagesModal" class="modal-overlay" onclick="if(event.target === this) closeModal('adminManagePackagesModal')">
         <div class="modal-box" style="width: 90%; max-width: 700px;">
-            <h3>🛠️ Manage Travel Packages</h3>
+            <h3>🛠️ Manage Low Carbon Trips</h3>
             <div class="admin-bookings-table-container">
                 <table class="admin-bookings-table">
                     <thead>
                         <tr>
-                            <th>Package Title</th>
+                            <th>Low Carbon Trip Title</th>
                             <th>Subtitle</th>
                             <th>Carbon Summary</th>
                             <th>Actions</th>
@@ -165,12 +177,12 @@
     <!-- Edit Package Modal -->
     <div id="editPackageModal" class="modal-overlay" onclick="if(event.target === this) closeModal('editPackageModal')">
         <div class="modal-box" style="width: 90%; max-width: 500px;">
-            <h3>✏️ Edit Package Details</h3>
+            <h3>✏️ Edit Low Carbon Trip Details</h3>
             <input type="hidden" id="editPkgIdVal">
 
             <div class="form-group">
-                <label>Package Title (ชื่อแพ็กเกจ)</label>
-                <input type="text" id="editPkgTitle" placeholder="e.g. Adventure Package">
+                <label>Low Carbon Trip Title (ชื่อแผนแนะนำการเดินทาง)</label>
+                <input type="text" id="editPkgTitle" placeholder="e.g. Adventure Low Carbon Trip">
             </div>
 
             <div class="form-group">
@@ -198,6 +210,31 @@
                 <textarea id="editPkgDetails" rows="4" placeholder="ระบุแต่ละดีเทลคาร์บอนคั่นด้วยเครื่องหมายจุลภาค" style="width: 100%; box-sizing: border-box; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; color: #ffffff; padding: 10px; font-family: 'Sarabun', sans-serif; font-size: 14.5px; resize: vertical;"></textarea>
             </div>
 
+            <div class="form-group">
+                <label>Guide Name (ชื่อไกด์นำเที่ยว)</label>
+                <input type="text" id="editPkgGuideName" placeholder="เช่น ไกด์ชูชาติ">
+            </div>
+
+            <div class="form-group">
+                <label>Guide Bio (คำแนะนำ/ประวัติไกด์)</label>
+                <textarea id="editPkgGuideBio" rows="3" placeholder="เช่น ผู้เชี่ยวชาญการเดินป่าและใบเมี่ยง..." style="width: 100%; box-sizing: border-box; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; color: #ffffff; padding: 10px; font-family: 'Sarabun', sans-serif; font-size: 14.5px; resize: vertical;"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Guide Image Path (รูปภาพไกด์จริง - เช่น ../home/images/name.jpg)</label>
+                <input type="text" id="editPkgGuideImage" placeholder="ระบุพาธไฟล์รูป หรือปล่อยว่างเพื่อใช้รูปดีฟอลต์">
+            </div>
+
+            <div class="form-group">
+                <label>Trip Plan (กำหนดการท่องเที่ยว - ขึ้นบรรทัดใหม่ละ 1 เรื่อง)</label>
+                <textarea id="editPkgItinerary" rows="5" placeholder="เช่น:&#10;09:00 - เดินทางถึงหมู่บ้านป่าเหมี้ยง&#10;10:30 - เดินป่าชมต้นชาอายุกว่า 200 ปี&#10;12:00 - ทานอาหารพื้นบ้านคาร์บอนต่ำ" style="width: 100%; box-sizing: border-box; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; color: #ffffff; padding: 10px; font-family: 'Sarabun', sans-serif; font-size: 14.5px; resize: vertical;"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Trip Cover Image Path (รูปภาพหน้าปก - เช่น ../home/images/cover.png)</label>
+                <input type="text" id="editPkgImage" placeholder="ระบุพาธไฟล์รูปภาพหน้าปก เช่น ../home/images/kiu_fin.png">
+            </div>
+
             <div class="modal-actions">
                 <button class="btn btn-cancel" onclick="closeModal('editPackageModal')">Cancel</button>
                 <button class="btn btn-save" onclick="savePackageEdit()">💾 Save Changes</button>
@@ -205,13 +242,152 @@
         </div>
     </div>
 
+    <!-- Package Details Modal -->
+    <div id="packageDetailModal" class="modal-overlay" onclick="if(event.target === this) closeModal('packageDetailModal')">
+        <div class="modal-box detail-modal" style="width: 95%; max-width: 720px; padding: 0; overflow: hidden; background: #0f1410;">
+            <div class="detail-hero" id="detailHeroHeader">
+                <div class="detail-hero-overlay"></div>
+                <button class="detail-close-btn" onclick="closeModal('packageDetailModal')">&times;</button>
+                <div class="detail-hero-text">
+                    <h2 id="detailPkgTitle">Adventure Low Carbon Trip</h2>
+                    <p id="detailPkgSubtitle" class="detail-hero-subtitle">สำหรับคนชอบการเดินทางด้วยตัวเอง</p>
+                </div>
+            </div>
+            
+            <div class="detail-body">
+                <p id="detailPkgDesc" class="detail-desc"></p>
+                
+
+
+                <!-- Eco Guidelines Checklist -->
+                <div class="detail-section">
+                    <h4 class="detail-section-title">✅ ข้อควรปฏิบัติเพื่อช่วยลดคาร์บอน (Green Travel Checklist)</h4>
+                    <p style="font-size: 13.5px; color: var(--text-muted); margin-top: -6px; margin-bottom: 14px; line-height: 1.6;">
+                        เมื่อเดินทางไปถึงชุมชน ลองปฏิบัติตามข้อแนะนำเหล่านี้ (สามารถกดเช็คถูกเพื่อติดตามเป้าหมายสีเขียวของคุณ และ<strong>อย่าลืมถ่ายรูปคู่กับกิจกรรมเหล่านี้ในมือถือเพื่อใช้เป็นหลักฐานแลกของรางวัลด้วยนะครับ 📸</strong>)
+                    </p>
+                    <div class="eco-checklist-container" id="detailPkgItineraryContainer">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+                
+                <!-- Carbon Impact (split calculation) -->
+                <div class="carbon-calculator-box">
+                    <h4 class="detail-section-title">📊 คำนวณคาร์บอนฟุตพริ้นท์ทริป (ต่อคน)</h4>
+                    
+                    <div class="carbon-calc-details">
+                        <!-- In-village metrics -->
+                        <div class="calc-row">
+                            <span class="calc-label">🏡 คาร์บอนฟุตพริ้นท์ในพื้นที่ (ต่อคน/วัน):</span>
+                            <span class="calc-value" id="calcInVillageDaily">0.00 kgCO2e/วัน</span>
+                        </div>
+                        <div class="calc-subrow">
+                            <span class="calc-sublabel">สะสมจาก: อาหารท้องถิ่น + ไฟฟ้าโฮมสเตย์ + การจัดการขยะทั่วไป + รถนำเที่ยวในพื้นที่</span>
+                            <span class="calc-subvalue" id="calcInVillageTotal" style="display: none;">0.00 kgCO2e</span>
+                        </div>
+
+                        <!-- Transport Selection -->
+                        <div class="transport-select-group">
+                            <div class="transport-label">🚗 ยานพาหนะเดินทางหลัก (ไป-กลับลำปาง 160 กม.):</div>
+                            <div class="transport-options">
+                                <label class="transport-option-card">
+                                    <input type="radio" name="pkgTransportSelect" value="car" checked onchange="updateDynamicCarbonCalculation()">
+                                    <div class="option-card-content">
+                                        <span class="option-icon">🚗</span>
+                                        <span class="option-text">รถส่วนตัว (น้ำมัน)</span>
+                                        <span class="option-val">+43.15 kgCO2e</span>
+                                    </div>
+                                </label>
+                                <label class="transport-option-card">
+                                    <input type="radio" name="pkgTransportSelect" value="ev" onchange="updateDynamicCarbonCalculation()">
+                                    <div class="option-card-content">
+                                        <span class="option-icon">🔌</span>
+                                        <span class="option-text">รถไฟฟ้า (EV)</span>
+                                        <span class="option-val">+15.52 kgCO2e</span>
+                                    </div>
+                                </label>
+                                <label class="transport-option-card">
+                                    <input type="radio" name="pkgTransportSelect" value="van" onchange="updateDynamicCarbonCalculation()">
+                                    <div class="option-card-content">
+                                        <span class="option-icon">🚐</span>
+                                        <span class="option-text">รถตู้สาธารณะ/แชร์</span>
+                                        <span class="option-val">+8.60 kgCO2e</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Total carbon footprint display -->
+                        <div class="carbon-total-display">
+                            <div class="total-main">
+                                <span class="total-label">คาร์บอนฟุตพริ้นท์รวม (ในพื้นที่ 1 วัน + ค่าเดินทาง):</span>
+                                <span class="total-value" id="calcTotalCarbon">0.00 kgCO2e</span>
+                            </div>
+                            <div class="total-scale-status" id="calcScaleBadge">
+                                ระดับคาร์บอนในพื้นที่: <span class="badge-good">ดีต่อสิ่งแวดล้อม</span>
+                            </div>
+                        </div>
+
+                        <!-- References & Method Toggle -->
+                        <div class="carbon-references-toggle" onclick="toggleReferenceDetails()">
+                            <span>🔍 ดูรายละเอียดแหล่งอ้างอิงและสูตรการคำนวณ</span>
+                            <span class="toggle-arrow" id="refToggleArrow">▼</span>
+                        </div>
+                        <div class="carbon-references-content" id="carbonReferenceContent" style="display: none;">
+                            <h5>สูตรและค่าสัมประสิทธิ์การปล่อยก๊าซเรือนกระจก (Emission Factors) อ้างอิง อบก. (TGO)</h5>
+                            <ul>
+                                <li><strong>การเดินทางเข้าพื้นที่ (160 กม. ไป-กลับเมืองลำปาง):</strong> 
+                                    <ul>
+                                        <li>รถส่วนบุคคลน้ำมัน: 160 กม. × 0.2697 kgCO2e/กม. (อ้างอิงค่าสัมประสิทธิ์การปล่อยก๊าซเรือนกระจกของยานพาหนะ อบก. หมวดยานพาหนะนั่งส่วนบุคคล)</li>
+                                        <li>รถยนต์ไฟฟ้า (EV): 160 กม. × 0.0970 kgCO2e/กม. (คำนวณจาก Grid Emission Factor ประเทศไทย 0.5562 kgCO2e/kWh และอัตราการใช้ไฟเฉลี่ยของ EV ขนาดกลาง 0.174 kWh/กม.)</li>
+                                        <li>รถตู้/รถแชร์สาธารณะ: 160 กม. × 0.0538 kgCO2e/กม.ต่อคน (อ้างอิงค่าขนส่งสาธารณะขนาดเล็ก อบก. หารเฉลี่ยผู้โดยสารอย่างน้อย 5 คน)</li>
+                                    </ul>
+                                </li>
+                                <li><strong>อาหารท้องถิ่นในหมู่บ้าน:</strong> ปริมาณการปล่อยเฉลี่ย 20.4347 kgCO2e/คน/วัน 
+                                    <br>คำนวณจากวัตถุดิบสดในชุมชน (ลด Food Miles/การขนส่ง) ปรุงด้วย LPG 0.1 กก. + หมู 1.5 กก. + ไก่ 1.5 กก. + ผัก 2 กก. คิดค่า EF แยกรายวัตถุดิบตามฐานข้อมูลคาร์บอนฟุตพริ้นท์ของผลิตภัณฑ์ (องค์การบริหารจัดการก๊าซเรือนกระจก)
+                                </li>
+                                <li><strong>พลังงานในโฮมสเตย์:</strong> ปริมาณการปล่อยเฉลี่ย 0.1557 kgCO2e/คืน/คน
+                                    <br>คำนวณจากสูตร: <em>กำลังไฟฟ้าเครื่องใช้ไฟฟ้าที่จำเป็น [พัดลม 30W + หลอดไฟ 5W] (0.035 kW) × เวลาใช้งาน 8 ชม. × Grid Emission Factor ของประเทศไทย (0.5562 kgCO2e/kWh)</em>
+                                </li>
+                                <li><strong>การจัดการขยะทั่วไป:</strong> ปริมาณการปล่อยเฉลี่ย 0.7933 kgCO2e/คน/วัน
+                                    <br>คำนวณจากสูตร: <em>น้ำหนักขยะเฉลี่ย (1 กก./คน/วัน) × ค่า EF การจัดการขยะฝังกลบ (0.7933 kgCO2e/กก.)</em> อ้างอิงตามแนวทาง 2006 IPCC Guidelines for National Greenhouse Gas Inventories
+                                </li>
+                                <li><strong>การเดินทางในพื้นที่ท่องเที่ยว:</strong> 2.6970 kgCO2e/ทริป (คิดระยะเฉลี่ย 10 กม. ด้วยรถกระบะนำเที่ยวรอบหมู่บ้าน)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="detail-footer">
+                <div class="detail-footer-inner">
+                    <button id="detailPkgBookBtn" class="detail-book-btn" onclick="bookPackageFromDetails()">ลงทะเบียนใช้แผนการเดินทางนี้</button>
+                    <span class="detail-footer-hint">ระบบจะบันทึกแผนของคุณเพื่อส่งข้อมูลแจ้งประสานงานชุมชนล่วงหน้า</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="bookPackageModal" class="modal-overlay" onclick="if(event.target === this) closeModal('bookPackageModal')">
         <div class="modal-box">
-            <h3>Book Travel Package</h3>
+            <h3>ลงทะเบียนใช้แผนการเดินทางคาร์บอนต่ำ</h3>
             <p id="bookPkgName" style="color: var(--primary-light); font-weight: bold; font-size: 16px; margin-top: -10px; text-align: center;"></p>
             <input type="hidden" id="bookPkgId">
             <input type="hidden" id="bookPkgAdultsInput" value="1">
             <input type="hidden" id="bookPkgChildrenInput" value="0">
+
+            <div class="registration-incentive-box" style="background: rgba(64, 192, 87, 0.08); border: 1px solid rgba(64, 192, 87, 0.2); border-radius: 12px; padding: 14px; margin-bottom: 16px; font-size: 13px; line-height: 1.6; color: var(--text-light); text-align: left;">
+                <div style="font-weight: bold; font-size: 14px; color: var(--primary-light); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                    🌿 ทำไมต้องลงทะเบียน? (Why Register?)
+                </div>
+                <ul style="margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px;">
+                    <li><strong>เพื่อร่วมสะสมสถิติคาร์บอนต่ำ:</strong> ยอดคาร์บอนฟุตพริ้นท์ของทริปนี้จะถูกบันทึกเพื่อนำไปรวมเป็นความสำเร็จทางสิ่งแวดล้อมของชุมชนบ้านป่าเหมี้ยง</li>
+                    <li><strong>รับสิทธิพิเศษรักษ์โลก:</strong> ยื่นหน้าจอ <em>"แผนการเดินทางของฉัน"</em> คู่กับภาพถ่ายยืนยันกิจกรรมในพื้นที่จริงเพื่อรับ <strong>เครื่องดื่มชาป่าออร์แกนิกฟรี 🍵</strong> หรือ <strong>ส่วนลดสินค้าชุมชน 10% 🛍️</strong></li>
+                    <li><strong>ชุมชนจัดเตรียมต้อนรับ:</strong> ข้อมูลวันเดินทางและจำนวนคนจะถูกแจ้งไปยังโฮมสเตย์และร้านค้าท้องถิ่นล่วงหน้าเพื่อเตรียมต้อนรับคุณ</li>
+                </ul>
+                <div style="font-size: 11px; color: var(--text-muted); margin-top: 8px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 8px;">
+                    * <em>การลงทะเบียนนี้ไม่ใช่การจองห้องพัก โฮมสเตย์ หรือร้านอาหารโดยตรง หากต้องการจองที่พักหรือเช็คสถานะว่าง กรุณาเลือกจองผ่านแผนที่หลัก (Map)</em>
+                </div>
+            </div>
 
             <div class="form-group">
                 <label>ชื่อผู้จอง</label>
@@ -231,6 +407,15 @@
             <div class="form-group">
                 <label>Travel Date (วันที่เดินทาง)</label>
                 <input type="date" id="bookPkgDateInput">
+            </div>
+
+            <div class="form-group">
+                <label>ยานพาหนะหลักที่ใช้เดินทางมาชุมชน (สำหรับคำนวณคาร์บอน)</label>
+                <select id="bookPkgTransportSelect" style="width: 100%; box-sizing: border-box; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; color: #ffffff; padding: 10px; font-family: 'Sarabun', sans-serif; font-size: 14.5px;" onchange="updateBookingCarbonFootprint()">
+                    <option value="car">🚗 รถส่วนตัว (น้ำมัน) [+43.15 kgCO2e/คน]</option>
+                    <option value="ev">🔌 รถยนต์ไฟฟ้า (EV) [+15.52 kgCO2e/คน]</option>
+                    <option value="van">🚐 รถตู้สาธารณะ/แชร์ [+8.60 kgCO2e/คน]</option>
+                </select>
             </div>
 
             <div class="form-group">
@@ -263,9 +448,16 @@
                 </div>
             </div>
 
+            <!-- Carbon Footprint Summary in Booking Modal -->
+            <div class="carbon-booking-summary" style="background: rgba(64, 192, 87, 0.05); border: 1px solid rgba(64, 192, 87, 0.15); border-radius: 12px; padding: 12px 14px; margin-top: 15px; margin-bottom: 15px;">
+                <div style="font-size: 13px; color: var(--text-muted); text-align: center;">คาร์บอนฟุตพริ้นท์รวม (ในพื้นที่ 1 วัน + ค่าเดินทาง) x จำนวนคน:</div>
+                <div id="bookPkgCarbonTotal" style="font-size: 24px; font-weight: bold; color: #40c057; text-align: center; margin: 6px 0;">0.00 kgCO2e</div>
+                <div style="font-size: 11.5px; color: var(--text-muted); text-align: center; line-height: 1.4;">คำนวณจากกิจกรรมในพื้นที่ 1 วันต่อคน + ยานพาหนะที่เลือก คูณจำนวนคนทั้งหมด</div>
+            </div>
+
             <div class="modal-actions">
                 <button class="btn btn-cancel" onclick="closeModal('bookPackageModal')">Cancel</button>
-                <button class="btn btn-save" id="confirmBookPkgBtn" onclick="submitPackageBooking()">Confirm Booking</button>
+                <button class="btn btn-save" id="confirmBookPkgBtn" onclick="submitPackageBooking()">💾 บันทึกแผนการเดินทาง</button>
             </div>
         </div>
     </div>
@@ -273,13 +465,13 @@
     <!-- User Package Bookings Modal -->
     <div id="userPkgBookingsModal" class="modal-overlay" onclick="if(event.target === this) closeModal('userPkgBookingsModal')">
         <div class="modal-box" style="width: 90%; max-width: 800px;">
-            <h3>📋 My Bookings (การจองแพ็กเกจของฉัน)</h3>
+            <h3>📋 My Low Carbon Trips (แผนการเดินทางของฉัน)</h3>
             <div class="admin-bookings-table-container">
                 <table class="admin-bookings-table">
                     <thead>
                         <tr>
-                            <th>Package Name</th>
-                            <th>Customer Name</th>
+                            <th>Low Carbon Trip Name</th>
+                            <th>Traveler Name</th>
                             <th>Contact Info</th>
                             <th>Travel Date</th>
                             <th>Guests</th>
@@ -301,7 +493,7 @@
     <!-- User Edit Package Booking Modal -->
     <div id="editPkgBookingModal" class="modal-overlay" onclick="if(event.target === this) closeModal('editPkgBookingModal')">
         <div class="modal-box">
-            <h3>✏️ Edit Package Booking</h3>
+            <h3>✏️ Edit Registered Low Carbon Trip Plan</h3>
             <p id="editPkgBookingTitle" style="color: var(--primary-light); font-weight: bold; font-size: 16px; margin-top: -10px; text-align: center;"></p>
             <input type="hidden" id="editPkgBookingId">
 
@@ -346,45 +538,55 @@
     <div id="packageSection" class="package-page">
         <div class="package-page-inner">
             <div class="package-page-header">
-                <h2 class="package-page-title">🌿 Low Carbon Packages</h2>
-                <p class="package-page-desc">เลือกแพ็กเกจท่องเที่ยวคาร์บอนต่ำที่เหมาะกับคุณ</p>
+                <h2 class="package-page-title">Low Carbon Trip</h2>
+                <p class="package-page-desc">คำแนะนำและแผนเส้นทางท่องเที่ยวคาร์บอนต่ำในบ้านป่าเหมี้ยงด้วยตัวคุณเอง</p>
+                <div class="local-welcome-banner">
+                    <div class="welcome-quote">
+                        <p class="quote-text">“ยินดีต้อนรับนักท่องเที่ยวทุกท่านเข้าสู่ชุมชนบ้านป่าเหมี้ยง ชุมชนของเราได้จัดเตรียมข้อมูลแผนการเดินทางคาร์บอนต่ำ และพร้อมให้บริการต้อนรับ โฮมสเตย์ และกิจกรรมท้องถิ่นเพื่อช่วยรักษาสิ่งแวดล้อมร่วมกับทุกท่านครับ”</p>
+                        <p class="quote-signature">— กลุ่มต้อนรับและชุมชนบ้านป่าเหมี้ยง</p>
+                    </div>
+                </div>
             </div>
 
             <!-- Low Carbon Information & Scale Section -->
             <div class="low-carbon-info-card">
                 <div class="info-card-header">
-                    <h3>🍃 การท่องเที่ยวคาร์บอนต่ำ (Low Carbon Tourism) คืออะไร?</h3>
-                    <p>แนวทางการเดินทางท่องเที่ยวรูปแบบใหม่ที่เป็นมิตรต่อโลก พร้อมการประเมินปริมาณคาร์บอนฟุตพริ้นท์เพื่อการตัดสินใจที่ดีขึ้น</p>
+                    <h3>การท่องเที่ยวคาร์บอนต่ำ ณ ชุมชนบ้านป่าเหมี้ยงคืออะไร?</h3>
+                    <p>แนวทางการเดินทางและพักผ่อนในชุมชนที่เป็นมิตรต่อโลก โดยแยกคิดคาร์บอนของ "กิจกรรมในหมู่บ้าน (ค่าอาหาร + ไฟฟ้าโฮมสเตย์ + ขยะ)" ออกจาก "การเดินทางหลัก"</p>
                 </div>
                 <div class="info-card-body">
                     <div class="info-text-section">
-                        <p><strong>การท่องเที่ยวคาร์บอนต่ำ</strong> คือการเดินทางท่องเที่ยวที่เน้นการทำกิจกรรมที่ปล่อยก๊าซเรือนกระจก (โดยเฉพาะคาร์บอนไดออกไซด์) ให้น้อยที่สุดตลอดทั้งทริป เช่น การเลือกเดินเท้าหรือใช้จักรยานในการท่องเที่ยว, การพักในโฮมสเตย์ที่ใช้พลังงานอย่างประหยัดและเป็นมิตรกับสิ่งแวดล้อม, การเลือกรับประทานอาหารท้องถิ่นเพื่อลดระยะทางในการขนส่งวัตถุดิบ (Food Miles) และการลดขยะพลาสติกตลอดทริป เพื่อรักษาความสมบูรณ์และระบบนิเวศดั้งเดิมของชุมชนป่าเหมี้ยงอย่างยั่งยืน</p>
+                        <p><strong>การท่องเที่ยวคาร์บอนต่ำ (Low-Carbon Tourism)</strong> ณ บ้านป่าเหมี้ยง คือการท่องเที่ยวโดยเน้นลดผลกระทบต่อสิ่งแวดล้อมให้มากที่สุด โดยการประเมินคาร์บอนฟุตพริ้นท์ตามมาตรฐานของ อบก. แยกเป็น 2 ส่วนหลัก:</p>
+                        <ul>
+                            <li><strong>การปล่อยคาร์บอนสะสมในหมู่บ้าน (In-village Impact):</strong> เกิดจากการกินอาหารท้องถิ่นที่ใช้วัตถุดิบชุมชน (ช่วยลด Food Miles), การใช้พลังงานในที่พักแบบประหยัด (เปิดพัดลมและหลอดไฟเท่าที่จำเป็น), และการคัดแยกขยะมูลฝอยเพื่อลดการปล่อยก๊าซจากการฝังกลบ</li>
+                            <li><strong>การเดินทางเข้าหมู่บ้าน (Main Transport):</strong> เป็นคาร์บอนจากการเดินทางภายนอกจากตัวเมืองหรือจังหวัดอื่นๆ ระยะทางไป-กลับเฉลี่ย 160 กม. ซึ่งจะแสดงแยกส่วนเพื่อให้ผู้เดินทางสามารถวางแผนเลือกประเภทรถ (รถน้ำมัน, EV หรือรถตู้สาธารณะ) เพื่อช่วยลดคาร์บอนสะสมรวมของทริปได้มากที่สุด</li>
+                        </ul>
                     </div>
                     <div class="scale-section">
-                        <h4>เกณฑ์การประเมินปริมาณคาร์บอน (Carbon Footprint Scale ต่อคน/วัน)</h4>
-                        <p class="scale-info-desc">ปริมาณการปล่อยคาร์บอนฟุตพริ้นท์ที่เหมาะสมและส่งผลต่อสิ่งแวดล้อม:</p>
+                        <h4>เกณฑ์ประเมินการปล่อยคาร์บอนสำหรับกิจกรรมในพื้นที่ (ต่อคน/วัน)</h4>
+                        <p class="scale-info-desc">คำนวณเฉพาะกิจกรรม อาหาร ที่พัก และขยะ ที่เกิดขึ้นในหมู่บ้านป่าเหมี้ยง:</p>
                         <div class="carbon-scale-bar">
                             <div class="scale-segment scale-good">
-                                <span class="scale-badge badge-good">🟢 ดีต่อสิ่งแวดล้อม (Low Carbon)</span>
+                                <span class="scale-badge badge-good">ดีต่อสิ่งแวดล้อม</span>
                                 <span class="scale-value">น้อยกว่า 15 kgCO2e</span>
-                                <span class="scale-desc">ปล่อยคาร์บอนน้อยมาก จากกิจกรรมประหยัดพลังงาน เดินเท้า ทานพืชผักท้องถิ่น</span>
+                                <span class="scale-desc">เน้นทานพืชผักท้องถิ่น/มังสวิรัติ ประหยัดพลังงานระดับสูง และเดินเท้าสำรวจหมู่บ้าน</span>
                             </div>
                             <div class="scale-segment scale-moderate">
-                                <span class="scale-badge badge-moderate">🟡 ปานกลาง (Moderate Carbon)</span>
+                                <span class="scale-badge badge-moderate">ปานกลาง (ทริปปกติ)</span>
                                 <span class="scale-value">15 - 30 kgCO2e</span>
-                                <span class="scale-desc">ระดับการใช้ชีวิตทั่วไป มีการเดินทางโดยรถยนต์ส่วนตัวและใช้พลังงานระดับปกติ</span>
+                                <span class="scale-desc">ระดับการเดินทางและกิจกรรมทั่วไป ทานเมนูเนื้อสัตว์ท้องถิ่น และใช้ไฟฟ้าโฮมสเตย์ปกติ</span>
                             </div>
                             <div class="scale-segment scale-high">
-                                <span class="scale-badge badge-high">🔴 ควรปรับปรุง (High Carbon)</span>
+                                <span class="scale-badge badge-high">ควรปรับปรุง</span>
                                 <span class="scale-value">มากกว่า 30 kgCO2e</span>
-                                <span class="scale-desc">มีการปล่อยคาร์บอนสูง จากการเดินทางระยะไกล หรือกิจกรรมที่ใช้พลังงานเชื้อเพลิงสูง</span>
+                                <span class="scale-desc">มีการใช้ทรัพยากร พลังงาน หรือมีขยะมูลฝอยสูงเกินความจำเป็นในระหว่างทริป</span>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="info-card-footer">
-                    <span class="info-source-title">📌 อ้างอิงเกณฑ์และวิธีคำนวณคาร์บอนฟุตพริ้นท์:</span>
-                    <p>ปริมาณคาร์บอนฟุตพริ้นท์ (kgCO2e) คำนวณตามแนวทางและค่าสัมประสิทธิ์การปล่อยก๊าซเรือนกระจก (Emission Factors) ของ <strong>องค์การบริหารจัดการก๊าซเรือนกระจก (องค์การมหาชน) (อบก. - TGO)</strong> ประเทศไทย โดยวิเคราะห์ข้อมูลรายกิจกรรม เช่น การเดินทางด้วยรถยนต์ส่วนตัว (เฉลี่ย 0.22 kgCO2e/กม.), อาหารและเครื่องดื่มท้องถิ่น (เฉลี่ย 1.2 - 2.4 kgCO2e/มื้อ), พลังงานไฟฟ้าในที่พักโฮมสเตย์ (เฉลี่ย 2.5 kgCO2e/คืน), และค่าสัมประสิทธิ์กิจกรรมสันทนาการอื่นๆ เพื่อให้ผู้เดินทางสามารถประเมินและชดเชยการปล่อยคาร์บอนได้อย่างแม่นยำ</p>
+                    <span class="info-source-title">อ้างอิงเกณฑ์และวิธีคำนวณ</span>
+                    <p>สูตรและค่าสัมประสิทธิ์การปล่อยก๊าซเรือนกระจก (Emission Factors) คำนวณตรงตามคู่มือประเมินคาร์บอนฟุตพริ้นท์ของ <strong>องค์การบริหารจัดการก๊าซเรือนกระจก (องค์การมหาชน) (อบก. - TGO)</strong> ประเทศไทย และแนวทาง <strong>2006 IPCC Guidelines</strong> เพื่อให้ข้อมูลมีความถูกต้องทางวิชาการและโปร่งใสสูงที่สุด</p>
                 </div>
             </div>
 
@@ -396,6 +598,7 @@
     <div id="toast-container"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../shared_auth.js"></script>
     <script src="script.js"></script>
 </body>
 

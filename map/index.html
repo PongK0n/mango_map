@@ -400,6 +400,7 @@
         }
 
         .form-group input,
+        .form-group textarea,
         .form-group select {
             width: 100%;
             padding: 10px 14px;
@@ -414,11 +415,68 @@
         }
 
         .form-group input:focus,
+        .form-group textarea:focus,
         .form-group select:focus {
             outline: none;
             border-color: var(--primary-light);
             background: rgba(0, 0, 0, 0.4);
             box-shadow: 0 0 0 3px rgba(64, 192, 87, 0.15);
+        }
+
+        .google-btn {
+            width: 100%;
+            padding: 12px 14px;
+            box-sizing: border-box;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            color: #ffffff;
+            font-family: 'Barlow', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            margin-bottom: 16px;
+        }
+
+        .google-btn:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .google-btn svg {
+            flex-shrink: 0;
+        }
+
+        .auth-divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--text-muted);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .auth-divider::before,
+        .auth-divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .auth-divider:not(:empty)::before {
+            margin-right: 15px;
+        }
+
+        .auth-divider:not(:empty)::after {
+            margin-left: 15px;
         }
 
         /* Modal contact details section */
@@ -1163,7 +1221,7 @@
             </a>
             <a href="../travel_package/index.html" class="hamburger-link">
                 <span class="hamburger-icon">📦</span>
-                <span>Package</span>
+                <span>Low Carbon Trip</span>
             </a>
         </div>
         <div class="hamburger-backdrop" id="hamburgerBackdrop" onclick="toggleHamburger()"></div>
@@ -1209,6 +1267,21 @@
     <div id="loginModal" class="modal-overlay" onclick="if(event.target === this) closeModal('loginModal')">
         <div class="modal-box">
             <h3 id="authModalTitle">Login</h3>
+
+            <div id="googleAuthContainer">
+                <button class="google-btn" onclick="handleGoogleLogin()">
+                    <svg viewBox="0 0 24 24" width="20" height="20">
+                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                    </svg>
+                    <span>Sign in with Google</span>
+                </button>
+                <div class="auth-divider">
+                    <span>OR</span>
+                </div>
+            </div>
 
             <div id="signupFields" style="display: none;">
                 <div class="form-group">
@@ -1314,6 +1387,18 @@
             <div class="form-group">
                 <label>Rating (e.g. 5.0)</label>
                 <input type="text" id="editRating">
+            </div>
+            <div class="form-group">
+                <label>รายละเอียดภาษาไทย (Thai Description)</label>
+                <textarea id="editDescriptionTh" rows="3" placeholder="คำอธิบายสถานที่ภาษาไทย..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>รายละเอียดภาษาอังกฤษ (English Description)</label>
+                <textarea id="editDescriptionEn" rows="3" placeholder="English description..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>รูปภาพจริง (Image Path/URL - e.g. ../home/images/kiu_fin.png)</label>
+                <input type="text" id="editImageUrl" placeholder="../home/images/...">
             </div>
             <div class="modal-actions">
                 <button class="btn btn-cancel" onclick="closeModal('editModal')">Cancel</button>
@@ -1531,20 +1616,11 @@
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../shared_auth.js"></script>
 
     <script>
-        // --- 1. ตั้งค่าเชื่อมต่อ Supabase ---
-        const { createClient } = supabase;
-        const supabaseUrl = "https://siuxbtxvpsntzumcmzjb.supabase.co";
-        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNpdXhidHh2cHNudHp1bWNtempiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEzMzc3NzYsImV4cCI6MjA4NjkxMzc3Nn0.Hn2Nuut3JszHzDpbHFB3W4nPaW0eH9tVVdLSOU7GUNY";
-        const db = createClient(supabaseUrl, supabaseKey);
-
-        // --- ตัวแปรหลักของระบบ ---
+        // --- ตัวแปรหลักของระบบ (Auth state is managed by shared_auth.js) ---
         let locations = [];
-        let isAdminLoggedIn = false;
-        let isUserLoggedIn = false;
-        let currentUserEmail = "";
-        let currentUserProfile = {};
         let currentFilter = 'all';
         let bookingRooms = 0;
         let bookingAdults = 0;
@@ -1556,8 +1632,7 @@
             document.getElementById('hamburgerBackdrop').classList.toggle('open');
         }
 
-        // กำหนด Email ของ Admin (สมมติว่าเป็น admin@example.com ถ้าใช้จริงให้เปลี่ยนใหม่)
-        const ADMIN_EMAIL = 'miangmap@gmail.com';
+
 
         // --- 2. สร้างแผนที่ Leaflet ---
         var map = L.map('map').setView([18.83081, 99.38724], 15);
@@ -1569,42 +1644,6 @@
 
         // --- 3. ตรวจสอบสถานะล็อกอิน ---
         db.auth.onAuthStateChange((event, session) => {
-            isUserLoggedIn = !!session;
-            if (session) {
-                currentUserEmail = session.user.email;
-                currentUserProfile = session.user.user_metadata || {};
-                isAdminLoggedIn = (currentUserEmail === ADMIN_EMAIL);
-                document.getElementById('authBtn').innerText = isAdminLoggedIn ? "Logout (Admin)" : "Logout (User)";
-            } else {
-                currentUserEmail = "";
-                currentUserProfile = {};
-                isAdminLoggedIn = false;
-                document.getElementById('authBtn').innerText = "Login / Sign Up";
-            }
-
-            // แสดง/ซ่อน ปุ่มจัดการการจองของแอดมินและปุ่มของยูสเซอร์ทั่วไป
-            const adminBtn = document.getElementById('adminBookingsBtn');
-            if (adminBtn) {
-                adminBtn.style.display = isAdminLoggedIn ? 'inline-block' : 'none';
-            }
-
-            const myBookingsBtn = document.getElementById('myBookingsBtn');
-            if (myBookingsBtn) {
-                myBookingsBtn.style.display = (isUserLoggedIn && !isAdminLoggedIn) ? 'inline-block' : 'none';
-            }
-
-            // แสดง/ซ่อน ปุ่มจัดการการจองของแอดมิน
-            const bookingsBtn = document.getElementById('adminBookingsBtn');
-            if (bookingsBtn) {
-                bookingsBtn.style.display = isAdminLoggedIn ? 'inline-block' : 'none';
-            }
-
-            if (event === 'PASSWORD_RECOVERY') {
-                // เปิดหน้าต่างตั้งรหัสผ่านใหม่
-                document.getElementById('newPasswordInput').value = '';
-                document.getElementById('updatePasswordModal').style.display = "flex";
-            }
-
             filterMap(currentFilter); // รีเฟรชแผนที่เมื่อสถานะเปลี่ยน
         });
 
@@ -1699,6 +1738,7 @@
 
                     let bookBtn = "";
                     let roomStatusHtml = "";
+                    let detailBtn = "";
                     if (loc.category === 'stay') {
                         bookBtn = `<button class="book-package-btn" onclick="handleBookPackage(${loc.id}, '${loc.name}')">📅 Book Now</button>`;
                         
@@ -1710,6 +1750,8 @@
                                 <span>สถานะห้องพัก: ว่าง <strong>${available}</strong> ห้อง | จองแล้ว <strong>${booked}</strong> ห้อง</span>
                             </div>
                         `;
+                    } else if (loc.category === 'tour') {
+                        detailBtn = `<a href="../attraction/index.html?id=${loc.id}" class="book-package-btn" style="text-align: center; text-decoration: none; display: block; box-sizing: border-box; color: #ffffff !important;">รายละเอียดเพิ่มเติม / View Details</a>`;
                     }
 
                     const popupHtml = `
@@ -1726,6 +1768,7 @@
                             ${roomStatusHtml}
                             ${adminControls}
                             ${bookBtn}
+                            ${detailBtn}
                         </div>
                     `;
                     marker.bindPopup(popupHtml);
@@ -1743,163 +1786,7 @@
             });
         }
 
-        // --- 6. ระบบ Login / Logout / Register / Reset Password ---
-        let authMode = 'login'; // 'login', 'signup', 'forgot'
-
-        async function toggleAuthModal() {
-            if (isUserLoggedIn) {
-                const { error } = await db.auth.signOut();
-                if (!error) showToast("ออกจากระบบสำเร็จ", "success");
-            } else {
-                authMode = 'login';
-                updateAuthModalUI();
-                document.getElementById('emailInput').value = '';
-                document.getElementById('passwordInput').value = '';
-                document.getElementById('firstNameInput').value = '';
-                document.getElementById('lastNameInput').value = '';
-                document.getElementById('phoneNumInput').value = '';
-                document.getElementById('loginModal').style.display = "flex";
-            }
-        }
-
-        function closeModal(modalId) {
-            document.getElementById(modalId).style.display = "none";
-        }
-
-        function updateAuthModalUI() {
-            const title = document.getElementById('authModalTitle');
-            const submitBtn = document.getElementById('authSubmitBtn');
-            const toggleLink = document.getElementById('authToggleLink');
-            const forgotLink = document.getElementById('forgotPasswordLink');
-            const signupFields = document.getElementById('signupFields');
-            const passwordGroup = document.getElementById('passwordFieldGroup');
-
-            if (authMode === 'login') {
-                title.innerText = "Login";
-                submitBtn.innerText = "Login";
-                toggleLink.innerText = "Don't have an account? Sign Up";
-                toggleLink.style.display = "inline";
-                forgotLink.style.display = "inline";
-                signupFields.style.display = "none";
-                passwordGroup.style.display = "block";
-            } else if (authMode === 'signup') {
-                title.innerText = "Sign Up";
-                submitBtn.innerText = "Sign Up";
-                toggleLink.innerText = "Already have an account? Login";
-                toggleLink.style.display = "inline";
-                forgotLink.style.display = "none";
-                signupFields.style.display = "block";
-                passwordGroup.style.display = "block";
-            } else if (authMode === 'forgot') {
-                title.innerText = "Reset Password";
-                submitBtn.innerText = "Send Reset Link";
-                toggleLink.innerText = "Back to Login";
-                toggleLink.style.display = "inline";
-                forgotLink.style.display = "none";
-                signupFields.style.display = "none";
-                passwordGroup.style.display = "none";
-            }
-        }
-
-        function toggleAuthType() {
-            if (authMode === 'forgot') {
-                authMode = 'login';
-            } else {
-                authMode = authMode === 'login' ? 'signup' : 'login';
-            }
-            updateAuthModalUI();
-        }
-
-        function switchToForgotMode() {
-            authMode = 'forgot';
-            updateAuthModalUI();
-        }
-
-        async function handleAuthAction() {
-            const email = document.getElementById('emailInput').value;
-            const pass = document.getElementById('passwordInput').value;
-
-            const fName = document.getElementById('firstNameInput').value;
-            const lName = document.getElementById('lastNameInput').value;
-            const phoneStr = document.getElementById('phoneNumInput').value;
-
-            const submitBtn = document.getElementById('authSubmitBtn');
-
-            if (!email) {
-                showToast("กรุณากรอกอีเมล", "error");
-                return;
-            }
-
-            if (authMode !== 'forgot' && !pass) {
-                showToast("กรุณากรอกรหัสผ่าน", "error");
-                return;
-            }
-
-            if (authMode === 'signup' && (!fName || !lName || !phoneStr)) {
-                showToast("กรุณากรอก ชื่อ, นามสกุล และเบอร์โทรศัพท์ ให้ครบถ้วน", "error");
-                return;
-            }
-
-            submitBtn.innerText = "กำลังประมวลผล...";
-
-            let error = null;
-            if (authMode === 'signup') {
-                const res = await db.auth.signUp({
-                    email: email,
-                    password: pass,
-                    options: {
-                        data: {
-                            first_name: fName,
-                            last_name: lName,
-                            phone: phoneStr
-                        }
-                    }
-                });
-                error = res.error;
-                if (!error) showToast("สมัครสมาชิกสำเร็จ! ยินดีต้อนรับสู่ระบบ", "success");
-            } else if (authMode === 'login') {
-                const res = await db.auth.signInWithPassword({ email: email, password: pass });
-                error = res.error;
-                if (!error) showToast("เข้าสู่ระบบสำเร็จ!", "success");
-            } else if (authMode === 'forgot') {
-                const redirectUrl = window.location.origin + window.location.pathname;
-                const res = await db.auth.resetPasswordForEmail(email, { redirectTo: redirectUrl });
-                error = res.error;
-                if (!error) showToast("ส่งลิงก์รีเซตรหัสผ่านไปยังอีเมลของคุณเรียบร้อยแล้ว!", "success");
-            }
-
-            if (error) {
-                showToast("เกิดข้อผิดพลาด: " + error.message, "error");
-                updateAuthModalUI(); // รีเซ็ตข้อความปุ่ม
-            } else {
-                document.getElementById('emailInput').value = '';
-                document.getElementById('passwordInput').value = '';
-                closeModal('loginModal');
-            }
-        }
-
-        async function handleUpdatePassword() {
-            const newPassword = document.getElementById('newPasswordInput').value;
-            const updateBtn = document.getElementById('updatePasswordBtn');
-
-            if (!newPassword || newPassword.length < 6) {
-                showToast("รหัสผ่านต้องมีความยาวอย่างน้อย 6 ตัวอักษร", "error");
-                return;
-            }
-
-            updateBtn.innerText = "กำลังบันทึก...";
-
-            const { error } = await db.auth.updateUser({ password: newPassword });
-
-            updateBtn.innerText = "Update Password";
-
-            if (error) {
-                showToast("เกิดข้อผิดพลาดในการเปลี่ยนรหัสผ่าน: " + error.message, "error");
-            } else {
-                showToast("เปลี่ยนรหัสผ่านสำเร็จแล้ว! สามารถเข้าสู่ระบบด้วยรหัสผ่านใหม่ได้ทันที", "success");
-                closeModal('updatePasswordModal');
-            }
-        }
+        // --- 6. ระบบ Login / Logout / Register / Reset Password (Managed by shared_auth.js) ---
 
         // --- ฟังก์ชันสำหรับการจอง ---
         function handleBookPackage(locId, locName) {
@@ -2050,6 +1937,9 @@
             document.getElementById('editPhone').value = loc.phone || "";
             document.getElementById('editFacebook').value = loc.facebook || "";
             document.getElementById('editRating').value = loc.rating || "";
+            document.getElementById('editDescriptionTh').value = loc.description_th || "";
+            document.getElementById('editDescriptionEn').value = loc.description_en || "";
+            document.getElementById('editImageUrl').value = loc.image_url || "";
 
             // โชว์/ซ่อน ฟิลด์จำนวนห้อง และเซ็ตค่าเริ่มต้น
             toggleRoomFields(loc.category);
@@ -2076,7 +1966,10 @@
                 facebook: document.getElementById('editFacebook').value,
                 rating: document.getElementById('editRating').value,
                 available_rooms: category === 'stay' ? parseInt(document.getElementById('editAvailableRooms').value) || 0 : null,
-                booked_rooms: category === 'stay' ? parseInt(document.getElementById('editBookedRooms').value) || 0 : null
+                booked_rooms: category === 'stay' ? parseInt(document.getElementById('editBookedRooms').value) || 0 : null,
+                description_th: document.getElementById('editDescriptionTh').value,
+                description_en: document.getElementById('editDescriptionEn').value,
+                image_url: document.getElementById('editImageUrl').value
             };
 
             const { error } = await db.from('locations').update(updatedData).eq('id', id);

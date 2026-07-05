@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIANG MAP - Infographic Poster</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700;800&family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2b8a3e;
+            --primary-light: #40c057;
+            --primary-dark: #1b4332;
+            --accent: #d3f9d8;
+            --bg-dark: #0f1410;
+            --bg-deep: #0b0d0c;
+            --bg-raised: #1b2318;
+            --text-light: #ffffff;
+            --text-muted: #868e96;
+            --text-overcast: #d1d5db;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --card-radius: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-overcast);
+            font-family: 'Sarabun', 'Barlow', sans-serif;
+            width: 1200px;
+            height: 1800px;
+            padding: 45px;
+            box-sizing: border-box;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* Ambient Forest Background Overlay */
+        .ambient-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(43, 138, 62, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(27, 67, 50, 0.25) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(15, 20, 16, 1) 0%, #0b0d0c 100%);
+            z-index: -1;
+        }
+
+        /* Decorative border */
+        .poster-border {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            bottom: 20px;
+            border: 1px solid rgba(64, 192, 87, 0.15);
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .poster-border::before {
+            content: '';
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            right: 5px;
+            bottom: 5px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        /* Corner accents */
+        .corner {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--primary-light);
+            z-index: 101;
+        }
+        .top-left { top: 15px; left: 15px; border-right: none; border-bottom: none; }
+        .top-right { top: 15px; right: 15px; border-left: none; border-bottom: none; }
+        .bottom-left { bottom: 15px; left: 15px; border-right: none; border-top: none; }
+        .bottom-right { bottom: 15px; right: 15px; border-left: none; border-top: none; }
+
+        /* ================= HEADER ================= */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 25px;
+            margin-bottom: 30px;
+        }
+
+        .header-logo-section h1 {
+            font-family: 'Barlow', sans-serif;
+            font-size: 52px;
+            font-weight: 800;
+            color: var(--text-light);
+            letter-spacing: 2px;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-logo-section h1 span {
+            color: var(--primary-light);
+        }
+
+        .header-logo-section p {
+            font-size: 18px;
+            color: var(--text-muted);
+            margin-top: 5px;
+            font-weight: 300;
+            letter-spacing: 0.5px;
+        }
+
+        .header-badge {
+            background: rgba(64, 192, 87, 0.15);
+            border: 1px solid rgba(64, 192, 87, 0.4);
+            color: var(--accent);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: 'Barlow', sans-serif;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            box-shadow: 0 0 15px rgba(64, 192, 87, 0.1);
+        }
+
+        /* ================= MAIN CONTENT ================= */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 540px 540px;
+            gap: 30px;
+            flex-grow: 1;
+        }
+
+        /* Common elements */
+        .section-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text-light);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-left: 4px solid var(--primary-light);
+            padding-left: 12px;
+        }
+
+        .card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--card-radius);
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        /* ================= LEFT COLUMN ================= */
+        .left-col {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        /* 1. Heritage section */
+        .heritage-card p {
+            font-size: 15px;
+            line-height: 1.7;
+            font-weight: 300;
+            text-align: justify;
+        }
+
+        .heritage-card strong {
+            color: var(--primary-light);
+            font-weight: 600;
+        }
+
+        .heritage-highlights {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .h-item {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .h-item img {
+            width: 100%;
+            height: 105px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .h-item h4 {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .h-item p {
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        /* 2. Destination Grid */
+        .dest-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .dest-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: var(--card-radius);
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .dest-image-wrapper {
+            position: relative;
+            width: 100%;
+            height: 110px;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .dest-image-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .dest-badge {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: rgba(15, 20, 16, 0.85);
+            backdrop-filter: blur(4px);
+            padding: 2px 8px;
+            border-radius: 40px;
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--accent);
+            border: 1px solid rgba(64, 192, 87, 0.3);
+        }
+
+        .dest-card h4 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-light);
+        }
+
+        .dest-card p {
+            font-size: 12.5px;
+            line-height: 1.6;
+            color: var(--text-muted);
+            font-weight: 300;
+        }
+
+        /* ================= RIGHT COLUMN ================= */
+        .right-col {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        /* 1. Low Carbon Pillars */
+        .pillars-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .pillar-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+        }
+
+        .pillar-icon {
+            font-size: 22px;
+            background: rgba(64, 192, 87, 0.15);
+            color: var(--primary-light);
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .pillar-info h4 {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-light);
+            margin-bottom: 4px;
+        }
+
+        .pillar-info p {
+            font-size: 12px;
+            line-height: 1.5;
+            color: var(--text-muted);
+            font-weight: 300;
+        }
+
+        /* 2. Platform / Mockup Section */
+        .platform-box {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .platform-desc {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .platform-feature {
+            border-left: 2px solid var(--primary);
+            padding-left: 10px;
+        }
+
+        .platform-feature h5 {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--primary-light);
+            margin-bottom: 2px;
+        }
+
+        .platform-feature p {
+            font-size: 11.5px;
+            color: var(--text-overcast);
+            line-height: 1.5;
+        }
+
+        /* CSS Phone Mockup */
+        .phone-mockup {
+            width: 150px;
+            height: 250px;
+            border-radius: 20px;
+            border: 4px solid #2d3748;
+            background: #0b0d0c;
+            position: relative;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            flex-shrink: 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .phone-screen {
+            flex-grow: 1;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            position: relative;
+            background: url('images/pamiangview.jpg');
+            background-size: cover;
+            background-position: center;
+        }
+
+        .phone-screen::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 20, 16, 0.7);
+            z-index: 1;
+        }
+
+        .phone-notch {
+            width: 60px;
+            height: 10px;
+            background: #2d3748;
+            border-radius: 0 0 8px 8px;
+            align-self: center;
+            z-index: 10;
+        }
+
+        .phone-content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            justify-content: space-between;
+            color: white;
+        }
+
+        .phone-title {
+            font-family: 'Barlow', sans-serif;
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--primary-light);
+            text-align: center;
+            letter-spacing: 0.5px;
+        }
+
+        .phone-map-graphic {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            height: 120px;
+            background: rgba(15, 20, 16, 0.6);
+            backdrop-filter: blur(2px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .map-route {
+            position: absolute;
+            width: 100px;
+            height: 80px;
+            top: 20px;
+            left: 10px;
+            stroke: var(--primary-light);
+            stroke-width: 2.5;
+            fill: none;
+            stroke-dasharray: 4;
+            animation: dash 5s linear infinite;
+        }
+
+        .map-pin {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #ff4d4d;
+            border-radius: 50%;
+            box-shadow: 0 0 0 4px rgba(255, 77, 77, 0.4);
+        }
+        .pin1 { top: 20px; left: 15px; }
+        .pin2 { top: 60px; left: 80px; background: var(--primary-light); box-shadow: 0 0 0 4px rgba(64, 192, 87, 0.4); }
+
+        .phone-nav {
+            background: rgba(15, 20, 16, 0.9);
+            border-radius: 6px;
+            padding: 4px;
+            display: flex;
+            justify-content: space-around;
+            font-size: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* 3. Impact Box */
+        .impact-box {
+            background: linear-gradient(135deg, rgba(43, 138, 62, 0.25) 0%, rgba(27, 67, 50, 0.1) 100%);
+            border: 1px solid rgba(64, 192, 87, 0.3);
+            border-radius: var(--card-radius);
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            box-shadow: 0 8px 30px rgba(64, 192, 87, 0.1);
+        }
+
+        .impact-radial {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: conic-gradient(var(--primary-light) 0% 50%, rgba(255, 255, 255, 0.05) 50% 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .impact-radial::after {
+            content: '';
+            position: absolute;
+            width: 82px;
+            height: 82px;
+            border-radius: 50%;
+            background: var(--bg-dark);
+            z-index: 1;
+        }
+
+        .impact-percentage {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+        }
+
+        .impact-percentage h3 {
+            font-family: 'Barlow', sans-serif;
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--text-light);
+            line-height: 1;
+        }
+
+        .impact-percentage p {
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .impact-desc h4 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-light);
+            margin-bottom: 4px;
+        }
+
+        .impact-desc p {
+            font-size: 13px;
+            line-height: 1.6;
+            color: var(--text-overcast);
+            font-weight: 300;
+        }
+
+        /* ================= FOOTER ================= */
+        footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .footer-brand {
+            font-family: 'Barlow', sans-serif;
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--text-light);
+            letter-spacing: 1px;
+        }
+
+        .footer-brand span {
+            color: var(--primary-light);
+        }
+
+        .footer-meta {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .qr-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 8px 16px;
+            border-radius: 12px;
+        }
+
+        /* CSS Mockup QR Code */
+        .qr-code {
+            width: 50px;
+            height: 50px;
+            background: #ffffff;
+            padding: 4px;
+            border-radius: 6px;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            grid-template-rows: repeat(5, 1fr);
+            gap: 2px;
+        }
+
+        .qr-pixel { background: #000; }
+        .qr-pixel.white { background: #fff; }
+        
+        /* Outline finder patterns for QR */
+        .qr-code > div:nth-child(1), .qr-code > div:nth-child(2), .qr-code > div:nth-child(3),
+        .qr-code > div:nth-child(6), .qr-code > div:nth-child(8),
+        .qr-code > div:nth-child(11), .qr-code > div:nth-child(12), .qr-code > div:nth-child(13) {
+            background: #000;
+        }
+
+        .qr-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .qr-text span:first-child {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-light);
+        }
+
+        .qr-text span:last-child {
+            font-size: 10px;
+            color: var(--text-muted);
+        }
+
+        .partners {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            font-size: 11px;
+            color: var(--text-muted);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            padding-left: 15px;
+        }
+
+        .partner-logo {
+            font-family: 'Barlow', sans-serif;
+            font-weight: 800;
+            font-size: 13px;
+            color: var(--text-light);
+        }
+    </style>
+</head>
+<body>
+    <div class="ambient-bg"></div>
+    
+    <!-- Poster Borders -->
+    <div class="poster-border"></div>
+    <div class="corner top-left"></div>
+    <div class="corner top-right"></div>
+    <div class="corner bottom-left"></div>
+    <div class="corner bottom-right"></div>
+
+    <!-- Header Section -->
+    <header>
+        <div class="header-logo-section">
+            <h1>MIANG <span>MAP</span></h1>
+            <p>แผนที่นวัตกรรมเพื่อการท่องเที่ยวคาร์บอนต่ำ ชุมชนบ้านป่าเหมี้ยง</p>
+        </div>
+        <div class="header-badge">Low Carbon Community Tourism</div>
+    </header>
+
+    <!-- Main Content Grid -->
+    <div class="main-layout">
+        
+        <!-- LEFT COLUMN: Heritage and Destinations -->
+        <div class="left-col">
+            
+            <!-- Heritage Card -->
+            <div class="card heritage-card">
+                <div class="section-title">วิถีชุมชนคนอยู่กับป่า 200 ปี</div>
+                <p>
+                    <strong>"บ้านป่าเหมี้ยง"</strong> ชุมชนท่องเที่ยวเชิงอนุรักษ์ที่ตั้งอยู่ในหุบเขาสูง 1,200 เมตรจากระดับน้ำทะเล ในเขตอุทยานแห่งชาติแจ้ซ้อน จังหวัดลำปาง สืบทอดประวัติศาสตร์ยาวนานกว่า 200 ปี โดยวิถีชีวิตและเศรษฐกิจของชาวบ้านผูกพันกับป่าไม้ดิบเขาอย่างเกื้อกูลกัน
+                </p>
+                
+                <div class="heritage-highlights">
+                    <div class="h-item">
+                        <img src="images/pa_miang_tea.png" alt="ใบเหมี้ยง">
+                        <h4>🍃 ชาใบเหมี้ยงธรรมชาติ</h4>
+                        <p>เก็บใบเหมี้ยงด้วยมือ นึ่งเตาดินและหมักแบบโบราณ แปรรูปเป็นเมี่ยง ชาคั่ว และหมอนใบชาเพื่อสุขภาพ</p>
+                    </div>
+                    <div class="h-item">
+                        <img src="images/wild_coffee.png" alt="กาแฟป่า">
+                        <h4>☕ กาแฟป่าออร์แกนิก</h4>
+                        <p>กาแฟอาราบิก้าออร์แกนิก 100% ที่ปลูกใต้ร่มเงาป่าใหญ่ ช่วยอนุรักษ์ความอุดมสมบูรณ์ของธรรมชาติ</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Destinations Card -->
+            <div class="card" style="flex-grow: 1; display: flex; flex-direction: column;">
+                <div class="section-title" style="margin-bottom: 15px;">4 พิกัดเช็กอินห้ามพลาด</div>
+                <div class="dest-grid" style="flex-grow: 1;">
+                    
+                    <div class="dest-card">
+                        <div class="dest-image-wrapper">
+                            <img src="images/kiu_fin.png" alt="กิ่วฝิ่น">
+                            <span class="dest-badge">1,517 เมตร</span>
+                        </div>
+                        <h4>🌅 กิ่วฝิ่น</h4>
+                        <p>จุดชมวิวทะเลหมอกและแสงแรกของวันแบบ 360 องศา บนเขตแดนลำปาง-เชียงใหม่ อากาศหนาวเย็นตลอดปี</p>
+                    </div>
+
+                    <div class="dest-card">
+                        <div class="dest-image-wrapper">
+                            <img src="images/wild_coffee.png" alt="กาแฟป่า">
+                            <span class="dest-badge">Workshop</span>
+                        </div>
+                        <h4>☕ เวิร์กช็อปกาแฟป่า</h4>
+                        <p>ร่วมดริปกาแฟอาราบิก้าสดๆ ปลูกธรรมชาติ ดื่มด่ำรสชาติเป็นเอกลักษณ์ท่ามกลางลมเย็นของหุบเขา</p>
+                    </div>
+
+                    <div class="dest-card">
+                        <div class="dest-image-wrapper">
+                            <img src="images/mae_ka_waterfall.png" alt="น้ำตกแม่ก๋า">
+                            <span class="dest-badge">Eco Sight</span>
+                        </div>
+                        <h4>🌊 น้ำตกแม่ก๋า</h4>
+                        <p>น้ำตกใสสะอาดที่ซ่อนตัวอยู่อย่างเงียบสงบในป่าลึก ไหลผ่านโขดหินลดหลั่นอย่างสวยงามและร่มรื่น</p>
+                    </div>
+
+                    <div class="dest-card">
+                        <div class="dest-image-wrapper">
+                            <img src="images/community_homestay.png" alt="โฮมสเตย์">
+                            <span class="dest-badge">Eco Stay</span>
+                        </div>
+                        <h4>🏡 โฮมสเตย์ริมธาร</h4>
+                        <p>พักผ่อนอุ่นไอโฮมสเตย์ชาวบ้านริมน้ำใส ไร้แอร์แต่เย็นสบายด้วยอุณหภูมิป่า ฟังเสียงน้ำไหลผ่อนคลาย</p>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <!-- RIGHT COLUMN: Low Carbon and Platform -->
+        <div class="right-col">
+            
+            <!-- Low Carbon Pillars Card -->
+            <div class="card">
+                <div class="section-title">4 เสาหลักคาร์บอนต่ำ (Low Carbon Pillars)</div>
+                <div class="pillars-list">
+                    
+                    <div class="pillar-card">
+                        <div class="pillar-icon">🚶</div>
+                        <div class="pillar-info">
+                            <h4>การเดินทางไร้มลพิษ</h4>
+                            <p>รณรงค์เดินเท้าหรือปั่นจักรยานในพื้นที่ชุมชน ลดการใช้พลังงานเชื้อเพลิง</p>
+                        </div>
+                    </div>
+
+                    <div class="pillar-card">
+                        <div class="pillar-icon">🍲</div>
+                        <div class="pillar-info">
+                            <h4>วัตถุดิบท้องถิ่น 0 กม.</h4>
+                            <p>ปรุงอาหารด้วยพืชผักและสมุนไพรสดในท้องถิ่น ลดระยะทางขนส่งอาหาร (Food Miles)</p>
+                        </div>
+                    </div>
+
+                    <div class="pillar-card">
+                        <div class="pillar-icon">❄️</div>
+                        <div class="pillar-info">
+                            <h4>โฮมสเตย์พลังธรรมชาติ</h4>
+                            <p>ใช้ลมธรรมชาติที่เย็นสบายโชยตลอดคืนในการระบายอากาศ ลดการใช้ไฟฟ้าเครื่องปรับอากาศ</p>
+                        </div>
+                    </div>
+
+                    <div class="pillar-card">
+                        <div class="pillar-icon">🚮</div>
+                        <div class="pillar-info">
+                            <h4>Plogging & Zero Waste</h4>
+                            <p>เดินป่าเก็บขยะ พกพาขวดน้ำส่วนตัว ลดการใช้พลาสติกใช้แล้วทิ้งร่วมกัน</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Impact Highlight Card -->
+            <div class="card impact-box">
+                <div class="impact-radial">
+                    <div class="impact-percentage">
+                        <h3>-50%</h3>
+                        <p>CO₂</p>
+                    </div>
+                </div>
+                <div class="impact-desc">
+                    <h4>นวัตกรรมสีเขียวเพื่อโลก</h4>
+                    <p>การเลือกพักโฮมสเตย์พลังธรรมชาติ สัญจรด้วยการเดินเท้า และบริโภคอาหารวัตถุดิบท้องถิ่น <strong>สามารถลดการปล่อยคาร์บอนลงได้ถึง 50%</strong> เมื่อเทียบกับการท่องเที่ยวทั่วไป เป็นส่วนหนึ่งของการรักษาสิ่งแวดล้อมอย่างแท้จริง</p>
+                </div>
+            </div>
+
+            <!-- Platform Innovation Card -->
+            <div class="card" style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center;">
+                <div class="section-title">แพลตฟอร์มบริการการท่องเที่ยว</div>
+                <div class="platform-box">
+                    <div class="platform-desc">
+                        <div class="platform-feature">
+                            <h5>🗺️ Interactive Map (แผนที่ท่องเที่ยวเชิงโต้ตอบ)</h5>
+                            <p>ค้นหาพิกัดโฮมสเตย์ ร้านค้า จุดชมวิว และจุดคาร์บอนพอยต์ของชุมชน นำทางผ่านบราวเซอร์แบบเรียลไทม์</p>
+                        </div>
+                        <div class="platform-feature">
+                            <h5>📦 Low Carbon Trip (ระบบจองทริปคาร์บอนต่ำ)</h5>
+                            <p>แพ็กเกจนำเที่ยวแบบคาร์บอนต่ำที่คัดสรรเป็นพิเศษ อำนวยความสะดวกในการจองที่พักและกิจกรรมอนุรักษ์ล่วงหน้า</p>
+                        </div>
+                    </div>
+                    
+                    <!-- CSS Phone Mockup representing interactive map -->
+                    <div class="phone-mockup">
+                        <div class="phone-notch"></div>
+                        <div class="phone-screen">
+                            <div class="phone-content">
+                                <div class="phone-title">MIANG MAP</div>
+                                <div class="phone-map-graphic">
+                                    <!-- Simple SVG Map Lines -->
+                                    <svg class="map-route">
+                                        <path d="M 15 20 C 30 20, 20 60, 80 60" />
+                                    </svg>
+                                    <div class="map-pin pin1"></div>
+                                    <div class="map-pin pin2"></div>
+                                    
+                                    <!-- Minimalist Map Card Overlay -->
+                                    <div style="position: absolute; bottom: 5px; left: 5px; right: 5px; background: rgba(15,20,16,0.9); border-radius: 4px; padding: 4px; font-size: 8px; border: 1px solid rgba(255,255,255,0.15)">
+                                        <div style="font-weight: bold; color: var(--primary-light)">🏡 โฮมสเตย์ริมธาร</div>
+                                        <div style="color: #aaa; font-size: 6px;">พิกัดคาร์บอนต่ำ • 0 กม. จากลำธาร</div>
+                                    </div>
+                                </div>
+                                <div class="phone-nav">
+                                    <span>🏠 Home</span>
+                                    <span style="color: var(--primary-light); font-weight: bold;">🗺️ Map</span>
+                                    <span>📦 Pack</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Footer Section -->
+    <footer>
+        <div class="footer-left">
+            <div class="footer-brand">MIANG <span>MAP</span></div>
+            <div class="footer-meta">
+                <p>โครงการส่งเสริมการท่องเที่ยวคาร์บอนต่ำ ชุมชนบ้านป่าเหมี้ยง อ.เมืองปาน จ.ลำปาง</p>
+                <p style="margin-top: 2px;">&copy; 2026 MIANG MAP. พัฒนาขึ้นเพื่อประโยชน์และการท่องเที่ยวที่ยั่งยืนของชุมชน</p>
+            </div>
+        </div>
+        <div class="footer-right">
+            <div class="qr-section">
+                <div class="qr-code">
+                    <div class="qr-pixel"></div><div class="qr-pixel"></div><div class="qr-pixel"></div><div class="qr-pixel"></div><div class="qr-pixel"></div>
+                    <div class="qr-pixel"></div><div class="qr-pixel white"></div><div class="qr-pixel"></div><div class="qr-pixel white"></div><div class="qr-pixel"></div>
+                    <div class="qr-pixel"></div><div class="qr-pixel"></div><div class="qr-pixel"></div><div class="qr-pixel"></div><div class="qr-pixel"></div>
+                    <div class="qr-pixel"></div><div class="qr-pixel white"></div><div class="qr-pixel"></div><div class="qr-pixel white"></div><div class="qr-pixel"></div>
+                    <div class="qr-pixel"></div><div class="qr-pixel"></div><div class="qr-pixel"></div><div class="qr-pixel"></div><div class="qr-pixel"></div>
+                </div>
+                <div class="qr-text">
+                    <span>แสกนสำรวจ</span>
+                    <span>MIANG MAP</span>
+                </div>
+            </div>
+            <div class="partners">
+                <span>ร่วมสนับสนุนโดย</span>
+                <span class="partner-logo">UTM ลำปาง</span>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
