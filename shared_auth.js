@@ -281,3 +281,5 @@ if (typeof window.showToast === 'undefined') {
         }, 4000);
     };
 }
+
+// Trigger redeployment - 2026-07-05

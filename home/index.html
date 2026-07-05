@@ -782,7 +782,8 @@
         }
 
         .modal-box {
-            background: #1b2318; /* Forest Floor Raised */
+            background: #1b2318;
+            /* Forest Floor Raised */
             color: var(--text-light);
             border: 1px solid var(--glass-border);
             padding: 30px;
@@ -975,7 +976,7 @@
             background-color: rgba(64, 192, 87, 0.15) !important;
             border-color: var(--primary-light) !important;
         }
-        
+
         /* Toast UI Styles */
         #toast-container {
             position: fixed;
@@ -987,13 +988,14 @@
             gap: 12px;
             max-width: 380px;
         }
+
         .toast {
             background: #1b2318;
             border: 1px solid var(--glass-border);
             color: #ffffff;
             padding: 14px 20px;
             border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
             font-family: 'Barlow', 'Sarabun', sans-serif;
             font-size: 14px;
             display: flex;
@@ -1004,19 +1006,24 @@
             transform: translateY(20px);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
+
         .toast.show {
             opacity: 1;
             transform: translateY(0);
         }
+
         .toast-success {
             border-left: 4px solid var(--primary-light);
         }
+
         .toast-error {
             border-left: 4px solid #ff6b6b;
         }
+
         .toast-info {
             border-left: 4px solid #339af0;
         }
+
         .toast-close {
             background: none;
             border: none;
@@ -1026,6 +1033,7 @@
             padding: 0;
             line-height: 1;
         }
+
         .toast-close:hover {
             color: #ffffff;
         }
@@ -1198,7 +1206,12 @@
             <div class="carbon-journal">
                 <div class="carbon-journal-title">บันทึกของผู้นำทางสิ่งแวดล้อม</div>
                 <p>
-                    "ทุกรอยเท้าที่เราย่ำผ่านผืนป่าเหมี้ยงล้วนทิ้งผลกระทบไว้ข้างหลัง จากการประเมินวิถีการเดินทางและกิจกรรมท่องเที่ยวของชุมชน พบว่าการเลือกใช้โฮมสเตย์พลังงานธรรมชาติ การสัญจรด้วยการเดินเท้า และการรับประทานอาหารจากวัตถุดิบป่าและสวนในท้องถิ่น สามารถช่วย <span class="highlight-text">ลดการปล่อยคาร์บอนลงได้ถึง 50%</span> เมื่อเทียบกับการท่องเที่ยวในรูปแบบปกติ... การมาเยือนของท่านจึงมิใช่เพียงการพักผ่อน แต่เป็นการร่วมปกป้องผืนป่าต้นน้ำให้คงอยู่อย่างสมบูรณ์และยั่งยืน"
+                    "ทุกรอยเท้าที่เราย่ำผ่านผืนป่าเหมี้ยงล้วนทิ้งผลกระทบไว้ข้างหลัง
+                    จากการประเมินวิถีการเดินทางและกิจกรรมท่องเที่ยวของชุมชน พบว่าการเลือกใช้โฮมสเตย์พลังงานธรรมชาติ
+                    การสัญจรด้วยการเดินเท้า และการรับประทานอาหารจากวัตถุดิบป่าและสวนในท้องถิ่น สามารถช่วย <span
+                        class="highlight-text">ลดการปล่อยคาร์บอนลงได้ถึง 50%</span>
+                    เมื่อเทียบกับการท่องเที่ยวในรูปแบบปกติ... การมาเยือนของท่านจึงมิใช่เพียงการพักผ่อน
+                    แต่เป็นการร่วมปกป้องผืนป่าต้นน้ำให้คงอยู่อย่างสมบูรณ์และยั่งยืน"
                 </p>
                 <div style="margin-top: 20px; font-size: 0.8rem; color: var(--text-muted); text-align: right;">
                     — ชุมชนบ้านป่าเหมี้ยง, ลำปาง
@@ -1241,10 +1254,14 @@
             <div id="googleAuthContainer">
                 <button class="google-btn" onclick="handleGoogleLogin()">
                     <svg viewBox="0 0 24 24" width="20" height="20">
-                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                        <path fill="#4285F4"
+                            d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                        <path fill="#34A853"
+                            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                        <path fill="#FBBC05"
+                            d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
+                        <path fill="#EA4335"
+                            d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
                     </svg>
                     <span>Sign in with Google</span>
                 </button>
@@ -1276,7 +1293,8 @@
                 <label>Password</label>
                 <input type="password" id="passwordInput" placeholder="Enter password">
             </div>
-            <div style="font-size: 14px; text-align: center; margin-bottom: 15px; display: flex; flex-direction: column; gap: 8px;">
+            <div
+                style="font-size: 14px; text-align: center; margin-bottom: 15px; display: flex; flex-direction: column; gap: 8px;">
                 <a href="#" onclick="toggleAuthType()" id="authToggleLink"
                     style="color: #1a73e8; text-decoration: none;">Don't have an account? Sign Up</a>
                 <a href="#" onclick="switchToForgotMode()" id="forgotPasswordLink"
@@ -1290,7 +1308,8 @@
     </div>
 
     <!-- Password Recovery/Update Modal -->
-    <div id="updatePasswordModal" class="modal-overlay" onclick="if(event.target === this) closeModal('updatePasswordModal')">
+    <div id="updatePasswordModal" class="modal-overlay"
+        onclick="if(event.target === this) closeModal('updatePasswordModal')">
         <div class="modal-box">
             <h3>Update Password</h3>
             <div class="form-group">
@@ -1299,7 +1318,8 @@
             </div>
             <div class="modal-actions">
                 <button class="btn btn-cancel" onclick="closeModal('updatePasswordModal')">Cancel</button>
-                <button class="btn btn-save" id="updatePasswordBtn" onclick="handleUpdatePassword()">Update Password</button>
+                <button class="btn btn-save" id="updatePasswordBtn" onclick="handleUpdatePassword()">Update
+                    Password</button>
             </div>
         </div>
     </div>

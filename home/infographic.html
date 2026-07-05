@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MIANG MAP - Infographic Poster</title>
     <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700;800&family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700;800&family=Sarabun:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <style>
         :root {
             --primary: #2b8a3e;
@@ -51,7 +54,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: 
+            background:
                 radial-gradient(circle at 10% 20%, rgba(43, 138, 62, 0.15) 0%, transparent 40%),
                 radial-gradient(circle at 90% 80%, rgba(27, 67, 50, 0.25) 0%, transparent 50%),
                 radial-gradient(circle at 50% 50%, rgba(15, 20, 16, 1) 0%, #0b0d0c 100%);
@@ -88,10 +91,34 @@
             border: 2px solid var(--primary-light);
             z-index: 101;
         }
-        .top-left { top: 15px; left: 15px; border-right: none; border-bottom: none; }
-        .top-right { top: 15px; right: 15px; border-left: none; border-bottom: none; }
-        .bottom-left { bottom: 15px; left: 15px; border-right: none; border-top: none; }
-        .bottom-right { bottom: 15px; right: 15px; border-left: none; border-top: none; }
+
+        .top-left {
+            top: 15px;
+            left: 15px;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .top-right {
+            top: 15px;
+            right: 15px;
+            border-left: none;
+            border-bottom: none;
+        }
+
+        .bottom-left {
+            bottom: 15px;
+            left: 15px;
+            border-right: none;
+            border-top: none;
+        }
+
+        .bottom-right {
+            bottom: 15px;
+            right: 15px;
+            border-left: none;
+            border-top: none;
+        }
 
         /* ================= HEADER ================= */
         header {
@@ -472,8 +499,18 @@
             border-radius: 50%;
             box-shadow: 0 0 0 4px rgba(255, 77, 77, 0.4);
         }
-        .pin1 { top: 20px; left: 15px; }
-        .pin2 { top: 60px; left: 80px; background: var(--primary-light); box-shadow: 0 0 0 4px rgba(64, 192, 87, 0.4); }
+
+        .pin1 {
+            top: 20px;
+            left: 15px;
+        }
+
+        .pin2 {
+            top: 60px;
+            left: 80px;
+            background: var(--primary-light);
+            box-shadow: 0 0 0 4px rgba(64, 192, 87, 0.4);
+        }
 
         .phone-nav {
             background: rgba(15, 20, 16, 0.9);
@@ -617,13 +654,23 @@
             gap: 2px;
         }
 
-        .qr-pixel { background: #000; }
-        .qr-pixel.white { background: #fff; }
-        
+        .qr-pixel {
+            background: #000;
+        }
+
+        .qr-pixel.white {
+            background: #fff;
+        }
+
         /* Outline finder patterns for QR */
-        .qr-code > div:nth-child(1), .qr-code > div:nth-child(2), .qr-code > div:nth-child(3),
-        .qr-code > div:nth-child(6), .qr-code > div:nth-child(8),
-        .qr-code > div:nth-child(11), .qr-code > div:nth-child(12), .qr-code > div:nth-child(13) {
+        .qr-code>div:nth-child(1),
+        .qr-code>div:nth-child(2),
+        .qr-code>div:nth-child(3),
+        .qr-code>div:nth-child(6),
+        .qr-code>div:nth-child(8),
+        .qr-code>div:nth-child(11),
+        .qr-code>div:nth-child(12),
+        .qr-code>div:nth-child(13) {
             background: #000;
         }
 
@@ -661,9 +708,10 @@
         }
     </style>
 </head>
+
 <body>
     <div class="ambient-bg"></div>
-    
+
     <!-- Poster Borders -->
     <div class="poster-border"></div>
     <div class="corner top-left"></div>
@@ -682,27 +730,31 @@
 
     <!-- Main Content Grid -->
     <div class="main-layout">
-        
+
         <!-- LEFT COLUMN: Heritage and Destinations -->
         <div class="left-col">
-            
+
             <!-- Heritage Card -->
             <div class="card heritage-card">
                 <div class="section-title">วิถีชุมชนคนอยู่กับป่า 200 ปี</div>
                 <p>
-                    <strong>"บ้านป่าเหมี้ยง"</strong> ชุมชนท่องเที่ยวเชิงอนุรักษ์ที่ตั้งอยู่ในหุบเขาสูง 1,200 เมตรจากระดับน้ำทะเล ในเขตอุทยานแห่งชาติแจ้ซ้อน จังหวัดลำปาง สืบทอดประวัติศาสตร์ยาวนานกว่า 200 ปี โดยวิถีชีวิตและเศรษฐกิจของชาวบ้านผูกพันกับป่าไม้ดิบเขาอย่างเกื้อกูลกัน
+                    <strong>"บ้านป่าเหมี้ยง"</strong> ชุมชนท่องเที่ยวเชิงอนุรักษ์ที่ตั้งอยู่ในหุบเขาสูง 1,200
+                    เมตรจากระดับน้ำทะเล ในเขตอุทยานแห่งชาติแจ้ซ้อน จังหวัดลำปาง สืบทอดประวัติศาสตร์ยาวนานกว่า 200 ปี
+                    โดยวิถีชีวิตและเศรษฐกิจของชาวบ้านผูกพันกับป่าไม้ดิบเขาอย่างเกื้อกูลกัน
                 </p>
-                
+
                 <div class="heritage-highlights">
                     <div class="h-item">
                         <img src="images/pa_miang_tea.png" alt="ใบเหมี้ยง">
                         <h4>🍃 ชาใบเหมี้ยงธรรมชาติ</h4>
-                        <p>เก็บใบเหมี้ยงด้วยมือ นึ่งเตาดินและหมักแบบโบราณ แปรรูปเป็นเมี่ยง ชาคั่ว และหมอนใบชาเพื่อสุขภาพ</p>
+                        <p>เก็บใบเหมี้ยงด้วยมือ นึ่งเตาดินและหมักแบบโบราณ แปรรูปเป็นเมี่ยง ชาคั่ว และหมอนใบชาเพื่อสุขภาพ
+                        </p>
                     </div>
                     <div class="h-item">
                         <img src="images/wild_coffee.png" alt="กาแฟป่า">
                         <h4>☕ กาแฟป่าออร์แกนิก</h4>
-                        <p>กาแฟอาราบิก้าออร์แกนิก 100% ที่ปลูกใต้ร่มเงาป่าใหญ่ ช่วยอนุรักษ์ความอุดมสมบูรณ์ของธรรมชาติ</p>
+                        <p>กาแฟอาราบิก้าออร์แกนิก 100% ที่ปลูกใต้ร่มเงาป่าใหญ่ ช่วยอนุรักษ์ความอุดมสมบูรณ์ของธรรมชาติ
+                        </p>
                     </div>
                 </div>
             </div>
@@ -711,7 +763,7 @@
             <div class="card" style="flex-grow: 1; display: flex; flex-direction: column;">
                 <div class="section-title" style="margin-bottom: 15px;">4 พิกัดเช็กอินห้ามพลาด</div>
                 <div class="dest-grid" style="flex-grow: 1;">
-                    
+
                     <div class="dest-card">
                         <div class="dest-image-wrapper">
                             <img src="images/kiu_fin.png" alt="กิ่วฝิ่น">
@@ -745,7 +797,8 @@
                             <span class="dest-badge">Eco Stay</span>
                         </div>
                         <h4>🏡 โฮมสเตย์ริมธาร</h4>
-                        <p>พักผ่อนอุ่นไอโฮมสเตย์ชาวบ้านริมน้ำใส ไร้แอร์แต่เย็นสบายด้วยอุณหภูมิป่า ฟังเสียงน้ำไหลผ่อนคลาย</p>
+                        <p>พักผ่อนอุ่นไอโฮมสเตย์ชาวบ้านริมน้ำใส ไร้แอร์แต่เย็นสบายด้วยอุณหภูมิป่า ฟังเสียงน้ำไหลผ่อนคลาย
+                        </p>
                     </div>
 
                 </div>
@@ -755,12 +808,12 @@
 
         <!-- RIGHT COLUMN: Low Carbon and Platform -->
         <div class="right-col">
-            
+
             <!-- Low Carbon Pillars Card -->
             <div class="card">
                 <div class="section-title">4 เสาหลักคาร์บอนต่ำ (Low Carbon Pillars)</div>
                 <div class="pillars-list">
-                    
+
                     <div class="pillar-card">
                         <div class="pillar-icon">🚶</div>
                         <div class="pillar-info">
@@ -806,7 +859,9 @@
                 </div>
                 <div class="impact-desc">
                     <h4>นวัตกรรมสีเขียวเพื่อโลก</h4>
-                    <p>การเลือกพักโฮมสเตย์พลังธรรมชาติ สัญจรด้วยการเดินเท้า และบริโภคอาหารวัตถุดิบท้องถิ่น <strong>สามารถลดการปล่อยคาร์บอนลงได้ถึง 50%</strong> เมื่อเทียบกับการท่องเที่ยวทั่วไป เป็นส่วนหนึ่งของการรักษาสิ่งแวดล้อมอย่างแท้จริง</p>
+                    <p>การเลือกพักโฮมสเตย์พลังธรรมชาติ สัญจรด้วยการเดินเท้า และบริโภคอาหารวัตถุดิบท้องถิ่น
+                        <strong>สามารถลดการปล่อยคาร์บอนลงได้ถึง 50%</strong> เมื่อเทียบกับการท่องเที่ยวทั่วไป
+                        เป็นส่วนหนึ่งของการรักษาสิ่งแวดล้อมอย่างแท้จริง</p>
                 </div>
             </div>
 
@@ -817,14 +872,16 @@
                     <div class="platform-desc">
                         <div class="platform-feature">
                             <h5>🗺️ Interactive Map (แผนที่ท่องเที่ยวเชิงโต้ตอบ)</h5>
-                            <p>ค้นหาพิกัดโฮมสเตย์ ร้านค้า จุดชมวิว และจุดคาร์บอนพอยต์ของชุมชน นำทางผ่านบราวเซอร์แบบเรียลไทม์</p>
+                            <p>ค้นหาพิกัดโฮมสเตย์ ร้านค้า จุดชมวิว และจุดคาร์บอนพอยต์ของชุมชน
+                                นำทางผ่านบราวเซอร์แบบเรียลไทม์</p>
                         </div>
                         <div class="platform-feature">
                             <h5>📦 Low Carbon Trip (ระบบจองทริปคาร์บอนต่ำ)</h5>
-                            <p>แพ็กเกจนำเที่ยวแบบคาร์บอนต่ำที่คัดสรรเป็นพิเศษ อำนวยความสะดวกในการจองที่พักและกิจกรรมอนุรักษ์ล่วงหน้า</p>
+                            <p>แพ็กเกจนำเที่ยวแบบคาร์บอนต่ำที่คัดสรรเป็นพิเศษ
+                                อำนวยความสะดวกในการจองที่พักและกิจกรรมอนุรักษ์ล่วงหน้า</p>
                         </div>
                     </div>
-                    
+
                     <!-- CSS Phone Mockup representing interactive map -->
                     <div class="phone-mockup">
                         <div class="phone-notch"></div>
@@ -838,10 +895,12 @@
                                     </svg>
                                     <div class="map-pin pin1"></div>
                                     <div class="map-pin pin2"></div>
-                                    
+
                                     <!-- Minimalist Map Card Overlay -->
-                                    <div style="position: absolute; bottom: 5px; left: 5px; right: 5px; background: rgba(15,20,16,0.9); border-radius: 4px; padding: 4px; font-size: 8px; border: 1px solid rgba(255,255,255,0.15)">
-                                        <div style="font-weight: bold; color: var(--primary-light)">🏡 โฮมสเตย์ริมธาร</div>
+                                    <div
+                                        style="position: absolute; bottom: 5px; left: 5px; right: 5px; background: rgba(15,20,16,0.9); border-radius: 4px; padding: 4px; font-size: 8px; border: 1px solid rgba(255,255,255,0.15)">
+                                        <div style="font-weight: bold; color: var(--primary-light)">🏡 โฮมสเตย์ริมธาร
+                                        </div>
                                         <div style="color: #aaa; font-size: 6px;">พิกัดคาร์บอนต่ำ • 0 กม. จากลำธาร</div>
                                     </div>
                                 </div>
@@ -867,17 +926,38 @@
             <div class="footer-brand">MIANG <span>MAP</span></div>
             <div class="footer-meta">
                 <p>โครงการส่งเสริมการท่องเที่ยวคาร์บอนต่ำ ชุมชนบ้านป่าเหมี้ยง อ.เมืองปาน จ.ลำปาง</p>
-                <p style="margin-top: 2px;">&copy; 2026 MIANG MAP. พัฒนาขึ้นเพื่อประโยชน์และการท่องเที่ยวที่ยั่งยืนของชุมชน</p>
+                <p style="margin-top: 2px;">&copy; 2026 MIANG MAP.
+                    พัฒนาขึ้นเพื่อประโยชน์และการท่องเที่ยวที่ยั่งยืนของชุมชน</p>
             </div>
         </div>
         <div class="footer-right">
             <div class="qr-section">
                 <div class="qr-code">
-                    <div class="qr-pixel"></div><div class="qr-pixel"></div><div class="qr-pixel"></div><div class="qr-pixel"></div><div class="qr-pixel"></div>
-                    <div class="qr-pixel"></div><div class="qr-pixel white"></div><div class="qr-pixel"></div><div class="qr-pixel white"></div><div class="qr-pixel"></div>
-                    <div class="qr-pixel"></div><div class="qr-pixel"></div><div class="qr-pixel"></div><div class="qr-pixel"></div><div class="qr-pixel"></div>
-                    <div class="qr-pixel"></div><div class="qr-pixel white"></div><div class="qr-pixel"></div><div class="qr-pixel white"></div><div class="qr-pixel"></div>
-                    <div class="qr-pixel"></div><div class="qr-pixel"></div><div class="qr-pixel"></div><div class="qr-pixel"></div><div class="qr-pixel"></div>
+                    <div class="qr-pixel"></div>
+                    <div class="qr-pixel"></div>
+                    <div class="qr-pixel"></div>
+                    <div class="qr-pixel"></div>
+                    <div class="qr-pixel"></div>
+                    <div class="qr-pixel"></div>
+                    <div class="qr-pixel white"></div>
+                    <div class="qr-pixel"></div>
+                    <div class="qr-pixel white"></div>
+                    <div class="qr-pixel"></div>
+                    <div class="qr-pixel"></div>
+                    <div class="qr-pixel"></div>
+                    <div class="qr-pixel"></div>
+                    <div class="qr-pixel"></div>
+                    <div class="qr-pixel"></div>
+                    <div class="qr-pixel"></div>
+                    <div class="qr-pixel white"></div>
+                    <div class="qr-pixel"></div>
+                    <div class="qr-pixel white"></div>
+                    <div class="qr-pixel"></div>
+                    <div class="qr-pixel"></div>
+                    <div class="qr-pixel"></div>
+                    <div class="qr-pixel"></div>
+                    <div class="qr-pixel"></div>
+                    <div class="qr-pixel"></div>
                 </div>
                 <div class="qr-text">
                     <span>แสกนสำรวจ</span>
@@ -891,4 +971,5 @@
         </div>
     </footer>
 </body>
+
 </html>
