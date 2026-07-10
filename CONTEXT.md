@@ -8,6 +8,9 @@ MIANG MAP is a community tourism platform for Ban Pa Miang (บ้านป่�
 The platform offers pre-defined travel packages (e.g., Adventure, Foodie, Scenic) as well as a **Flexible Trip (ทริปอิสระตามใจคุณ)** option (ID: 99).
 - **Flexible Trip Purpose**: For visitors who do not want to stick to a pre-defined itinerary, or are undecided about specific activities from the beginning. They can register this flexible trip first, and dynamically check off green/sustainable activities (Green Checklist) during their stay in the community to calculate actual carbon savings and earn rewards/privileges.
 
+### Attraction Details & Map Integration
+- **Show on Map (ดูตำแหน่งบนแผนที่)**: In the attraction details page (`attraction/index.html`), clicking "📍 ดูตำแหน่งบนแผนที่ / Show on Map" navigates to the interactive map (`map/index.html?focus=ID`). The map automatically pans, zooms in closely (zoom level 17), and opens the Leaflet popup card for the target location.
+
 ---
 
 ## Carbon Calculation & Scientific References
