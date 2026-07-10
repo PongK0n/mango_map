@@ -239,6 +239,10 @@ db.auth.onAuthStateChange((event, session) => {
         const updatePasswordModal = document.getElementById('updatePasswordModal');
         if (updatePasswordModal) updatePasswordModal.style.display = "flex";
     }
+
+    if (window.onAuthChange) {
+        window.onAuthChange(session);
+    }
 });
 
 // Toast display helper if not defined

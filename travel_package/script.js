@@ -38,7 +38,7 @@ async function fetchPackages() {
             description: "สำหรับผู้ที่ต้องการท่องเที่ยวแบบอิสระ ไม่ต้องการตารางเวลานำเที่ยว หรือประสงค์จะลงทะเบียนเพื่อบันทึกสถิติลดคาร์บอนและสะสมผลงานแลกรางวัลขณะอยู่ในชุมชนโดยไม่ฟิกซ์กิจกรรมล่วงหน้า",
             carbon_summary: "คาร์บอนจากกิจกรรม (อาหาร+ที่พัก+ขยะ): ~15.0 kgCO2e/วัน",
             highlights: ["อิสระ 100%", "ปรับเปลี่ยนตามต้องการ", "สะสมคาร์บอนตามจริง"],
-            details: ["เลือกเช็คลิสต์เองได้", "รับส่วนลดร้านค้า 10%"],
+            details: ["เลือกเช็คลิสต์เองได้", "รับสิทธิพิเศษ/ของรางวัลรักษ์โลก"],
             itinerary: "วันเดินทาง - เดินทางถึงบ้านป่าเหมี้ยง\nกิจกรรมอิสระ - เลือกเดินเท้าชมวิถีชีวิตหรือชิมกาแฟชุมชน\nพักค้างคืน - พักผ่อนในโฮมสเตย์ประหยัดพลังงาน\nวันเดินทางกลับ - ยื่นแสดงแผนการเดินทางของฉันเพื่อแลกรับรางวัล",
             guide_name: "ผู้ดูแลชุมชน",
             guide_image: "../home/images/village.jpg",
@@ -47,6 +47,8 @@ async function fetchPackages() {
     }
 
     renderPackagesList();
+    loadCommunityCarbonStats();
+    checkActiveChallengePass();
 }
 
 function getGuideNote(title) {
@@ -587,7 +589,7 @@ async function submitPackageBooking() {
     if (transportMode === 'ev') {
         transportText = "รถ EV";
     } else if (transportMode === 'van') {
-        transportText = "รถสาธารณะ/รถตู้";
+        transportText = "รถกระบะจากชุมชน";
     }
 
     const payload = {
@@ -622,6 +624,8 @@ async function submitPackageBooking() {
 
         showToast(welcomeMsg, "success");
         closeModal('bookPackageModal');
+        loadCommunityCarbonStats();
+        checkActiveChallengePass();
     }
 }
 
@@ -1009,7 +1013,7 @@ async function loadUserPkgBookings() {
                 <td style="font-weight: 700; color: #ffffff;">
                     ${escapeHTML(b.package_name)}
                     <div style="font-size: 11px; font-weight: normal; color: var(--primary-light); margin-top: 5px; background: rgba(64,192,87,0.08); border: 1px solid rgba(64,192,87,0.2); padding: 3px 8px; border-radius: 6px; display: block; width: fit-content; text-align: left;">
-                        🎁 สิทธิ์รับเครื่องดื่มต้อนรับ/ส่วนลด 10%
+                        🎁 สิทธิ์รับสิทธิพิเศษ/ของรางวัลรักษ์โลก
                     </div>
                 </td>
                 <td>${escapeHTML(b.user_name)}</td>
@@ -1059,6 +1063,8 @@ async function cancelPkgBooking(bookingId) {
 
     showToast("ยกเลิกการจองแพ็กเกจเรียบร้อยแล้ว", "success");
     await loadUserPkgBookings();
+    loadCommunityCarbonStats();
+    checkActiveChallengePass();
 }
 
 function openEditPkgBookingModal(bookingId, pkgName, travelDate, userName, userPhone, guestsCount) {
@@ -1163,4 +1169,495 @@ async function savePkgBookingEdit() {
     showToast("💾 แก้ไขข้อมูลการจองแพ็กเกจสำเร็จ!", "success");
     closeModal('editPkgBookingModal');
     await loadUserPkgBookings();
+    loadCommunityCarbonStats();
+    checkActiveChallengePass();
 }
+
+// =========================================================================
+// --- 8. ระบบภารกิจท้าทายสีเขียว (Green Journey Challenge) และ แดชบอร์ดคาร์บอนรวมชุมชน ---
+// =========================================================================
+
+async function loadCommunityCarbonStats() {
+    if (typeof db === 'undefined') return;
+
+    const { data: bookings, error } = await db
+        .from('package_bookings')
+        .select('*');
+        
+    if (error) {
+        console.error("Load community carbon stats error:", error);
+        return;
+    }
+    
+    // กรองประวัติที่ถูกยกเลิก
+    const cancelledIds = new Set();
+    (bookings || []).forEach(b => {
+        if (String(b.package_name || '').startsWith('CANCEL_REQUEST_')) {
+            const targetId = parseInt(b.package_name.replace('CANCEL_REQUEST_', ''));
+            if (!isNaN(targetId)) cancelledIds.add(targetId);
+        }
+    });
+    
+    const activeBookings = (bookings || []).filter(b => {
+        if (String(b.package_name || '').startsWith('CANCEL_REQUEST_')) return false;
+        if (cancelledIds.has(b.id)) return false;
+        if (b.status === 'cancelled' || b.status === 'rejected') return false;
+        return true;
+    });
+    
+    let totalTripsCount = activeBookings.length;
+    let totalCarbonSaved = 0;
+    
+    activeBookings.forEach(b => {
+        const guests = b.guests_count || 1;
+        const name = String(b.package_name || '');
+        
+        let savings = 0;
+        if (name.includes('รถ EV')) {
+            savings = (43.15 - 15.52) * guests;
+        } else if (name.includes('รถสาธารณะ') || name.includes('รถตู้') || name.includes('รถกระบะจากชุมชน')) {
+            savings = (43.15 - 8.60) * guests;
+        }
+        
+        // สมมติว่าโดยเฉลี่ยผู้ลงทะเบียนทำเช็คลิสต์รักษ์โลก ช่วยลดคาร์บอนเพิ่มเฉลี่ยข้อละ 2.0 kgCO2e
+        savings += 2.0 * guests; 
+        
+        totalCarbonSaved += savings;
+    });
+    
+    // ข้อมูลเริ่มต้นจำลอง (Seed Data) เพื่อความสมจริงในการมีส่วนร่วมเชิงสถิติสะสม
+    const seedTrips = 142;
+    const seedCarbon = 1240.0;
+    
+    const finalTripsCount = seedTrips + totalTripsCount;
+    const finalCarbonSaved = seedCarbon + totalCarbonSaved;
+    const finalTreesCount = Math.round(finalCarbonSaved / 12); // ต้นไม้ 1 ต้นดูดซับ CO2 ~12 กิโลกรัมต่อปี
+    
+    // อัปเดตข้อมูลขึ้นบน UI แดชบอร์ดชุมชน
+    const comTotalTripsEl = document.getElementById('comTotalTrips');
+    const comTotalSavedCarbonEl = document.getElementById('comTotalSavedCarbon');
+    const comTotalTreesEl = document.getElementById('comTotalTrees');
+    const comGoalPercentEl = document.getElementById('communityGoalPercent');
+    const comGoalProgressFillEl = document.getElementById('communityGoalProgressFill');
+    
+    if (comTotalTripsEl) comTotalTripsEl.innerText = finalTripsCount.toLocaleString('th-TH');
+    if (comTotalSavedCarbonEl) comTotalSavedCarbonEl.innerText = `${finalCarbonSaved.toFixed(1)} kgCO2e`;
+    if (comTotalTreesEl) comTotalTreesEl.innerText = finalTreesCount.toLocaleString('th-TH');
+    
+    const targetGoal = 2500;
+    const percent = Math.min(100, Math.round((finalCarbonSaved / targetGoal) * 100));
+    
+    if (comGoalPercentEl) comGoalPercentEl.innerText = `${percent}%`;
+    if (comGoalProgressFillEl) comGoalProgressFillEl.style.width = `${percent}%`;
+}
+
+async function checkActiveChallengePass() {
+    const container = document.getElementById('activeChallengePassContainer');
+    const pkgContent = document.getElementById('packageContent');
+    const welcomeBanner = document.querySelector('.local-welcome-banner');
+    const scaleCard = document.querySelector('.low-carbon-info-card');
+    
+    if (!container) return;
+    
+    // หากยังไม่ได้ล็อกอิน หรือเป็นแอดมิน ให้แสดงหน้ารายการตามปกติ
+    if (!isUserLoggedIn || isAdminLoggedIn) {
+        container.style.display = 'none';
+        if (pkgContent) pkgContent.style.display = 'grid';
+        if (welcomeBanner) welcomeBanner.style.display = 'block';
+        if (scaleCard) scaleCard.style.display = 'block';
+        forceShowAllPackages = false;
+        return;
+    }
+    
+    if (typeof db === 'undefined') return;
+    
+    // ดึงแผนเดินทางของผู้ใช้รายนี้
+    const { data: bookings, error } = await db
+        .from('package_bookings')
+        .select('*')
+        .eq('user_email', currentUserEmail)
+        .order('id', { ascending: false });
+        
+    if (error) {
+        console.error("Check active challenge pass error:", error);
+        return;
+    }
+    
+    // กรองการจองที่ยกเลิกแล้ว
+    const cancelledIds = new Set();
+    (bookings || []).forEach(b => {
+        if (String(b.package_name || '').startsWith('CANCEL_REQUEST_')) {
+            const targetId = parseInt(b.package_name.replace('CANCEL_REQUEST_', ''));
+            if (!isNaN(targetId)) cancelledIds.add(targetId);
+        }
+    });
+    
+    const activeBookings = (bookings || []).filter(b => {
+        if (String(b.package_name || '').startsWith('CANCEL_REQUEST_')) return false;
+        if (cancelledIds.has(b.id)) return false;
+        return ['pending', 'confirmed'].includes(b.status);
+    });
+    
+    if (activeBookings.length === 0) {
+        // ไม่มีทริปที่ยังทำงานอยู่ ให้แสดงรายการปกติ
+        container.style.display = 'none';
+        if (pkgContent) pkgContent.style.display = 'grid';
+        if (welcomeBanner) welcomeBanner.style.display = 'block';
+        if (scaleCard) scaleCard.style.display = 'block';
+        forceShowAllPackages = false;
+        return;
+    }
+    
+    // เลือกทริปล่าสุดที่ลงทะเบียนไว้มาทำเป็นใบภารกิจหลัก (Active Pass)
+    const activeBooking = activeBookings[0];
+    const bookingId = activeBooking.id;
+    const fullPkgName = activeBooking.package_name; // เช่น "Scenic Low Carbon Trip (รถ EV)"
+    
+    // แยกรูปแบบรถ และชื่อแพ็กเกจ
+    let cleanTitle = fullPkgName;
+    let transportLabel = 'รถส่วนตัว (น้ำมัน)';
+    let transportEmission = 43.15;
+    
+    if (fullPkgName.includes('(รถ EV)')) {
+        cleanTitle = fullPkgName.replace(' (รถ EV)', '');
+        transportLabel = 'รถยนต์ไฟฟ้า (EV)';
+        transportEmission = 15.52;
+    } else if (fullPkgName.includes('(รถสาธารณะ/รถตู้)') || fullPkgName.includes('(รถกระบะจากชุมชน)')) {
+        cleanTitle = fullPkgName.replace(' (รถสาธารณะ/รถตู้)', '').replace(' (รถกระบะจากชุมชน)', '');
+        transportLabel = 'รถกระบะจากชุมชน';
+        transportEmission = 8.60;
+    } else if (fullPkgName.includes('(รถส่วนตัว)')) {
+        cleanTitle = fullPkgName.replace(' (รถส่วนตัว)', '');
+        transportLabel = 'รถส่วนตัว (น้ำมัน)';
+        transportEmission = 43.15;
+    }
+    
+    // ค้นหาวัตถุแพ็กเกจเพื่อดึงข้อมูล Itinerary / Checklist
+    let matchedPkg = packageList.find(p => p.title.replace(/package/gi, 'Trip').replace(/itinerary/gi, 'Trip') === cleanTitle || p.title === cleanTitle);
+    if (!matchedPkg) {
+        matchedPkg = packageList[0] || { id: 99, title: cleanTitle };
+    }
+    
+    // คำนวณคาร์บอนฟุตพริ้นท์ฐาน (Base Footprint)
+    const isScenic = String(matchedPkg.title || '').toLowerCase().includes('scenic');
+    const inVillageDaily = isScenic ? 22.28 : 21.38;
+    const guestsCount = activeBooking.guests_count || 1;
+    const baseFootprint = (inVillageDaily + transportEmission) * guestsCount;
+    const transportSaving = (43.15 - transportEmission) * guestsCount;
+    
+    // ดึงสถานะภารกิจที่ติ๊กไว้จาก LocalStorage
+    const localKey = `miangmap_checklist_${bookingId}`;
+    let checkedIndices = [];
+    try {
+        const stored = localStorage.getItem(localKey);
+        if (stored) checkedIndices = JSON.parse(stored);
+    } catch (e) {}
+    
+    // ดึงภารกิจสีเขียว (Guidelines)
+    let guidelines = ECO_GUIDELINES[matchedPkg.id] || ECO_GUIDELINES[99];
+    
+    const dateFormatted = new Date(activeBooking.travel_date).toLocaleDateString('th-TH', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+    
+    let checklistHtml = '';
+    const itemOffsets = [-3.0, -1.2, -2.5, -1.0, -2.0];
+    const itemExplanations = [
+        "จอดรถส่วนตัว/ใช้รถท้องถิ่น เพื่อลดมลพิษสะสมในเขตป่าดิบชื้น",
+        "พกกระบอกน้ำ/ถุงผ้าส่วนตัว งดขวดพลาสติกแบบใช้ครั้งเดียวทิ้ง",
+        "อุดหนุนพืชผักท้องถิ่นสด ๆ ลด Food Miles การขนส่งเป็น 0 กม.",
+        "ปิดไฟและพัดลมเมื่อไม่ใช้งาน ช่วยลดภาระการใช้กระแสไฟฟ้าในโฮมสเตย์",
+        "ร่วมกิจกรรมเดินป่าเชิงอนุรักษ์ธรรมชาติหรืออุดหนุนของชุมชน"
+    ];
+    
+    guidelines.forEach((step, idx) => {
+        const isChecked = checkedIndices.includes(idx);
+        const parts = step.split(' - ');
+        const titleStr = parts.length > 1 ? parts.slice(1).join(' - ') : step;
+        
+        checklistHtml += `
+            <label class="ticket-checklist-item ${isChecked ? 'checked' : ''}" data-index="${idx}">
+                <input type="checkbox" class="ticket-checkbox-input" data-index="${idx}" ${isChecked ? 'checked' : ''} onchange="toggleTicketChecklist(${bookingId}, ${baseFootprint}, ${guestsCount}, this)">
+                <div class="ticket-checklist-text">
+                    <span class="ticket-item-title">${escapeHTML(titleStr)}</span>
+                    <span class="ticket-item-why">💡 ${itemExplanations[idx]} (<strong style="color: var(--primary-light);">${itemOffsets[idx].toFixed(1)} kgCO2e/คน</strong>)</span>
+                </div>
+            </label>
+        `;
+    });
+    
+    // ตั้งค่าสถานะใบนำทาง
+    let statusText = activeBooking.status === 'confirmed' ? 'อนุมัติแล้ว (Confirmed)' : 'รอการตรวจสอบ (Pending)';
+    let statusColor = activeBooking.status === 'confirmed' ? 'var(--primary-light)' : '#f59e0b';
+    
+    // แสดงตั๋วภารกิจแทนรายการทริปปกติ
+    container.style.display = 'block';
+    if (!forceShowAllPackages) {
+        if (pkgContent) pkgContent.style.display = 'none';
+        if (welcomeBanner) welcomeBanner.style.display = 'none';
+        if (scaleCard) scaleCard.style.display = 'none';
+    }
+    
+    container.innerHTML = `
+        <div style="text-align: center; margin-bottom: 20px;">
+            <span class="community-badge-chip" style="background: rgba(64,192,87,0.1); border-color: rgba(64,192,87,0.3); color: var(--primary-light); font-size: 13px; padding: 6px 16px;">🎯 คุณมีทริปท้าทายสิ่งแวดล้อมที่กำลังเปิดใช้งาน</span>
+        </div>
+        
+        <div class="active-pass-ticket">
+            <!-- Ticket Notch Top -->
+            <div class="ticket-cutout-top"></div>
+            
+            <!-- Left Section: Main Info -->
+            <div class="ticket-main-section">
+                <div class="ticket-main-header">
+                    <div class="ticket-brand">MIANG MAP CHALLENGE PASS</div>
+                    <div class="ticket-title">${escapeHTML(cleanTitle)}</div>
+                </div>
+                
+                <div class="ticket-meta-grid">
+                    <div>
+                        <div class="meta-item-label">รหัสอ้างอิง</div>
+                        <div class="meta-item-val" style="font-family: 'Barlow', sans-serif; font-weight: 700; color: var(--primary-light);">#MM-${bookingId}</div>
+                    </div>
+                    <div>
+                        <div class="meta-item-label">สถานะทริป</div>
+                        <div class="meta-item-val" id="ticketStatusMeta" style="color: ${statusColor}; font-weight: 700; font-size: 11px;">${statusText}</div>
+                    </div>
+                    <div>
+                        <div class="meta-item-label">วันเดินทาง</div>
+                        <div class="meta-item-val">${dateFormatted}</div>
+                    </div>
+                    <div>
+                        <div class="meta-item-label">จำนวนนักเดินทาง</div>
+                        <div class="meta-item-val" style="font-family: 'Barlow', sans-serif;">${guestsCount} คน</div>
+                    </div>
+                    <div style="grid-column: 1 / -1;">
+                        <div class="meta-item-label">ยานพาหนะหลัก</div>
+                        <div class="meta-item-val" style="font-size: 12px; color: var(--accent);">${transportLabel}</div>
+                    </div>
+                </div>
+                
+                <div class="ticket-carbon-gauge-box">
+                    <div class="gauge-title">คาร์บอนฟุตพริ้นท์ทริปนี้</div>
+                    <div class="gauge-val-row">
+                        <span class="gauge-current-val" id="ticketCarbonFootprintVal">0.00 kgCO2e</span>
+                        <span class="gauge-saving-text" id="ticketCarbonSavingVal">-0.00 kgCO2e</span>
+                    </div>
+                    <div class="ticket-gauge-track">
+                        <div class="ticket-gauge-fill" id="ticketCarbonGaugeFill" style="width: 100%;"></div>
+                    </div>
+                    <div style="font-size: 10px; color: var(--text-muted); margin-top: 6px; text-align: center;">
+                        ระดับความรักษ์โลก: <span id="ticketEcoTier" style="color: var(--primary-light); font-weight: bold;">Standard Green</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Section: Checklist & Reward -->
+            <div class="ticket-sidebar-section">
+                <div>
+                    <div class="ticket-sidebar-title">
+                        <span>🍃 ภารกิจลดคาร์บอนในพื้นที่ (Green Quests)</span>
+                    </div>
+                    <div class="ticket-checklist">
+                        ${checklistHtml}
+                    </div>
+                </div>
+                
+                <div class="ticket-redeem-area">
+                    <div class="redeem-instructions">
+                        <div class="redeem-title">🎁 รางวัลผู้พิทักษ์ป่า (Redeem Reward)</div>
+                        <div class="redeem-desc" id="redeemInstructionsText">
+                            สะสมภารกิจอย่างน้อย 3 ข้อ และได้รับการอนุมัติทริปเพื่อรับ **ของรางวัลหรือสิทธิพิเศษรักษ์โลกจากชุมชน 🎁**
+                        </div>
+                    </div>
+                    
+                    <!-- Stamp -->
+                    <div class="digital-stamp" id="ticketStamp">
+                        <span class="stamp-text-top">MIANG MAP</span>
+                        <span class="stamp-text-main" id="stampMainText">LOCKED</span>
+                        <span class="stamp-text-bottom">CHALLENGE</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Ticket Notch Bottom -->
+            <div class="ticket-cutout-bottom"></div>
+        </div>
+        
+        <div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 30px;">
+            <button id="toggleAllPackagesBtn" class="nav-btn" onclick="toggleAllPackagesGrid()" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; color: #ffffff; padding: 10px 20px; font-size: 13.5px; cursor: pointer; transition: all 0.2s;">
+                🔍 ดูแผนแนะนำเส้นทางและทริปทั้งหมด
+            </button>
+        </div>
+    `;
+    
+    // ตั้งค่าคาร์บอนสะสมเริ่มต้นใน UI ของตั๋ว
+    updateActiveTicketCarbon(bookingId, baseFootprint, guestsCount, transportSaving);
+}
+
+function toggleTicketChecklist(bookingId, baseFootprint, guestsCount, checkbox) {
+    const label = checkbox.closest('.ticket-checklist-item');
+    if (checkbox.checked) {
+        label.classList.add('checked');
+    } else {
+        label.classList.remove('checked');
+    }
+    
+    // บันทึกสถานะภารกิจลง LocalStorage
+    const localKey = `miangmap_checklist_${bookingId}`;
+    let checkedIndices = [];
+    const checkboxes = document.querySelectorAll('.ticket-checkbox-input');
+    checkboxes.forEach(cb => {
+        if (cb.checked) {
+            checkedIndices.push(parseInt(cb.dataset.index));
+        }
+    });
+    localStorage.setItem(localKey, JSON.stringify(checkedIndices));
+    
+    // ค้นหารถเดินทางหลักเพื่อคำนวณส่วนลดคาร์บอนทางอ้อมอีกครั้ง
+    let transportSaving = 0;
+    const activePassTicket = document.querySelector('.active-pass-ticket');
+    if (activePassTicket) {
+        const transportValEl = activePassTicket.querySelector('.meta-item-val[style*="var(--accent)"]');
+        if (transportValEl) {
+            const text = transportValEl.innerText;
+            if (text.includes('EV')) {
+                transportSaving = (43.15 - 15.52) * guestsCount;
+            } else if (text.includes('รถตู้') || text.includes('สาธารณะ') || text.includes('รถกระบะจากชุมชน')) {
+                transportSaving = (43.15 - 8.60) * guestsCount;
+            }
+        }
+    }
+    
+    updateActiveTicketCarbon(bookingId, baseFootprint, guestsCount, transportSaving);
+}
+
+function updateActiveTicketCarbon(bookingId, baseFootprint, guestsCount, transportSaving) {
+    const localKey = `miangmap_checklist_${bookingId}`;
+    let checkedIndices = [];
+    try {
+        const stored = localStorage.getItem(localKey);
+        if (stored) checkedIndices = JSON.parse(stored);
+    } catch (e) {}
+    
+    const itemOffsets = [-3.0, -1.2, -2.5, -1.0, -2.0];
+    let offsetPerPerson = 0;
+    checkedIndices.forEach(idx => {
+        offsetPerPerson += Math.abs(itemOffsets[idx]);
+    });
+    
+    const totalChecklistOffset = offsetPerPerson * guestsCount;
+    const finalCarbonFootprint = Math.max(0, baseFootprint - totalChecklistOffset);
+    const totalSavings = transportSaving + totalChecklistOffset;
+    
+    // อัปเดตข้อมูล DOM ในตั๋ว
+    const footprintValEl = document.getElementById('ticketCarbonFootprintVal');
+    const savingValEl = document.getElementById('ticketCarbonSavingVal');
+    const gaugeFillEl = document.getElementById('ticketCarbonGaugeFill');
+    const ecoTierEl = document.getElementById('ticketEcoTier');
+    const stampEl = document.getElementById('ticketStamp');
+    const stampMainEl = document.getElementById('stampMainText');
+    const redeemTextEl = document.getElementById('redeemInstructionsText');
+    
+    if (footprintValEl) footprintValEl.innerText = `${finalCarbonFootprint.toFixed(1)} kgCO2e`;
+    if (savingValEl) savingValEl.innerText = `ลดไป: -${totalSavings.toFixed(1)} kgCO2e`;
+    
+    if (gaugeFillEl) {
+        const percentage = baseFootprint > 0 ? Math.round((finalCarbonFootprint / baseFootprint) * 100) : 100;
+        gaugeFillEl.style.width = `${percentage}%`;
+        
+        if (percentage < 45) {
+            gaugeFillEl.style.background = '#40c057'; // ดีต่อโลกมาก (Green)
+        } else if (percentage < 80) {
+            gaugeFillEl.style.background = '#f59e0b'; // ปานกลาง (Orange)
+        } else {
+            gaugeFillEl.style.background = '#ff6b6b'; // ค่อนข้างสูง (Red)
+        }
+    }
+    
+    if (ecoTierEl) {
+        const checkedCount = checkedIndices.length;
+        if (checkedCount === 0) {
+            ecoTierEl.innerText = "Standard Green";
+            ecoTierEl.style.color = "var(--text-muted)";
+        } else if (checkedCount < 3) {
+            ecoTierEl.innerText = "🍃 Bronze Leaf";
+            ecoTierEl.style.color = "#d3f9d8";
+        } else if (checkedCount < 5) {
+            ecoTierEl.innerText = "🌟 Silver Leaf";
+            ecoTierEl.style.color = "#f59e0b";
+        } else {
+            ecoTierEl.innerText = "👑 Golden Guardian";
+            ecoTierEl.style.color = "#fcc419";
+        }
+    }
+    
+    // เงื่อนไขในการแลกรางวัล: ต้องทำสำเร็จอย่างน้อย 3 ภารกิจขึ้นไป
+    const isRedeemable = checkedIndices.length >= 3;
+    
+    let bookingStatus = 'pending';
+    const statusMetaEl = document.getElementById('ticketStatusMeta');
+    if (statusMetaEl && statusMetaEl.innerText.includes('อนุมัติแล้ว')) {
+        bookingStatus = 'confirmed';
+    }
+    
+    if (stampEl) {
+        if (isRedeemable) {
+            stampEl.classList.add('stamp-gold');
+            if (bookingStatus === 'confirmed') {
+                if (stampMainEl) stampMainEl.innerText = "REDEEMABLE";
+                stampEl.querySelector('.stamp-text-top').innerText = "APPROVED";
+                stampEl.querySelector('.stamp-text-bottom').innerText = "CO2 SAVED";
+                if (redeemTextEl) {
+                    redeemTextEl.innerHTML = `🎉 **ภารกิจสำเร็จ!** ทริปนี้ลดคาร์บอนเด่นชัด ยื่นหน้านี้กับผู้ดูแลในพื้นที่ เพื่อรับ **ของรางวัลหรือสิทธิพิเศษรักษ์โลกจากชุมชน 🎁** ได้เลยครับ!`;
+                }
+            } else {
+                if (stampMainEl) stampMainEl.innerText = "VERIFYING";
+                stampEl.querySelector('.stamp-text-top').innerText = "PENDING";
+                stampEl.querySelector('.stamp-text-bottom').innerText = "CO2 SAVED";
+                if (redeemTextEl) {
+                    redeemTextEl.innerHTML = `⏳ **ภารกิจพร้อมแลกสิทธิ์!** ขณะนี้แอดมินชุมชนกำลังประมวลผลอนุมัติทริปของคุณ เมื่อสถานะขึ้นอนุมัติแล้ว ตราประทับจะเปลี่ยนเป็นสีทองสำเร็จเพื่อนำไปแลกรับของรางวัลครับ`;
+                }
+            }
+        } else {
+            stampEl.classList.remove('stamp-gold');
+            if (stampMainEl) stampMainEl.innerText = "LOCKED";
+            stampEl.querySelector('.stamp-text-top').innerText = "MIANG MAP";
+            stampEl.querySelector('.stamp-text-bottom').innerText = "CHALLENGE";
+            if (redeemTextEl) {
+                const diff = 3 - checkedIndices.length;
+                redeemTextEl.innerHTML = `สะสมภารกิจสิ่งแวดล้อมเสริมอีก **${diff} ข้อ** เพื่อรับสิทธิ์แลก **ของรางวัลหรือสิทธิพิเศษรักษ์โลกจากชุมชน 🎁**!`;
+            }
+        }
+    }
+}
+
+let forceShowAllPackages = false;
+function toggleAllPackagesGrid() {
+    forceShowAllPackages = !forceShowAllPackages;
+    
+    const pkgContent = document.getElementById('packageContent');
+    const welcomeBanner = document.querySelector('.local-welcome-banner');
+    const scaleCard = document.querySelector('.low-carbon-info-card');
+    const toggleBtn = document.getElementById('toggleAllPackagesBtn');
+    
+    if (forceShowAllPackages) {
+        if (pkgContent) pkgContent.style.display = 'grid';
+        if (welcomeBanner) welcomeBanner.style.display = 'block';
+        if (scaleCard) scaleCard.style.display = 'block';
+        if (toggleBtn) toggleBtn.innerText = "🙈 ซ่อนรายการแนะนำเส้นทางท่องเที่ยวทั้งหมด";
+    } else {
+        if (pkgContent) pkgContent.style.display = 'none';
+        if (welcomeBanner) welcomeBanner.style.display = 'none';
+        if (scaleCard) scaleCard.style.display = 'none';
+        if (toggleBtn) toggleBtn.innerText = "🔍 ดูแผนแนะนำเส้นทางและทริปทั้งหมด";
+    }
+}
+
+// Hook การเปลี่ยนสถานะ Auth จาก shared_auth.js เพื่อคำนวณและแสดงตั๋วใหม่ทันที
+window.onAuthChange = function(session) {
+    loadCommunityCarbonStats();
+    checkActiveChallengePass();
+};
