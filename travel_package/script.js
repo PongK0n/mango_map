@@ -54,7 +54,7 @@ async function fetchPackages() {
 function getGuideNote(title) {
     const t = String(title).toLowerCase();
     if (t.includes('adventure')) {
-        return "ลุยทางเดินป่าเชิงอนุรักษ์ อาบละอองน้ำตกแม่ก๋าแสนเย็นชุ่มฉ่ำ ปล่อยคาร์บอนต่ำที่สุดครับ";
+        return "ลุยทางเดินป่าเชิงอนุรักษ์ อาบละอองน้ำตกสองปานแสนเย็นชุ่มฉ่ำ ปล่อยคาร์บอนต่ำที่สุดครับ";
     } else if (t.includes('foodie')) {
         return "มาเก็บชาสดจากต้นกลางป่าดิบชื้น ทำสปาเมี่ยง และทานแกงแคฝีมือป้ากันค่ะ";
     } else if (t.includes('scenic')) {
@@ -615,7 +615,7 @@ async function submitPackageBooking() {
         let welcomeMsg = "🎉 บันทึกแผนเดินทางสำเร็จ! ชุมชนบ้านป่าเหมี้ยงต้อนรับคุณ และระบบได้เตรียมจัดส่งข้อมูลการเข้าพักให้ผู้ดูแลโฮมสเตย์ชุมชนเรียบร้อยแล้วครับ";
 
         if (guideName.includes('สมจิต')) {
-            welcomeMsg = "🎉 บันทึกแผนสำเร็จ! ลุงสมจิต (ผู้ดูแลป่าชุมชน) ทราบเรื่องแล้ว และยินดีที่จะได้ต้อนรับคุณสู่เส้นทางเดินป่าน้ำตกแม่ก๋าครับ!";
+            welcomeMsg = "🎉 บันทึกแผนสำเร็จ! ลุงสมจิต (ผู้ดูแลป่าชุมชน) ทราบเรื่องแล้ว และยินดีที่จะได้ต้อนรับคุณสู่เส้นทางเดินป่าน้ำตกสองปานครับ!";
         } else if (guideName.includes('สมศรี')) {
             welcomeMsg = "🎉 บันทึกแผนสำเร็จ! ป้าสมศรีเริ่มเตรียมชุดวัตถุดิบอาหารและชาเมี่ยงออร์แกนิกท้องถิ่นสดๆ จากป่าไว้รอต้อนรับคุณแล้วค่ะ!";
         } else if (guideName.includes('เอก')) {
@@ -878,7 +878,7 @@ function openEditPackageModal(pkgId) {
     document.getElementById('editPkgImage').value = pkg.image_url || '';
 
     // Set placeholders
-    document.getElementById('editPkgHighlights').placeholder = "ระบุคำไฮไลท์บรรทัดละ 1 เรื่อง\nเช่น:\nเส้นทางน้ำตกแม่ก๋า\nช่วงเวลาแนะนำ: กุมภาพันธ์";
+    document.getElementById('editPkgHighlights').placeholder = "ระบุคำไฮไลท์บรรทัดละ 1 เรื่อง\nเช่น:\nเส้นทางน้ำตกสองปาน\nช่วงเวลาแนะนำ: กุมภาพันธ์";
     document.getElementById('editPkgDetails').placeholder = "ระบุดีเทลการปล่อยคาร์บอนบรรทัดละ 1 เรื่อง\nเช่น:\nอาหาร 7.2 kgCO2e\nที่พัก 2.5 kgCO2e";
 
     document.getElementById('editPackageModal').style.display = 'flex';
