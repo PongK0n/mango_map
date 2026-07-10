@@ -1007,32 +1007,37 @@
 
         @media (max-width: 768px) {
             .big-nav {
-                flex-direction: column;
-                height: auto;
-                padding: 10px 0;
-                align-items: flex-start;
+                flex-direction: row;
+                height: 60px;
+                padding: 0 16px;
+                align-items: center;
+                justify-content: space-between;
             }
 
             .nav-left {
-                margin-left: 16px;
-                margin-bottom: 4px;
+                margin-left: 0;
+                margin-bottom: 0;
+                gap: 8px;
             }
 
             .nav-brand {
-                font-size: 20px;
-                letter-spacing: 1px;
+                font-size: 18px;
+                letter-spacing: 0.5px;
                 margin-left: 0;
                 margin-bottom: 0;
             }
 
             .nav-links {
-                width: 100%;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                max-width: 60%;
                 overflow-x: auto;
                 white-space: nowrap;
-                padding-left: 16px;
-                padding-right: 16px;
-                padding-bottom: 6px;
-                gap: 8px;
+                padding: 0;
+                margin: 0;
+                -ms-overflow-style: none;  /* IE and Edge */
+                scrollbar-width: none;  /* Firefox */
             }
 
             .nav-links::-webkit-scrollbar {
@@ -1040,17 +1045,28 @@
             }
 
             .nav-btn {
-                font-size: 13.5px;
+                font-size: 12px;
                 padding: 6px 10px;
+                height: 32px;
+                line-height: 20px;
+                white-space: nowrap;
             }
 
             .admin-btn {
-                padding: 4px 8px;
+                padding: 6px 10px;
                 margin-left: 4px;
+                font-size: 12px;
+                height: 32px;
+                line-height: 20px;
+                white-space: nowrap;
+            }
+
+            .hamburger-menu {
+                top: 60px;
             }
 
             #map {
-                padding-top: 85px;
+                padding-top: 60px;
             }
         }
 
