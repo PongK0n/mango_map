@@ -1638,6 +1638,7 @@
         // --- ตัวแปรหลักของระบบ (Auth state is managed by shared_auth.js) ---
         let locations = [];
         let currentFilter = 'all';
+        let markerMap = {}; // Map of location IDs to Leaflet markers
         let bookingRooms = 0;
         let bookingAdults = 0;
         let bookingChildren = 0;
@@ -1707,6 +1708,7 @@
 
             currentFilter = category;
             markersLayer.clearLayers();
+            markerMap = {};
 
             locations.forEach(loc => {
                 if (category === 'all' || loc.category === category) {
@@ -1716,6 +1718,8 @@
                         draggable: isAdminLoggedIn,
                         icon: getMarkerIcon(loc.category)
                     });
+
+                    markerMap[loc.id] = marker;
 
                     // ฟังก์ชันเมื่อแอดมินลากหมุดไปวางที่ใหม่
                     if (isAdminLoggedIn) {
@@ -2523,12 +2527,21 @@
             const urlParams = new URLSearchParams(window.location.search);
             const filter = urlParams.get('filter');
             const locate = urlParams.get('locate');
+            const focus = urlParams.get('focus');
             
             if (filter && ['stay', 'food', 'tour', 'other'].includes(filter)) {
                 filterMap(filter);
             }
             if (locate === 'true') {
                 findMyLocation();
+            }
+            if (focus) {
+                const targetMarker = markerMap[parseInt(focus)];
+                if (targetMarker) {
+                    // Zoom close (level 17 is great for detail viewing) and pan to it
+                    map.setView(targetMarker.getLatLng(), 17);
+                    targetMarker.openPopup();
+                }
             }
         })();
 

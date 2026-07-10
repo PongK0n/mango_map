@@ -1081,7 +1081,7 @@
 
                     <!-- Call To Actions (Button Hierarchy) -->
                     <div class="action-stack">
-                        <a href="../map/index.html" class="btn-primary-cta">🗺️ สำรวจแผนที่นำทาง / Explore Map</a>
+                        <a href="../map/index.html" id="exploreMapBtn" class="btn-primary-cta">📍 ดูตำแหน่งบนแผนที่ / Show on Map</a>
                         <a href="../travel_package/index.html" class="btn-secondary-cta">📦 ทริปคาร์บอนต่ำ / Low Carbon Trip</a>
                     </div>
                 </aside>
@@ -1248,6 +1248,12 @@
                 // Switch visible panes
                 loading.style.display = 'none';
                 content.style.display = 'block';
+
+                // Set dynamic explore map URL with focus ID
+                const exploreMapBtn = document.getElementById('exploreMapBtn');
+                if (exploreMapBtn) {
+                    exploreMapBtn.href = `../map/index.html?focus=${location.id}`;
+                }
 
             } catch (err) {
                 console.error("Error loading attraction details:", err);
