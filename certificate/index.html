@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="การ์ดสรุปผลแรงก์และยอดเครดิตคาร์บอน ชุมชนบ้านป่าเหมี้ยง จ.ลำปาง">
+    <title>การ์ดสรุปผลคาร์บอนต่ำ - MIANG MAP</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700;800&family=Sarabun:ital,wght@0,300;0,400;0,600;0,700;0,800;1,400&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../travel_package/styles.css?v=2.1.0">
+
+    <style>
+        /* Standalone Minimal Eco Card Page */
+        body.cert-standalone-body {
+            background: #0f1612;
+            color: #f3f4f6;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: 'Sarabun', 'Barlow', sans-serif;
+        }
+
+        .cert-standalone-navbar {
+            width: 100%;
+            background: rgba(18, 28, 22, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(81, 207, 102, 0.2);
+            padding: 14px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-sizing: border-box;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .cert-brand-wrap {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+        }
+
+        .cert-brand-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            color: #51cf66;
+            font-family: 'Barlow', sans-serif;
+        }
+
+        .cert-brand-badge {
+            font-size: 0.72rem;
+            background: rgba(81, 207, 102, 0.15);
+            color: #86efac;
+            padding: 3px 8px;
+            border-radius: 4px;
+            border: 1px solid rgba(81, 207, 102, 0.3);
+            font-weight: 600;
+        }
+
+        .cert-standalone-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cert-standalone-viewport {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 36px 16px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .cert-standalone-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+
+        .cert-footer-tip {
+            margin-top: 24px;
+            color: #94a3b8;
+            font-size: 0.85rem;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        @media screen and (max-width: 600px) {
+            .cert-standalone-actions {
+                flex-wrap: wrap;
+                justify-content: flex-end;
+            }
+            .cert-standalone-navbar {
+                padding: 12px 16px;
+            }
+        }
+    </style>
+</head>
+
+<body class="cert-standalone-body">
+
+    <!-- Top Action Navbar -->
+    <nav class="cert-standalone-navbar">
+        <div class="cert-brand-wrap" onclick="window.location.href='../travel_package/index.html'">
+            <span style="font-size: 24px;">🌿</span>
+            <div>
+                <span class="cert-brand-title">MIANG MAP</span>
+                <span class="cert-brand-badge">ECO RANK CARD</span>
+            </div>
+        </div>
+
+        <div class="cert-standalone-actions">
+            <button type="button" class="btn btn-secondary" onclick="window.location.href='../travel_package/index.html'" style="background: rgba(255,255,255,0.1); color:#fff; border:1px solid rgba(255,255,255,0.2); padding: 9px 14px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600;">
+                ← กิจกรรม & คำนวณคาร์บอน
+            </button>
+            <button type="button" class="btn-copy-caption" onclick="copyCardSummaryText()" style="padding: 9px 16px; font-size: 0.85rem;">
+                📋 คัดลอกข้อความ
+            </button>
+            <button type="button" class="btn-save-image" onclick="downloadCertificateImage()" style="padding: 9px 18px; font-size: 0.85rem;">
+                🖼️ เซฟรูปภาพ (PNG 1:1)
+            </button>
+        </div>
+    </nav>
+
+    <!-- Card Viewport -->
+    <main class="cert-standalone-viewport">
+        <div class="cert-standalone-container">
+            <!-- 1:1 Minimal Square Eco Card -->
+            <div class="minimal-square-eco-card" id="minimalEcoCard">
+                <!-- Top Brand -->
+                <div class="card-top-brand">
+                    <span class="brand-leaf">🌿</span>
+                    <span class="brand-text">บ้านป่าเหมี้ยง • MIANG MAP</span>
+                </div>
+
+                <!-- Traveler Name -->
+                <div class="card-traveler-section">
+                    <span class="card-lead-text">บันทึกสถิติการท่องเที่ยวคาร์บอนต่ำ</span>
+                    <h3 class="card-traveler-name" id="ticketUserNameDisplay">นักเดินทางรักษ์โลก</h3>
+                </div>
+
+                <!-- Rank Badge & Title -->
+                <div class="card-rank-center" id="cardRankBox">
+                    <div class="card-medal-icon" id="ticketHonorIcon">🥇</div>
+                    <div class="card-rank-tier-title" id="ticketHonorTitle">ระดับเหรียญทอง</div>
+                    <div class="card-rank-honor-name" id="cardRankHonorName">ผู้พิทักษ์ผืนป่าเหมี้ยง</div>
+                </div>
+
+                <!-- Hero Metric: Carbon Credit Saved -->
+                <div class="card-credit-highlight">
+                    <span class="credit-metric-label">ยอดคาร์บอนเครดิตที่ช่วยลดได้</span>
+                    <div class="credit-metric-number-wrap">
+                        <span class="credit-number" id="ticketSavingsDisplay">-4.20</span>
+                        <span class="credit-unit">kgCO2e</span>
+                    </div>
+                    <div class="credit-net-subtext">
+                        คาร์บอนสุทธิ: <strong id="ticketNetDisplay">4.40</strong> kgCO2e
+                    </div>
+                </div>
+
+                <!-- Community Thank You Note -->
+                <div class="card-thankyou-box">
+                    <p class="thankyou-quote">
+                        “ขอบคุณที่ร่วมท่องเที่ยวอย่างรับผิดชอบ<br>และช่วยดูแลผืนป่าต้นน้ำบ้านป่าเหมี้ยงไปด้วยกัน”
+                    </p>
+                    <span class="thankyou-by">— ชุมชนท่องเที่ยวบ้านป่าเหมี้ยง จ.ลำปาง</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="cert-footer-tip">
+            <span>💡 สัดส่วนสี่เหลี่ยมจัตุรัส 1:1 เหมาะสำหรับการแชร์ลง Instagram, Facebook หรือ LINE</span>
+        </div>
+    </main>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script>
+        let currentCardData = {
+            travelerName: 'นักเดินทางรักษ์โลก',
+            totalSavings: 4.20,
+            netCarbon: 4.40,
+            tierTitle: 'ระดับเหรียญทอง',
+            honorTitle: 'ผู้พิทักษ์ผืนป่าเหมี้ยง',
+            medalIcon: '🥇'
+        };
+
+        function getUrlParams() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                name: params.get('name'),
+                saved: params.get('saved'),
+                net: params.get('net'),
+                tier: params.get('tier'),
+                title: params.get('title')
+            };
+        }
+
+        function loadCardData() {
+            const params = getUrlParams();
+            let name = params.name;
+            let saved = params.saved;
+            let net = params.net;
+            let tier = params.tier;
+            let title = params.title;
+
+            // Fallback to localStorage if params are absent
+            if (!name && !net) {
+                try {
+                    const savedState = localStorage.getItem('miangmap_activity_tracker');
+                    if (savedState) {
+                        const parsed = JSON.parse(savedState);
+                        if (parsed.travelerName) name = parsed.travelerName;
+                    }
+                } catch (e) {}
+            }
+
+            name = name || 'นักเดินทางรักษ์โลก';
+            saved = parseFloat(saved) || 4.20;
+            net = parseFloat(net) || 4.40;
+
+            let icon = '🥇';
+            let tierTitle = 'ระดับเหรียญทอง';
+            let honorName = title || 'ผู้พิทักษ์ผืนป่าเหมี้ยง';
+
+            if (tier === 'silver' || (!tier && net > 15 && net <= 30)) {
+                icon = '🥈';
+                tierTitle = 'ระดับเหรียญเงิน';
+                honorName = title || 'นักเดินทางรักษ์ธรรมชาติ';
+            } else if (tier === 'bronze' || (!tier && net > 30)) {
+                icon = '🥉';
+                tierTitle = 'ระดับเหรียญทองแดง';
+                honorName = title || 'ทูตการท่องเที่ยวสีเขียว';
+            }
+
+            currentCardData = {
+                travelerName: name,
+                totalSavings: Math.abs(saved),
+                netCarbon: net,
+                tierTitle: tierTitle,
+                honorTitle: honorName,
+                medalIcon: icon
+            };
+
+            // Populate DOM
+            document.getElementById('ticketUserNameDisplay').innerText = name;
+            document.getElementById('ticketHonorIcon').innerText = icon;
+            document.getElementById('ticketHonorTitle').innerText = tierTitle;
+            document.getElementById('cardRankHonorName').innerText = honorName;
+            document.getElementById('ticketSavingsDisplay').innerText = '-' + currentCardData.totalSavings.toFixed(2);
+            document.getElementById('ticketNetDisplay').innerText = currentCardData.netCarbon.toFixed(2);
+        }
+
+        function downloadCertificateImage() {
+            const cardElement = document.getElementById('minimalEcoCard');
+            if (!cardElement) return;
+
+            showToast("⏳ กำลังสร้างรูปภาพการ์ดสรุปผล 1:1...", "info");
+
+            html2canvas(cardElement, {
+                scale: 3, // 1:1 Crisp High-res export (~1320 x 1320 px)
+                useCORS: true,
+                allowTaint: true,
+                backgroundColor: '#FFFFFF',
+                logging: false
+            }).then(canvas => {
+                const cleanName = currentCardData.travelerName.replace(/s+/g, '_');
+                const link = document.createElement('a');
+                link.download = 'Pa-Miang-EcoCard-' + cleanName + '.png';
+                link.href = canvas.toDataURL('image/png');
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                showToast("🎉 ดาวน์โหลดรูปภาพการ์ดสรุปผล 1:1 สำเร็จ!", "success");
+            }).catch(err => {
+                console.error("html2canvas error:", err);
+                showToast("ไม่สามารถสร้างรูปภาพได้ กรุณาลองใหม่อีกครั้ง", "error");
+            });
+        }
+
+        function copyCardSummaryText() {
+            const today = new Date().toISOString().split('T')[0];
+            const summaryText = `🌿 สถิติการท่องเที่ยวคาร์บอนต่ำ ณ ชุมชนบ้านป่าเหมี้ยง • MIANG MAP
+👤 นักเดินทาง: ${currentCardData.travelerName}
+🏆 ผลประเมิน: ${currentCardData.medalIcon} ${currentCardData.tierTitle} (${currentCardData.honorTitle})
+🌱 ยอดคาร์บอนเครดิตที่ช่วยลดได้: -${currentCardData.totalSavings.toFixed(2)} kgCO2e
+📊 คาร์บอนสุทธิของทริป: ${currentCardData.netCarbon.toFixed(2)} kgCO2e
+📅 วันที่: ${today}
+
+“ขอบคุณที่ร่วมท่องเที่ยวอย่างรับผิดชอบ และช่วยดูแลผืนป่าต้นน้ำบ้านป่าเหมี้ยงไปด้วยกัน”
+— ชุมชนท่องเที่ยวบ้านป่าเหมี้ยง จ.ลำปาง
+#MIANGMAP #บ้านป่าเหมี้ยง #LowCarbonTourism #Lampang`;
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(summaryText)
+                    .then(() => showToast("📋 คัดลอกข้อความสรุปผลลง Clipboard เรียบร้อยแล้ว!", "success"))
+                    .catch(() => fallbackCopy(summaryText));
+            } else {
+                fallbackCopy(summaryText);
+            }
+        }
+
+        function fallbackCopy(text) {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            showToast("📋 คัดลอกข้อความเรียบร้อยแล้ว!", "success");
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+            const toast = document.createElement('div');
+            toast.className = 'toast toast-' + type;
+            toast.innerText = message;
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        document.addEventListener('DOMContentLoaded', loadCardData);
+    </script>
+</body>
+
+</html>

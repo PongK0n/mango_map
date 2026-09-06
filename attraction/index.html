@@ -1,13 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="รายละเอียดสถานที่ท่องเที่ยว ณ ชุมชนบ้านป่าเหมี้ยง สัมผัสธรรมชาติและวิถีชีวิตคาร์บอนต่ำ">
-    <title>MIANG MAP - Attraction Details</title>
+    <title>MIANG MAP - รายละเอียดสถานที่</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700;800&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700;800&family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
         :root {
@@ -27,7 +29,7 @@
         body {
             margin: 0;
             padding: 0;
-            font-family: 'Barlow', 'Sarabun', sans-serif;
+            font-family: 'Sarabun', 'Barlow', sans-serif;
             background-color: var(--bg-dark);
             color: var(--text-overcast);
             min-height: 100vh;
@@ -67,7 +69,7 @@
             border: none;
             cursor: pointer;
             padding: 8px;
-            display: flex;
+            display: none;
             flex-direction: column;
             gap: 5px;
             z-index: 2100;
@@ -121,9 +123,9 @@
             padding: 14px 24px;
             color: #bbb;
             text-decoration: none;
-            font-family: 'Barlow', sans-serif;
-            font-size: 16px;
-            font-weight: 600;
+            font-family: 'Sarabun', sans-serif;
+            font-size: 15px;
+            font-weight: 500;
             transition: all 0.2s ease;
         }
 
@@ -134,8 +136,8 @@
 
         .hamburger-link.active {
             color: var(--primary-light);
-            background: linear-gradient(90deg, rgba(64, 192, 87, 0.15) 0%, transparent 100%);
-            border-left: 3px solid var(--primary-light);
+            background: rgba(64, 192, 87, 0.12);
+            font-weight: 600;
         }
 
         .hamburger-icon {
@@ -165,40 +167,51 @@
             font-weight: 800;
             letter-spacing: 1px;
             text-transform: uppercase;
-            transition: all 0.3s ease;
+            text-decoration: none;
+            transition: color 0.2s ease;
         }
 
         .nav-brand:hover {
             color: var(--primary-light);
-            text-shadow: 0 0 10px rgba(64, 192, 87, 0.5);
         }
 
         .nav-links {
             display: flex;
-            gap: 15px;
+            gap: 8px;
             align-items: center;
         }
 
-        .nav-btn {
-            background: none;
-            border: none;
-            color: #ccc;
-            font-family: 'Barlow', sans-serif;
-            font-size: 15px;
+        .nav-link {
+            color: #d1d5db;
+            text-decoration: none;
+            font-size: 14px;
             font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            font-family: 'Barlow', sans-serif;
             text-transform: uppercase;
-            cursor: pointer;
-            padding: 10px 15px;
-            transition: all 0.3s ease;
-            position: relative;
-            white-space: nowrap;
             letter-spacing: 0.5px;
-            border-radius: 4px;
         }
 
-        .nav-btn:hover {
-            color: white;
-            background-color: rgba(255, 255, 255, 0.05);
+        .nav-link:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .nav-link.active {
+            color: var(--primary-light);
+            background: rgba(64, 192, 87, 0.12);
+            font-weight: 700;
+        }
+
+        @media (max-width: 768px) {
+            .hamburger-btn {
+                display: flex !important;
+            }
+            .nav-links {
+                display: none !important;
+            }
         }
 
         /* Hero Image Header Section */
@@ -354,7 +367,6 @@
         .story-container {
             background-color: var(--bg-raised);
             border: 1px solid var(--glass-border);
-            border-left: 4px solid var(--primary-light);
             border-radius: 12px;
             padding: 40px;
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
@@ -495,7 +507,7 @@
             text-decoration: none;
             padding: 13px 20px;
             border-radius: 8px;
-            box-shadow: 0 6px 20px rgba(64, 192, 87, 0.2);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
             transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
             text-align: center;
             cursor: pointer;
@@ -503,7 +515,7 @@
         }
 
         .btn-primary-cta:hover {
-            box-shadow: 0 10px 25px rgba(64, 192, 87, 0.35);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.45);
             transform: translateY(-2px);
             filter: brightness(1.05);
         }
@@ -599,13 +611,13 @@
             border-radius: 8px;
             font-weight: 700;
             font-size: 14.5px;
-            box-shadow: 0 4px 12px rgba(64, 192, 87, 0.25);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
             transition: all 0.2s ease;
         }
 
         .btn-error-back:hover {
-            box-shadow: 0 6px 16px rgba(64, 192, 87, 0.4);
-            filter: brightness(1.1);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45);
+            filter: brightness(1.08);
         }
 
         @keyframes spin {
@@ -869,30 +881,7 @@
         .admin-btn:hover {
             background-color: var(--primary-light) !important;
             color: white !important;
-            box-shadow: 0 4px 12px rgba(64, 192, 87, 0.2);
-        }
-
-        .my-bookings-btn,
-        .admin-bookings-btn,
-        .admin-manage-packages-btn {
-            background-color: rgba(64, 192, 87, 0.08) !important;
-            border: 1px solid rgba(64, 192, 87, 0.2) !important;
-            color: var(--primary-light) !important;
-            padding: 6px 16px !important;
-            border-radius: 20px !important;
-            font-weight: 700 !important;
-            font-size: 13.5px !important;
-            transition: all 0.3s ease !important;
-            margin-right: 8px;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .my-bookings-btn:hover,
-        .admin-bookings-btn:hover,
-        .admin-manage-packages-btn:hover {
-            background-color: rgba(64, 192, 87, 0.15) !important;
-            border-color: var(--primary-light) !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         }
         
         /* Toast UI Styles */
@@ -913,7 +902,7 @@
             padding: 14px 20px;
             border-radius: 12px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-            font-family: 'Barlow', 'Sarabun', sans-serif;
+            font-family: 'Sarabun', 'Barlow', sans-serif;
             font-size: 14px;
             display: flex;
             align-items: center;
@@ -928,13 +917,13 @@
             transform: translateY(0);
         }
         .toast-success {
-            border-left: 4px solid var(--primary-light);
+            border-color: rgba(64, 192, 87, 0.4);
         }
         .toast-error {
-            border-left: 4px solid #ff6b6b;
+            border-color: rgba(224, 49, 49, 0.4);
         }
         .toast-info {
-            border-left: 4px solid #339af0;
+            border-color: rgba(25, 113, 194, 0.4);
         }
         .toast-close {
             background: none;
@@ -956,12 +945,12 @@
     <!-- Nav Bar -->
     <nav class="big-nav">
         <div class="nav-left">
-            <button class="hamburger-btn" onclick="toggleHamburger()" id="hamburgerBtn">
+            <button class="hamburger-btn" onclick="toggleHamburger()" id="hamburgerBtn" aria-label="เมนูหลัก">
                 <span></span>
                 <span></span>
                 <span></span>
             </button>
-            <div class="nav-brand" onclick="window.location.href='../home/index.html'" style="cursor: pointer;">MIANG MAP</div>
+            <a href="../home/index.html" class="nav-brand">MIANG MAP</a>
         </div>
 
         <div class="hamburger-menu" id="hamburgerMenu">
@@ -974,14 +963,16 @@
                 <span>Map</span>
             </a>
             <a href="../travel_package/index.html" class="hamburger-link">
-                <span class="hamburger-icon">📦</span>
-                <span>Low Carbon Trip</span>
+                <span class="hamburger-icon">🌱</span>
+                <span>Activities & Carbon</span>
             </a>
         </div>
         <div class="hamburger-backdrop" id="hamburgerBackdrop" onclick="toggleHamburger()"></div>
 
         <div class="nav-links">
-            <button id="authBtn" onclick="toggleAuthModal()" class="nav-btn admin-btn">Login / Sign Up</button>
+            <a href="../home/index.html" class="nav-link">Home</a>
+            <a href="../map/index.html" class="nav-link">Map</a>
+            <a href="../travel_package/index.html" class="nav-link">Activities & Carbon</a>
         </div>
     </nav>
 
@@ -1029,6 +1020,12 @@
                 
                 <!-- Left Column: Story Contents -->
                 <div class="story-container">
+                    <!-- Quote & Host Banner (ADR 0006) -->
+                    <div class="story-host-banner" id="storyHostBanner" style="display: none; margin-bottom: 24px; padding: 18px 20px; background: rgba(64, 192, 87, 0.08); border: 1px solid rgba(64, 192, 87, 0.25); border-radius: 8px;">
+                        <div id="storyHostName" style="font-size: 1.1rem; font-weight: 700; color: #86efac; margin-bottom: 6px;"></div>
+                        <div id="storyHostQuote" style="font-size: 1.05rem; font-style: italic; color: #ffffff; line-height: 1.5;"></div>
+                    </div>
+
                     <!-- Thai Story Block -->
                     <div class="story-block th" id="thaiStoryBlock">
                         <div class="section-label">บันทึกเรื่องราวจากชุมชน</div>
@@ -1036,6 +1033,13 @@
                         <p class="story-text" id="thaiDescription">
                             คำอธิบายสถานที่ภาษาไทย...
                         </p>
+                    </div>
+
+                    <!-- Signature Highlights & Activities (ADR 0006) -->
+                    <div class="story-block" id="signatureHighlightsBlock" style="display: none; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                        <div class="section-label" style="color: #ffd43b;">🌟 เสน่ห์ประจำจุดหมาย & กิจกรรมห้ามพลาด</div>
+                        <p class="story-text" id="signatureHighlightsText" style="color: #ffffff; font-weight: 600; font-size: 1.02rem; margin-top: 8px; line-height: 1.6;"></p>
+                        <div id="branchesInfo" style="margin-top: 14px; font-size: 0.92rem; color: #d1d5db; line-height: 1.5;"></div>
                     </div>
 
                     <!-- English Story Block -->
@@ -1082,7 +1086,7 @@
                     <!-- Call To Actions (Button Hierarchy) -->
                     <div class="action-stack">
                         <a href="../map/index.html" id="exploreMapBtn" class="btn-primary-cta">📍 ดูตำแหน่งบนแผนที่ / Show on Map</a>
-                        <a href="../travel_package/index.html" class="btn-secondary-cta">📦 ทริปคาร์บอนต่ำ / Low Carbon Trip</a>
+                        <a href="../travel_package/index.html" class="btn-secondary-cta">🌱 กิจกรรม & คำนวณคาร์บอน</a>
                     </div>
                 </aside>
 
@@ -1090,84 +1094,17 @@
         </main>
     </div>
 
-    <!-- Auth Modals -->
-    <div id="loginModal" class="modal-overlay" onclick="if(event.target === this) closeModal('loginModal')">
-        <div class="modal-box">
-            <h3 id="authModalTitle">Login</h3>
-
-            <div id="googleAuthContainer">
-                <button class="google-btn" onclick="handleGoogleLogin()">
-                    <svg viewBox="0 0 24 24" width="20" height="20">
-                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-                    </svg>
-                    <span>Sign in with Google</span>
-                </button>
-                <div class="auth-divider">
-                    <span>OR</span>
-                </div>
-            </div>
-
-            <div id="signupFields" style="display: none;">
-                <div class="form-group">
-                    <label>First Name (ชื่อ)</label>
-                    <input type="text" id="firstNameInput" placeholder="Enter first name">
-                </div>
-                <div class="form-group">
-                    <label>Last Name (นามสกุล)</label>
-                    <input type="text" id="lastNameInput" placeholder="Enter last name">
-                </div>
-                <div class="form-group">
-                    <label>Phone Number (เบอร์โทร)</label>
-                    <input type="tel" id="phoneNumInput" placeholder="Enter phone number">
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Email</label>
-                <input type="email" id="emailInput" placeholder="Enter email">
-            </div>
-            <div class="form-group" id="passwordFieldGroup">
-                <label>Password</label>
-                <input type="password" id="passwordInput" placeholder="Enter password">
-            </div>
-            <div style="font-size: 14px; text-align: center; margin-bottom: 15px; display: flex; flex-direction: column; gap: 8px;">
-                <a href="#" onclick="toggleAuthType()" id="authToggleLink"
-                    style="color: #1a73e8; text-decoration: none;">Don't have an account? Sign Up</a>
-                <a href="#" onclick="switchToForgotMode()" id="forgotPasswordLink"
-                    style="color: #868e96; text-decoration: none; font-size: 13px;">Forgot Password? (ลืมรหัสผ่าน?)</a>
-            </div>
-            <div class="modal-actions">
-                <button class="btn btn-cancel" onclick="closeModal('loginModal')">Cancel</button>
-                <button class="btn btn-save" id="authSubmitBtn" onclick="handleAuthAction()">Login</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Password Recovery/Update Modal -->
-    <div id="updatePasswordModal" class="modal-overlay" onclick="if(event.target === this) closeModal('updatePasswordModal')">
-        <div class="modal-box">
-            <h3>Update Password</h3>
-            <div class="form-group">
-                <label>New Password (รหัสผ่านใหม่)</label>
-                <input type="password" id="newPasswordInput" placeholder="Enter new password (min 6 chars)">
-            </div>
-            <div class="modal-actions">
-                <button class="btn btn-cancel" onclick="closeModal('updatePasswordModal')">Cancel</button>
-                <button class="btn btn-save" id="updatePasswordBtn" onclick="handleUpdatePassword()">Update Password</button>
-            </div>
-        </div>
-    </div>
-
     <!-- Toast Container -->
     <div id="toast-container"></div>
 
-    <!-- Supabase Client integration -->
+    <!-- Supabase Client integration & Community Stories (ADR 0006) -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="../shared_auth.js"></script>
+    <script src="../community_stories.js"></script>
     <script>
+        const supabaseUrl = "https://siuxbtxvpsntzumcmzjb.supabase.co";
+        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNpdXhidHh2cHNudHp1bWNtempiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEzMzc3NzYsImV4cCI6MjA4NjkxMzc3Nn0.Hn2Nuut3JszHzDpbHFB3W4nPaW0eH9tVVdLSOU7GUNY";
+        const db = supabase.createClient(supabaseUrl, supabaseKey);
+
         // Hamburger toggle logic
         function toggleHamburger() {
             const btn = document.getElementById('hamburgerBtn');
@@ -1178,7 +1115,7 @@
             backdrop.classList.toggle('open');
         }
 
-        // Fetch Location from Supabase dynamically based on URL query parameter `id`
+        // Fetch Location from Supabase / Community Stories dynamically
         async function loadAttractionDetails() {
             const loading = document.getElementById('loadingState');
             const errorBlock = document.getElementById('errorState');
@@ -1194,49 +1131,113 @@
                     throw new Error("ไม่มีรหัสสถานที่ระบุมาในลิงก์ (No ID parameter found in URL)");
                 }
 
-                // Query DB Table
-                const { data: location, error } = await db
-                    .from('locations')
-                    .select('*')
-                    .eq('id', parseInt(attractionId))
-                    .single();
+                // Check community stories dictionary
+                const story = typeof getCommunityStory === 'function' ? getCommunityStory(attractionId) : null;
 
-                if (error || !location) {
-                    throw new Error(error ? error.message : "ไม่พบข้อมูลสถานที่ท่องเที่ยวนี้ในระบบฐานข้อมูล");
+                let location = null;
+                const isNumericId = /^\d+$/.test(attractionId);
+
+                if (isNumericId) {
+                    // Query DB Table
+                    const { data, error } = await db
+                        .from('locations')
+                        .select('*')
+                        .eq('id', parseInt(attractionId))
+                        .single();
+
+                    if (!error && data) {
+                        location = data;
+                    }
                 }
 
-                // Populate elements
-                document.getElementById('attractionTitle').innerText = location.name;
-                document.title = `MIANG MAP - ${location.name}`;
-                document.getElementById('latitudeBadge').innerHTML = `<span>Lat:</span> ${location.lat.toFixed(6)}`;
-                document.getElementById('longitudeBadge').innerHTML = `<span>Lng:</span> ${location.lng.toFixed(6)}`;
+                // Fallback to synthetic location from story if not found in database
+                if (!location) {
+                    if (story) {
+                        location = {
+                            id: story.id,
+                            name: story.name,
+                            lat: 18.82850,
+                            lng: 99.38700,
+                            image_url: story.heroImage,
+                            description_th: story.storyTh,
+                            description_en: story.storyEn
+                        };
+                    } else {
+                        throw new Error("ไม่พบข้อมูลสถานที่ท่องเที่ยวนี้ในระบบฐานข้อมูล");
+                    }
+                }
+
+                // Title & Page title
+                const displayName = story ? `${story.name} (โดย ${story.host})` : location.name;
+                document.getElementById('attractionTitle').innerText = displayName;
+                document.title = `MIANG MAP - ${displayName}`;
+                
+                const latVal = typeof location.lat === 'number' ? location.lat.toFixed(6) : '18.828500';
+                const lngVal = typeof location.lng === 'number' ? location.lng.toFixed(6) : '99.387000';
+                document.getElementById('latitudeBadge').innerHTML = `<span>Lat:</span> ${latVal}`;
+                document.getElementById('longitudeBadge').innerHTML = `<span>Lng:</span> ${lngVal}`;
 
                 // Ranger Record details
-                document.getElementById('rangerRecordId').innerText = `ID // #${String(location.id).padStart(4, '0')}`;
-                document.getElementById('rangerCoords').innerText = `${location.lat.toFixed(6)}, ${location.lng.toFixed(6)}`;
+                const recordIdStr = typeof location.id === 'number' ? String(location.id).padStart(4, '0') : String(location.id).toUpperCase();
+                document.getElementById('rangerRecordId').innerText = `ID // #${recordIdStr}`;
+                document.getElementById('rangerCoords').innerText = `${latVal}, ${lngVal}`;
 
-                // Set Hero Background Image or fallback ranger map grid
+                // Host Quote Banner (ADR 0006)
+                const hostBanner = document.getElementById('storyHostBanner');
+                if (story && story.tagline) {
+                    document.getElementById('storyHostName').innerText = `👤 ${story.host} • ${story.categoryLabel || ''}`;
+                    document.getElementById('storyHostQuote').innerText = `“${story.tagline}”`;
+                    hostBanner.style.display = 'block';
+                } else {
+                    hostBanner.style.display = 'none';
+                }
+
+                // Set Hero Background Image or fallback
                 const heroBanner = document.getElementById('heroBanner');
-                if (location.image_url && location.image_url.trim() !== '') {
-                    heroBanner.style.backgroundImage = `url('${location.image_url}')`;
+                const heroImgUrl = (location.image_url && location.image_url.trim() !== '') 
+                    ? location.image_url 
+                    : (story && story.heroImage ? story.heroImage : '');
+                
+                if (heroImgUrl) {
+                    heroBanner.style.backgroundImage = `url('${heroImgUrl}')`;
                     heroBanner.classList.remove('no-image');
                 } else {
                     heroBanner.style.backgroundImage = '';
                     heroBanner.classList.add('no-image');
                 }
 
-                // Set Content (Thai)
-                const descTh = location.description_th ? location.description_th.trim() : "";
+                // Set Content (Thai) - fallback to storyTh if db is empty
+                const descTh = (location.description_th && location.description_th.trim() !== '') 
+                    ? location.description_th.trim() 
+                    : (story ? story.storyTh : "");
+
                 if (descTh) {
                     document.getElementById('thaiDescription').innerText = descTh;
                     document.getElementById('thaiStoryBlock').style.display = 'block';
                 } else {
-                    // Fallback text if description is empty
-                    document.getElementById('thaiDescription').innerHTML = `<span style="color: var(--text-muted); font-style: italic;">ยังไม่มีคำอธิบายหรือเรื่องเล่าสำหรับจุดท่องเที่ยวธรรมชาตินี้ในขณะนี้ ยืนยันพิกัดจุดหมายที่ละติจูด ${location.lat} และลองจิจูด ${location.lng}</span>`;
+                    document.getElementById('thaiDescription').innerHTML = `<span style="color: var(--text-muted); font-style: italic;">ยังไม่มีคำอธิบายหรือเรื่องเล่าสำหรับจุดท่องเที่ยวธรรมชาตินี้ในขณะนี้ ยืนยันพิกัดจุดหมายที่ละติจูด ${latVal} และลองจิจูด ${lngVal}</span>`;
+                }
+
+                // Signature Highlights & Activities (ADR 0006)
+                const highlightsBlock = document.getElementById('signatureHighlightsBlock');
+                if (story && story.signatureHighlight) {
+                    document.getElementById('signatureHighlightsText').innerText = story.signatureHighlight;
+                    const branchesDiv = document.getElementById('branchesInfo');
+                    if (story.branches && story.branches.length > 0) {
+                        branchesDiv.innerHTML = `<strong style="color: #86efac;">📍 พิกัดสาขา / การให้บริการ:</strong><ul style="margin: 6px 0 0 18px; padding: 0;">${story.branches.map(b => `<li style="margin-bottom: 4px;">${b}</li>`).join('')}</ul>`;
+                    } else {
+                        branchesDiv.innerHTML = '';
+                    }
+                    highlightsBlock.style.display = 'block';
+                } else {
+                    highlightsBlock.style.display = 'none';
                 }
 
                 // Set Content (English)
-                const descEn = location.description_en ? location.description_en.trim() : "";
+                const descEn = (location.description_en && location.description_en.trim() !== '') 
+                    ? location.description_en.trim() 
+                    : (story ? story.storyEn : "");
+
                 const enBlock = document.getElementById('englishStoryBlock');
                 if (descEn) {
                     document.getElementById('englishDescription').innerText = descEn;
@@ -1245,14 +1246,28 @@
                     enBlock.style.display = 'none';
                 }
 
+                // Update Ecological Footprint in Ranger Panel if story has carbonFact
+                if (story && story.carbonFact) {
+                    const ecoPill = document.querySelector('.ranger-panel .eco-pill');
+                    if (ecoPill) {
+                        ecoPill.innerText = `🍃 ${story.carbonFact}`;
+                    }
+                }
+
                 // Switch visible panes
                 loading.style.display = 'none';
                 content.style.display = 'block';
 
-                // Set dynamic explore map URL with focus ID
+                // Set dynamic explore map URL
                 const exploreMapBtn = document.getElementById('exploreMapBtn');
                 if (exploreMapBtn) {
-                    exploreMapBtn.href = `../map/index.html?focus=${location.id}`;
+                    if (typeof location.id === 'number') {
+                        exploreMapBtn.href = `../map/index.html?focus=${location.id}`;
+                    } else if (story && story.category) {
+                        exploreMapBtn.href = `../map/index.html?filter=${story.category}`;
+                    } else {
+                        exploreMapBtn.href = `../map/index.html`;
+                    }
                 }
 
             } catch (err) {

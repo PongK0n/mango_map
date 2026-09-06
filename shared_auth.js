@@ -1,251 +1,109 @@
-// shared_auth.js - Shared Authentication Logic across Home, Map, and Packages pages
+// shared_auth.js - Streamlined Map Admin Authentication for MIANG MAP
 
 const supabaseUrl = "https://siuxbtxvpsntzumcmzjb.supabase.co";
 const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNpdXhidHh2cHNudHp1bWNtempiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEzMzc3NzYsImV4cCI6MjA4NjkxMzc3Nn0.Hn2Nuut3JszHzDpbHFB3W4nPaW0eH9tVVdLSOU7GUNY";
 
-// Initialize Supabase Client globally if not already set up
+// Initialize Supabase Client globally
 if (typeof window.db === 'undefined') {
     window.db = supabase.createClient(supabaseUrl, supabaseKey);
 }
 
-// Global authentication states
-var isUserLoggedIn = false;
+// Global authentication state
 var isAdminLoggedIn = false;
-var currentUserEmail = "";
-var currentUserProfile = {};
 const ADMIN_EMAIL = 'miangmap@gmail.com';
 
-let authMode = 'login'; // 'login', 'signup', 'forgot'
-
-async function toggleAuthModal() {
-    if (isUserLoggedIn) {
-        const confirmLogout = confirm("คุณต้องการออกจากระบบใช่หรือไม่?");
-        if (!confirmLogout) return;
-        const { error } = await db.auth.signOut();
-        if (!error) showToast("ออกจากระบบสำเร็จ", "success");
-    } else {
-        authMode = 'login';
-        updateAuthModalUI();
-        const emailInput = document.getElementById('emailInput');
+function openAdminLoginModal() {
+    const modal = document.getElementById('adminLoginModal');
+    if (modal) {
+        const emailInput = document.getElementById('adminEmailInput');
+        const passInput = document.getElementById('adminPasswordInput');
         if (emailInput) emailInput.value = '';
-        const passwordInput = document.getElementById('passwordInput');
-        if (passwordInput) passwordInput.value = '';
-        const fNameInput = document.getElementById('firstNameInput');
-        if (fNameInput) fNameInput.value = '';
-        const lNameInput = document.getElementById('lastNameInput');
-        if (lNameInput) lNameInput.value = '';
-        const phoneNumInput = document.getElementById('phoneNumInput');
-        if (phoneNumInput) phoneNumInput.value = '';
-        document.getElementById('loginModal').style.display = "flex";
+        if (passInput) passInput.value = '';
+        modal.style.display = 'flex';
     }
+}
+
+function closeAdminLoginModal() {
+    const modal = document.getElementById('adminLoginModal');
+    if (modal) modal.style.display = 'none';
 }
 
 function closeModal(modalId) {
     const modal = document.getElementById(modalId);
-    if (modal) modal.style.display = "none";
+    if (modal) modal.style.display = 'none';
 }
 
-function updateAuthModalUI() {
-    const title = document.getElementById('authModalTitle');
-    const submitBtn = document.getElementById('authSubmitBtn');
-    const toggleLink = document.getElementById('authToggleLink');
-    const forgotLink = document.getElementById('forgotPasswordLink');
-    const signupFields = document.getElementById('signupFields');
-    const passwordGroup = document.getElementById('passwordFieldGroup');
-    const googleContainer = document.getElementById('googleAuthContainer');
+async function handleAdminLogin() {
+    const emailInput = document.getElementById('adminEmailInput');
+    const passInput = document.getElementById('adminPasswordInput');
+    const submitBtn = document.getElementById('adminSubmitBtn');
 
-    if (authMode === 'login') {
-        if (title) title.innerText = "Login";
-        if (submitBtn) submitBtn.innerText = "Login";
-        if (toggleLink) {
-            toggleLink.innerText = "Don't have an account? Sign Up";
-            toggleLink.style.display = "inline";
-        }
-        if (forgotLink) forgotLink.style.display = "inline";
-        if (signupFields) signupFields.style.display = "none";
-        if (passwordGroup) passwordGroup.style.display = "block";
-        if (googleContainer) googleContainer.style.display = "block";
-    } else if (authMode === 'signup') {
-        if (title) title.innerText = "Sign Up";
-        if (submitBtn) submitBtn.innerText = "Sign Up";
-        if (toggleLink) {
-            toggleLink.innerText = "Already have an account? Login";
-            toggleLink.style.display = "inline";
-        }
-        if (forgotLink) forgotLink.style.display = "none";
-        if (signupFields) signupFields.style.display = "block";
-        if (passwordGroup) passwordGroup.style.display = "block";
-        if (googleContainer) googleContainer.style.display = "block";
-    } else if (authMode === 'forgot') {
-        if (title) title.innerText = "Reset Password";
-        if (submitBtn) submitBtn.innerText = "Send Reset Link";
-        if (toggleLink) {
-            toggleLink.innerText = "Back to Login";
-            toggleLink.style.display = "inline";
-        }
-        if (forgotLink) forgotLink.style.display = "none";
-        if (signupFields) signupFields.style.display = "none";
-        if (passwordGroup) passwordGroup.style.display = "none";
-        if (googleContainer) googleContainer.style.display = "none";
-    }
-}
+    const email = emailInput ? emailInput.value.trim() : '';
+    const pass = passInput ? passInput.value : '';
 
-async function handleGoogleLogin() {
-    const redirectUrl = window.location.origin + window.location.pathname;
-    const { error } = await db.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-            redirectTo: redirectUrl
-        }
-    });
-    if (error) {
-        showToast("เกิดข้อผิดพลาดในการล็อกอินด้วย Google: " + error.message, "error");
-    }
-}
-
-function toggleAuthType() {
-    if (authMode === 'forgot') {
-        authMode = 'login';
-    } else {
-        authMode = authMode === 'login' ? 'signup' : 'login';
-    }
-    updateAuthModalUI();
-}
-
-function switchToForgotMode() {
-    authMode = 'forgot';
-    updateAuthModalUI();
-}
-
-async function handleAuthAction() {
-    const email = document.getElementById('emailInput').value;
-    const passwordInput = document.getElementById('passwordInput');
-    const pass = passwordInput ? passwordInput.value : '';
-
-    const firstNameInput = document.getElementById('firstNameInput');
-    const fName = firstNameInput ? firstNameInput.value : '';
-    const lastNameInput = document.getElementById('lastNameInput');
-    const lName = lastNameInput ? lastNameInput.value : '';
-    const phoneNumInput = document.getElementById('phoneNumInput');
-    const phoneStr = phoneNumInput ? phoneNumInput.value : '';
-
-    const submitBtn = document.getElementById('authSubmitBtn');
-
-    if (!email) {
-        showToast("กรุณากรอกอีเมล", "error");
+    if (!email || !pass) {
+        showToast("กรุณากรอกอีเมลและรหัสผ่านผู้ดูแลระบบ", "error");
         return;
     }
 
-    if (authMode !== 'forgot' && !pass) {
-        showToast("กรุณากรอกรหัสผ่าน", "error");
+    if (submitBtn) submitBtn.innerText = "กำลังเข้าสู่ระบบ...";
+
+    const res = await db.auth.signInWithPassword({ email, password: pass });
+
+    if (res.error) {
+        showToast("เข้าสู่ระบบไม่สำเร็จ: " + res.error.message, "error");
+        if (submitBtn) submitBtn.innerText = "เข้าสู่ระบบ (Admin)";
         return;
     }
 
-    if (authMode === 'signup' && (!fName || !lName || !phoneStr)) {
-        showToast("กรุณากรอก ชื่อ, นามสกุล และเบอร์โทรศัพท์ ให้ครบถ้วน", "error");
+    if (res.data?.user?.email !== ADMIN_EMAIL) {
+        await db.auth.signOut();
+        showToast("บัญชีนี้ไม่มีสิทธิ์ผู้ดูแลระบบ (Admin Only)", "error");
+        if (submitBtn) submitBtn.innerText = "เข้าสู่ระบบ (Admin)";
         return;
     }
 
-    if (submitBtn) submitBtn.innerText = "กำลังประมวลผล...";
+    if (submitBtn) submitBtn.innerText = "เข้าสู่ระบบ (Admin)";
+    closeAdminLoginModal();
+    showToast("เข้าสู่โหมดผู้ดูแลระบบสำเร็จ! 🔑", "success");
+}
 
-    let error = null;
-    if (authMode === 'signup') {
-        const res = await db.auth.signUp({
-            email: email,
-            password: pass,
-            options: {
-                data: {
-                    first_name: fName,
-                    last_name: lName,
-                    phone: phoneStr
-                }
-            }
-        });
-        error = res.error;
-        if (!error) showToast("สมัครสมาชิกสำเร็จ! ยินดีต้อนรับสู่ระบบ", "success");
-    } else if (authMode === 'login') {
-        const res = await db.auth.signInWithPassword({ email: email, password: pass });
-        error = res.error;
-        if (!error) showToast("เข้าสู่ระบบสำเร็จ!", "success");
-    } else if (authMode === 'forgot') {
-        const redirectUrl = window.location.origin + window.location.pathname;
-        const res = await db.auth.resetPasswordForEmail(email, { redirectTo: redirectUrl });
-        error = res.error;
-        if (!error) showToast("ส่งลิงก์รีเซตรหัสผ่านไปยังอีเมลของคุณเรียบร้อยแล้ว!", "success");
-    }
+async function handleAdminLogout() {
+    const confirmLogout = confirm("ต้องการออกจากโหมดผู้ดูแลระบบใช่หรือไม่?");
+    if (!confirmLogout) return;
 
-    if (error) {
-        showToast("เกิดข้อผิดพลาด: " + error.message, "error");
-        updateAuthModalUI(); // รีเซ็ตข้อความปุ่ม
-    } else {
-        document.getElementById('emailInput').value = '';
-        if (passwordInput) passwordInput.value = '';
-        closeModal('loginModal');
+    await db.auth.signOut();
+    showToast("ออกจากโหมดผู้ดูแลระบบเรียบร้อยแล้ว", "success");
+
+    // Remove ?admin=true from URL cleanly
+    const url = new URL(window.location.href);
+    if (url.searchParams.has('admin')) {
+        url.searchParams.delete('admin');
+        window.history.replaceState({}, '', url.pathname + (url.search ? url.search : ''));
     }
 }
 
-async function handleUpdatePassword() {
-    const newPassword = document.getElementById('newPasswordInput').value;
-    const updateBtn = document.getElementById('updatePasswordBtn');
-
-    if (!newPassword || newPassword.length < 6) {
-        showToast("รหัสผ่านต้องมีความยาวอย่างน้อย 6 ตัวอักษร", "error");
-        return;
-    }
-
-    if (updateBtn) updateBtn.innerText = "กำลังบันทึก...";
-
-    const { error } = await db.auth.updateUser({ password: newPassword });
-
-    if (updateBtn) updateBtn.innerText = "Update Password";
-
-    if (error) {
-        showToast("เกิดข้อผิดพลาดในการเปลี่ยนรหัสผ่าน: " + error.message, "error");
-    } else {
-        showToast("เปลี่ยนรหัสผ่านสำเร็จแล้ว! สามารถเข้าสู่ระบบด้วยรหัสผ่านใหม่ได้ทันที", "success");
-        closeModal('updatePasswordModal');
-    }
-}
-
-// Global Auth State Change handler for navbar sync
+// Global Auth State Change handler
 db.auth.onAuthStateChange((event, session) => {
-    isUserLoggedIn = !!session;
-    if (session) {
-        currentUserEmail = session.user.email;
-        currentUserProfile = session.user.user_metadata || {};
-        isAdminLoggedIn = (currentUserEmail === ADMIN_EMAIL);
-        const authBtn = document.getElementById('authBtn');
-        if (authBtn) authBtn.innerText = isAdminLoggedIn ? "Logout (Admin)" : "Logout (User)";
-    } else {
-        currentUserEmail = "";
-        currentUserProfile = {};
-        isAdminLoggedIn = false;
-        const authBtn = document.getElementById('authBtn');
-        if (authBtn) authBtn.innerText = "Login / Sign Up";
+    isAdminLoggedIn = !!(session && session.user && session.user.email === ADMIN_EMAIL);
+
+    // Update Floating Admin Badge
+    const adminBadge = document.getElementById('adminFloatingBadge');
+    if (adminBadge) {
+        adminBadge.style.display = isAdminLoggedIn ? 'flex' : 'none';
     }
 
-    // Standard buttons visibility toggle
-    const bookingsBtn = document.getElementById('adminBookingsBtn');
-    const managePkgBtn = document.getElementById('adminManagePackagesBtn');
-    const myBookingsBtn = document.getElementById('myBookingsBtn');
-
-    if (bookingsBtn) bookingsBtn.style.display = isAdminLoggedIn ? 'inline-block' : 'none';
-    if (managePkgBtn) managePkgBtn.style.display = isAdminLoggedIn ? 'inline-block' : 'none';
-    if (myBookingsBtn) myBookingsBtn.style.display = (isUserLoggedIn && !isAdminLoggedIn) ? 'inline-block' : 'none';
-
-    if (event === 'PASSWORD_RECOVERY') {
-        const newPasswordInput = document.getElementById('newPasswordInput');
-        if (newPasswordInput) newPasswordInput.value = '';
-        const updatePasswordModal = document.getElementById('updatePasswordModal');
-        if (updatePasswordModal) updatePasswordModal.style.display = "flex";
+    // Refresh map if filterMap is available
+    if (typeof window.filterMap === 'function') {
+        window.filterMap(window.currentFilter || 'all');
     }
 
-    if (window.onAuthChange) {
+    if (typeof window.onAuthChange === 'function') {
         window.onAuthChange(session);
     }
 });
 
-// Toast display helper if not defined
+// Toast display helper
 if (typeof window.showToast === 'undefined') {
     window.showToast = function(message, type = 'success') {
         let container = document.getElementById('toast-container');
@@ -273,7 +131,6 @@ if (typeof window.showToast === 'undefined') {
 
         container.appendChild(toast);
         
-        // Trigger reflow for transition
         toast.offsetHeight;
         toast.classList.add('show');
 
@@ -285,5 +142,3 @@ if (typeof window.showToast === 'undefined') {
         }, 4000);
     };
 }
-
-// Trigger redeployment - 2026-07-05

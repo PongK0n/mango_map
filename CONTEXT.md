@@ -4,12 +4,19 @@
 
 MIANG MAP is a community tourism platform for Ban Pa Miang (บ้านป่าเหมี้ยง) in Lampang, Thailand. It supports low-carbon tourism by allowing visitors to view, plan, and register their trips, then track their carbon footprint and engage in eco-friendly challenges while in the community.
 
-### Travel Packages (Low Carbon Trips)
-The platform offers pre-defined travel packages (e.g., Adventure, Foodie, Scenic) as well as a **Flexible Trip (ทริปอิสระตามใจคุณ)** option (ID: 99).
-- **Flexible Trip Purpose**: For visitors who do not want to stick to a pre-defined itinerary, or are undecided about specific activities from the beginning. They can register this flexible trip first, and dynamically check off green/sustainable activities (Green Checklist) during their stay in the community to calculate actual carbon savings and earn rewards/privileges.
+### Low Carbon Activities & Carbon Tracker (กิจกรรม & คำนวณคาร์บอน)
+Instead of rigid pre-defined travel packages, the platform provides an interactive, zero-friction **Low Carbon Activity Tracker & Calculator** (`travel_package/index.html`).
+- **Purpose**: Allows visitors to select inbound transport and tick off individual village activities (homestay, tea craft, coffee, local meals, viewpoints) and green offset actions (tumblers, walking, waste cleanup).
+- **Real-time Carbon Assessment**: Calculates gross emissions, green savings, net carbon, and eco rating dynamically based on TGO and IPCC standards.
+- **Minimal Square Eco Rank Card (การ์ดแสดงผลแรงก์และเครดิตคาร์บอน 1:1)**: Users can generate a clean, plain square card displaying their traveler name, prestige rank achieved, carbon credits saved, net carbon impact, and a community thank-you message. Designed in a 1:1 square ratio optimized for saving as high-resolution PNG images and sharing to social media feeds (Instagram, Facebook, LINE). Saved locally in `localStorage` for uninterrupted tracking during travel.
 
-### Attraction Details & Map Integration
-- **Show on Map (ดูตำแหน่งบนแผนที่)**: In the attraction details page (`attraction/index.html`), clicking "📍 ดูตำแหน่งบนแผนที่ / Show on Map" navigates to the interactive map (`map/index.html?focus=ID`). The map automatically pans, zooms in closely (zoom level 17), and opens the Leaflet popup card for the target location.
+### Interactive Map & Direct Contact Directory
+- **Discovery & Direct Contact**: The interactive map (`map/index.html`) serves as a community directory for homestays, eco-attractions, cafes, and local shops. Rather than in-app room reservations, homestay cards prioritize direct communication via **Facebook Pages** (with telephone fallback), detailed story pages (`attraction/index.html?id=ID`), and Google Maps turn-by-turn navigation.
+- **Show on Map (ดูตำแหน่งบนแผนที่)**: From attraction detail pages, clicking "📍 ดูตำแหน่งบนแผนที่ / Show on Map" opens `map/index.html?focus=ID`, smoothly panning, zooming (level 17), and opening the target popup card.
+
+### Authentication & Admin Mode Architecture
+- **Zero-Friction Visitor Experience**: All visitor-facing pages (`home`, `travel_package`, `attraction`, `map`) have no login or sign-up barriers. Visitors can freely explore, compute carbon footprints, and generate eco cards without user accounts.
+- **Discreet Map Admin Mode (`map/index.html?admin=true`)**: Administrative privileges (dragging pins, editing location metadata) are accessed discreetly by administrators via query parameter and a compact Supabase login form, with an active floating badge providing single-click sign-out.
 
 ---
 
@@ -43,3 +50,17 @@ When guests perform sustainable tasks on their Challenge Pass, carbon reductions
 - **Zero-Food-Miles Eating** (local organic menu): **-2.5 kgCO2e/person**
 - **Homestay Resource Conservation** (turning off lights/fans): **-1.0 kgCO2e/person**
 - **Eco-Activity Participation** (conservation walking/plogging): **-2.0 kgCO2e/person**
+
+### 4. Empirical Village Activity Carbon Lifecycle Calculations (Field Research Document, ADR 0006)
+Specific empirical lifecycle measurements recorded for Ban Pa Miang community experiences:
+- **Tea Pillow & Tea Doll Crafting (หมอนใบชา & ตุ๊กตาชา โดย พี่สุนีย์)**: **0.70 kgCO2e/item**
+  *(Wild assam tea leaves dried naturally with zero emissions; cotton casing 1 kg emits 1.5 - 3.5 kgCO2e, tailored and transported at 5 - 6 kgCO2e; ~120g cotton per craft item = 0.70 kgCO2e)*
+- **Agroforestry Mixed Garden Walking Tour (เดินทัวร์สวนเกษตรผสมผสาน โดย แม่สายชล)**: **0.00 kgCO2e**
+  *(Direct walking tour from homestays to coffee/tea/avocado orchards with zero fuel use)*
+- **Traditional Khan Tok 3-Dish Meal (สำรับขันโตกพื้นบ้าน 3 เมนู โดย พี่ติ๋ง / พี่หนุ่ม)**: **1.70 - 2.60 kgCO2e/set (avg 0.85 kgCO2e/person/meal)**
+  *(Breakdown: Nam Prik Num + Steamed Veg 0.25–0.40 kgCO2e [0-mile]; Gaeng Khae Gai Baan 0.80–1.20 kgCO2e; Yum Bai Miang Samunphrai 0.30–0.50 kgCO2e; Organic sticky rice in banana leaf + cooking LPG 0.35–0.50 kgCO2e)*
+- **Complete Lifecycle Coffee Workshop (เวิร์กช็อปเปิดโลกกาแฟครบวงจร โดย พี่คมสันต์ / พี่หนุ่ม)**: **0.06 - 0.10 kgCO2e/cup (avg 0.08 kgCO2e/cup)**
+  *(Breakdown: Shade-grown picking 10–20g; Sun-drying 5–10g; LPG hand-roasting 30–45g; Manual grinding 0g; LPG boiling & drip 15–25g)*
+- **Heritage Wood-Steamed Miang Making (เรียนรู้วิถีทำเหมี้ยงโบราณเตาฟืน โดย ลุงสมบัติ & ยายเขียว)**: **0.035 - 0.07 kgCO2e/bunch (avg 0.05 kgCO2e/bunch)**
+  *(Breakdown: Hand-picking 0–5g; Dried fallen wood gathering & bamboo splitting 0–2g; Traditional wooden steamer & wood fire 30–60g [renewable biogenic carbon]; Bamboo tray air-cooling 0g; Bamboo-tied bunch with banana leaf packaging 2–5g)*
+

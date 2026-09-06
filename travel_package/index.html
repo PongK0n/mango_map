@@ -1,28 +1,33 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="เลือกแผนแนะนำเส้นทางท่องเที่ยวคาร์บอนต่ำ (Low Carbon Trip) ณ ชุมชนบ้านป่าเหมี้ยง สัมผัสธรรมชาติและการเดินทางที่เป็นมิตรต่อโลกด้วยตัวเอง">
-    <title>MIANG MAP - Low Carbon Trip</title>
+    <meta name="description" content="เลือกกิจกรรมท่องเที่ยวและคำนวณคาร์บอนฟุตพริ้นท์ ณ ชุมชนบ้านป่าเหมี้ยง สัมผัสวิถีชีวิตที่เป็นมิตรต่อโลกด้วยตัวคุณเอง">
+    <title>MIANG MAP - กิจกรรม & คำนวณคาร์บอน</title>
 
-    <link
-        href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700;800&family=Sarabun:wght@300;400;600&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=1.0.1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700;800&family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=1.0.2">
+    <style>
+        body {
+            font-family: 'Sarabun', 'Barlow', sans-serif;
+        }
+    </style>
 </head>
 
 <body>
 
     <nav class="big-nav">
         <div class="nav-left">
-            <button class="hamburger-btn" onclick="toggleHamburger()" id="hamburgerBtn">
+            <button class="hamburger-btn" onclick="toggleHamburger()" id="hamburgerBtn" aria-label="เมนูหลัก">
                 <span></span>
                 <span></span>
                 <span></span>
             </button>
-            <div class="nav-brand" onclick="goHome()" style="cursor: pointer;">MIANG MAP</div>
+            <a href="../home/index.html" class="nav-brand">MIANG MAP</a>
         </div>
 
         <div class="hamburger-menu" id="hamburgerMenu">
@@ -35,524 +40,32 @@
                 <span>Map</span>
             </a>
             <a href="../travel_package/index.html" class="hamburger-link active">
-                <span class="hamburger-icon">📦</span>
-                <span>Low Carbon Trip</span>
+                <span class="hamburger-icon">🌱</span>
+                <span>Activities & Carbon</span>
             </a>
         </div>
         <div class="hamburger-backdrop" id="hamburgerBackdrop" onclick="toggleHamburger()"></div>
 
         <div class="nav-links">
-            <button id="myBookingsBtn" onclick="openUserPkgBookingsModal()" class="nav-btn my-bookings-btn" style="display: none;">📋 My Registered Plans</button>
-
-            <button id="adminBookingsBtn" onclick="openAdminPkgBookingsModal()" class="nav-btn admin-bookings-btn" style="display: none;">📅 View Plans</button>
-            <button id="adminManagePackagesBtn" onclick="openAdminManagePackagesModal()" class="nav-btn admin-manage-packages-btn" style="display: none;">🛠️ Manage Low Carbon Trips</button>
-
-            <button id="authBtn" onclick="toggleAuthModal()" class="nav-btn admin-btn">Login / Sign Up</button>
+            <a href="../home/index.html" class="nav-link">Home</a>
+            <a href="../map/index.html" class="nav-link">Map</a>
+            <a href="../travel_package/index.html" class="nav-link active">Activities & Carbon</a>
         </div>
     </nav>
 
-    <div id="loginModal" class="modal-overlay" onclick="if(event.target === this) closeModal('loginModal')">
-        <div class="modal-box">
-            <h3 id="authModalTitle">Login</h3>
 
-            <div id="googleAuthContainer">
-                <button class="google-btn" onclick="handleGoogleLogin()">
-                    <svg viewBox="0 0 24 24" width="20" height="20">
-                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-                    </svg>
-                    <span>Sign in with Google</span>
-                </button>
-                <div class="auth-divider">
-                    <span>OR</span>
-                </div>
-            </div>
-
-            <div id="signupFields" style="display: none;">
-                <div class="form-group">
-                    <label>First Name (ชื่อ)</label>
-                    <input type="text" id="firstNameInput" placeholder="Enter first name">
-                </div>
-                <div class="form-group">
-                    <label>Last Name (นามสกุล)</label>
-                    <input type="text" id="lastNameInput" placeholder="Enter last name">
-                </div>
-                <div class="form-group">
-                    <label>Phone Number (เบอร์โทร)</label>
-                    <input type="tel" id="phoneNumInput" placeholder="Enter phone number">
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Email</label>
-                <input type="email" id="emailInput" placeholder="Enter email">
-            </div>
-            <div class="form-group" id="passwordFieldGroup">
-                <label>Password</label>
-                <input type="password" id="passwordInput" placeholder="Enter password">
-            </div>
-            <div style="font-size: 0.9rem; text-align: center; margin-bottom: 15px; display: flex; flex-direction: column; gap: 8px;">
-                <a href="#" onclick="toggleAuthType()" id="authToggleLink"
-                    style="color: var(--primary-light); text-decoration: none;">Don't have an account? Sign Up</a>
-                <a href="#" onclick="switchToForgotMode()" id="forgotPasswordLink"
-                    style="color: var(--text-muted); text-decoration: none; font-size: 0.9rem;">Forgot Password? (ลืมรหัสผ่าน?)</a>
-            </div>
-            <div class="modal-actions">
-                <button class="btn btn-cancel" onclick="closeModal('loginModal')">Cancel</button>
-                <button class="btn btn-save" id="authSubmitBtn" onclick="handleAuthAction()">Login</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Password Recovery/Update Modal -->
-    <div id="updatePasswordModal" class="modal-overlay" onclick="if(event.target === this) closeModal('updatePasswordModal')">
-        <div class="modal-box">
-            <h3>Set New Password</h3>
-            <div class="form-group">
-                <label>New Password (รหัสผ่านใหม่)</label>
-                <input type="password" id="newPasswordInput" placeholder="Enter new password (at least 6 chars)">
-            </div>
-            <div class="modal-actions">
-                <button class="btn btn-cancel" onclick="closeModal('updatePasswordModal')">Cancel</button>
-                <button class="btn btn-save" id="updatePasswordBtn" onclick="handleUpdatePassword()">Update Password</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Admin Package Bookings Modal -->
-    <div id="adminPkgBookingsModal" class="modal-overlay" onclick="if(event.target === this) closeModal('adminPkgBookingsModal')">
-        <div class="modal-box" style="width: 90%; max-width: 800px;">
-            <h3>📅 Registered Low Carbon Trips (แผนการเดินทางท่องเที่ยวที่ลงทะเบียน)</h3>
-            <div class="admin-bookings-table-container">
-                <table class="admin-bookings-table">
-                    <thead>
-                        <tr>
-                            <th>Low Carbon Trip Name</th>
-                            <th>Customer Name</th>
-                            <th>Contact Info</th>
-                            <th>Travel Date</th>
-                            <th>Guests</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="adminPkgBookingsTableBody">
-                        <!-- Bookings load dynamically -->
-                    </tbody>
-                </table>
-            </div>
-            <div class="modal-actions">
-                <button class="btn btn-cancel" onclick="closeModal('adminPkgBookingsModal')">Close</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Admin Manage Packages Modal -->
-    <div id="adminManagePackagesModal" class="modal-overlay" onclick="if(event.target === this) closeModal('adminManagePackagesModal')">
-        <div class="modal-box" style="width: 90%; max-width: 700px;">
-            <h3>🛠️ Manage Low Carbon Trips</h3>
-            <div class="admin-bookings-table-container">
-                <table class="admin-bookings-table">
-                    <thead>
-                        <tr>
-                            <th>Low Carbon Trip Title</th>
-                            <th>Subtitle</th>
-                            <th>Carbon Summary</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="adminPackagesTableBody">
-                        <!-- Packages load dynamically -->
-                    </tbody>
-                </table>
-            </div>
-            <div class="modal-actions">
-                <button class="btn btn-cancel" onclick="closeModal('adminManagePackagesModal')">Close</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Edit Package Modal -->
-    <div id="editPackageModal" class="modal-overlay" onclick="if(event.target === this) closeModal('editPackageModal')">
-        <div class="modal-box" style="width: 90%; max-width: 500px;">
-            <h3>✏️ Edit Low Carbon Trip Details</h3>
-            <input type="hidden" id="editPkgIdVal">
-
-            <div class="form-group">
-                <label>Low Carbon Trip Title (ชื่อแผนแนะนำการเดินทาง)</label>
-                <input type="text" id="editPkgTitle" placeholder="e.g. Adventure Low Carbon Trip">
-            </div>
-
-            <div class="form-group">
-                <label>Subtitle (คำโปรยรอง)</label>
-                <input type="text" id="editPkgSubtitle" placeholder="e.g. สำหรับคนชอบ Adventure">
-            </div>
-
-            <div class="form-group">
-                <label>Description (รายละเอียด)</label>
-                <textarea id="editPkgDesc" rows="3" style="width: 100%; box-sizing: border-box; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; color: #ffffff; padding: 10px; font-family: 'Sarabun', sans-serif; font-size: 14.5px; resize: vertical;"></textarea>
-            </div>
-
-            <div class="form-group">
-                <label>Carbon Summary (สรุปคาร์บอน)</label>
-                <input type="text" id="editPkgCarbonSummary" placeholder="e.g. รวม 14.1 kgCO2e">
-            </div>
-
-            <div class="form-group">
-                <label>Highlights (ไฮไลท์ - คั่นด้วยเครื่องหมายจุลภาค ,)</label>
-                <textarea id="editPkgHighlights" rows="4" placeholder="ระบุแต่ละไฮไลท์คั่นด้วยเครื่องหมายจุลภาค" style="width: 100%; box-sizing: border-box; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; color: #ffffff; padding: 10px; font-family: 'Sarabun', sans-serif; font-size: 14.5px; resize: vertical;"></textarea>
-            </div>
-
-            <div class="form-group">
-                <label>Carbon Details (ดีเทลคาร์บอน - คั่นด้วยเครื่องหมายจุลภาค ,)</label>
-                <textarea id="editPkgDetails" rows="4" placeholder="ระบุแต่ละดีเทลคาร์บอนคั่นด้วยเครื่องหมายจุลภาค" style="width: 100%; box-sizing: border-box; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; color: #ffffff; padding: 10px; font-family: 'Sarabun', sans-serif; font-size: 14.5px; resize: vertical;"></textarea>
-            </div>
-
-            <div class="form-group">
-                <label>Guide Name (ชื่อไกด์นำเที่ยว)</label>
-                <input type="text" id="editPkgGuideName" placeholder="เช่น ไกด์ชูชาติ">
-            </div>
-
-            <div class="form-group">
-                <label>Guide Bio (คำแนะนำ/ประวัติไกด์)</label>
-                <textarea id="editPkgGuideBio" rows="3" placeholder="เช่น ผู้เชี่ยวชาญการเดินป่าและใบเมี่ยง..." style="width: 100%; box-sizing: border-box; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; color: #ffffff; padding: 10px; font-family: 'Sarabun', sans-serif; font-size: 14.5px; resize: vertical;"></textarea>
-            </div>
-
-            <div class="form-group">
-                <label>Guide Image Path (รูปภาพไกด์จริง - เช่น ../home/images/name.jpg)</label>
-                <input type="text" id="editPkgGuideImage" placeholder="ระบุพาธไฟล์รูป หรือปล่อยว่างเพื่อใช้รูปดีฟอลต์">
-            </div>
-
-            <div class="form-group">
-                <label>Trip Plan (กำหนดการท่องเที่ยว - ขึ้นบรรทัดใหม่ละ 1 เรื่อง)</label>
-                <textarea id="editPkgItinerary" rows="5" placeholder="เช่น:&#10;09:00 - เดินทางถึงหมู่บ้านป่าเหมี้ยง&#10;10:30 - เดินป่าชมต้นชาอายุกว่า 200 ปี&#10;12:00 - ทานอาหารพื้นบ้านคาร์บอนต่ำ" style="width: 100%; box-sizing: border-box; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; color: #ffffff; padding: 10px; font-family: 'Sarabun', sans-serif; font-size: 14.5px; resize: vertical;"></textarea>
-            </div>
-
-            <div class="form-group">
-                <label>Trip Cover Image Path (รูปภาพหน้าปก - เช่น ../home/images/cover.png)</label>
-                <input type="text" id="editPkgImage" placeholder="ระบุพาธไฟล์รูปภาพหน้าปก เช่น ../home/images/kiu_fin.png">
-            </div>
-
-            <div class="modal-actions">
-                <button class="btn btn-cancel" onclick="closeModal('editPackageModal')">Cancel</button>
-                <button class="btn btn-save" onclick="savePackageEdit()">💾 Save Changes</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Package Details Modal -->
-    <div id="packageDetailModal" class="modal-overlay" onclick="if(event.target === this) closeModal('packageDetailModal')">
-        <div class="modal-box detail-modal" style="width: 95%; max-width: 720px; padding: 0; overflow: hidden; background: var(--bg-dark);">
-            <div class="detail-hero" id="detailHeroHeader">
-                <div class="detail-hero-overlay"></div>
-                <button class="detail-close-btn" onclick="closeModal('packageDetailModal')">&times;</button>
-                <div class="detail-hero-text">
-                    <h2 id="detailPkgTitle">Adventure Low Carbon Trip</h2>
-                    <p id="detailPkgSubtitle" class="detail-hero-subtitle">สำหรับคนชอบการเดินทางด้วยตัวเอง</p>
-                </div>
-            </div>
-            
-            <div class="detail-body">
-                <p id="detailPkgDesc" class="detail-desc"></p>
-                
-
-
-                <!-- Eco Guidelines Checklist -->
-                <div class="detail-section">
-                    <h3 class="detail-section-title">✅ ข้อควรปฏิบัติเพื่อช่วยลดคาร์บอน (Green Travel Checklist)</h3>
-                    <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: -6px; margin-bottom: 14px; line-height: 1.6;">
-                        เมื่อเดินทางไปถึงชุมชน ลองปฏิบัติตามข้อแนะนำเหล่านี้ (สามารถกดเช็คถูกเพื่อติดตามเป้าหมายสีเขียวของคุณ และ<strong>อย่าลืมถ่ายรูปคู่กับกิจกรรมเหล่านี้ในมือถือเพื่อใช้เป็นหลักฐานแลกของรางวัลด้วยนะครับ 📸</strong>)
-                    </p>
-                    <div class="eco-checklist-container" id="detailPkgItineraryContainer">
-                        <!-- Populated dynamically -->
-                    </div>
-                </div>
-                
-                <!-- Carbon Impact (split calculation) -->
-                <div class="carbon-calculator-box">
-                    <h3 class="detail-section-title">📊 คำนวณคาร์บอนฟุตพริ้นท์ทริป (ต่อคน)</h3>
-                    
-                    <div class="carbon-calc-details">
-                        <!-- In-village metrics -->
-                        <div class="calc-row">
-                            <span class="calc-label">🏡 คาร์บอนฟุตพริ้นท์ในพื้นที่ (ต่อคน/วัน):</span>
-                            <span class="calc-value" id="calcInVillageDaily">0.00 kgCO2e/วัน</span>
-                        </div>
-                        <div class="calc-subrow">
-                            <span class="calc-sublabel">สะสมจาก: อาหารท้องถิ่น + ไฟฟ้าโฮมสเตย์ + การจัดการขยะทั่วไป + รถนำเที่ยวในพื้นที่</span>
-                            <span class="calc-subvalue" id="calcInVillageTotal" style="display: none;">0.00 kgCO2e</span>
-                        </div>
-
-                        <!-- Transport Selection -->
-                        <div class="transport-select-group">
-                            <div class="transport-label">🚗 ยานพาหนะเดินทางหลัก (ไป-กลับลำปาง 160 กม.):</div>
-                            <div class="transport-options">
-                                <label class="transport-option-card">
-                                    <input type="radio" name="pkgTransportSelect" value="car" checked onchange="updateDynamicCarbonCalculation()">
-                                    <div class="option-card-content">
-                                        <span class="option-icon">🚗</span>
-                                        <span class="option-text">รถส่วนตัว (น้ำมัน)</span>
-                                        <span class="option-val">+43.15 kgCO2e</span>
-                                    </div>
-                                </label>
-                                <label class="transport-option-card">
-                                    <input type="radio" name="pkgTransportSelect" value="ev" onchange="updateDynamicCarbonCalculation()">
-                                    <div class="option-card-content">
-                                        <span class="option-icon">🔌</span>
-                                        <span class="option-text">รถไฟฟ้า (EV)</span>
-                                        <span class="option-val">+15.52 kgCO2e</span>
-                                    </div>
-                                </label>
-                                <label class="transport-option-card">
-                                    <input type="radio" name="pkgTransportSelect" value="van" onchange="updateDynamicCarbonCalculation()">
-                                    <div class="option-card-content">
-                                        <span class="option-icon">🛻</span>
-                                        <span class="option-text">รถกระบะจากชุมชน</span>
-                                        <span class="option-val">+8.60 kgCO2e</span>
-                                    </div>
-                                </label>
-                            </div>
-                        </div>
-
-                        <!-- Total carbon footprint display -->
-                        <div class="carbon-total-display">
-                            <div class="total-main">
-                                <span class="total-label">คาร์บอนฟุตพริ้นท์รวม (ในพื้นที่ 1 วัน + ค่าเดินทาง):</span>
-                                <span class="total-value" id="calcTotalCarbon">0.00 kgCO2e</span>
-                            </div>
-                            <div class="total-scale-status" id="calcScaleBadge">
-                                ระดับคาร์บอนในพื้นที่: <span class="badge-good">ดีต่อสิ่งแวดล้อม</span>
-                            </div>
-                        </div>
-
-                        <!-- References & Method Toggle -->
-                        <div class="carbon-references-toggle" onclick="toggleReferenceDetails()">
-                            <span>🔍 ดูรายละเอียดแหล่งอ้างอิงและสูตรการคำนวณ</span>
-                            <span class="toggle-arrow" id="refToggleArrow">▼</span>
-                        </div>
-                        <div class="carbon-references-content" id="carbonReferenceContent" style="display: none;">
-                            <h4>สูตรและค่าสัมประสิทธิ์การปล่อยก๊าซเรือนกระจก (Emission Factors) อ้างอิง อบก. (TGO)</h4>
-                            <ul>
-                                <li><strong>การเดินทางเข้าพื้นที่ (160 กม. ไป-กลับเมืองลำปาง):</strong> 
-                                    <ul>
-                                        <li>รถส่วนบุคคลน้ำมัน: 160 กม. × 0.2697 kgCO2e/กม. (อ้างอิงค่าสัมประสิทธิ์การปล่อยก๊าซเรือนกระจกของยานพาหนะ อบก. หมวดยานพาหนะนั่งส่วนบุคคล)</li>
-                                        <li>รถยนต์ไฟฟ้า (EV): 160 กม. × 0.0970 kgCO2e/กม. (คำนวณจาก Grid Emission Factor ประเทศไทย 0.5562 kgCO2e/kWh และอัตราการใช้ไฟเฉลี่ยของ EV ขนาดกลาง 0.174 kWh/กม.)</li>
-                                        <li>รถกระบะจากชุมชน (แชร์รถ): 160 กม. × 0.0538 kgCO2e/กม.ต่อคน (อ้างอิงค่าบริการรถกระบะรับส่งชุมชน/ขนส่งสาธารณะขนาดเล็ก อบก. หารเฉลี่ยผู้โดยสารอย่างน้อย 5 คน)</li>
-                                    </ul>
-                                </li>
-                                <li><strong>อาหารท้องถิ่นในหมู่บ้าน:</strong> ปริมาณการปล่อยเฉลี่ย 20.4347 kgCO2e/คน/วัน 
-                                    <br>คำนวณจากวัตถุดิบสดในชุมชน (ลด Food Miles/การขนส่ง) ปรุงด้วย LPG 0.1 กก. + หมู 1.5 กก. + ไก่ 1.5 กก. + ผัก 2 กก. คิดค่า EF แยกรายวัตถุดิบตามฐานข้อมูลคาร์บอนฟุตพริ้นท์ของผลิตภัณฑ์ (องค์การบริหารจัดการก๊าซเรือนกระจก)
-                                </li>
-                                <li><strong>พลังงานในโฮมสเตย์:</strong> ปริมาณการปล่อยเฉลี่ย 0.1557 kgCO2e/คืน/คน
-                                    <br>คำนวณจากสูตร: <em>กำลังไฟฟ้าเครื่องใช้ไฟฟ้าที่จำเป็น [พัดลม 30W + หลอดไฟ 5W] (0.035 kW) × เวลาใช้งาน 8 ชม. × Grid Emission Factor ของประเทศไทย (0.5562 kgCO2e/kWh)</em>
-                                </li>
-                                <li><strong>การจัดการขยะทั่วไป:</strong> ปริมาณการปล่อยเฉลี่ย 0.7933 kgCO2e/คน/วัน
-                                    <br>คำนวณจากสูตร: <em>น้ำหนักขยะเฉลี่ย (1 กก./คน/วัน) × ค่า EF การจัดการขยะฝังกลบ (0.7933 kgCO2e/กก.)</em> อ้างอิงตามแนวทาง 2006 IPCC Guidelines for National Greenhouse Gas Inventories
-                                </li>
-                                <li><strong>การเดินทางในพื้นที่ท่องเที่ยว:</strong> 2.6970 kgCO2e/ทริป (คิดระยะเฉลี่ย 10 กม. ด้วยรถกระบะนำเที่ยวรอบหมู่บ้าน)</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="detail-footer">
-                <div class="detail-footer-inner">
-                    <button id="detailPkgBookBtn" class="detail-book-btn" onclick="bookPackageFromDetails()">ลงทะเบียนใช้แผนการเดินทางนี้</button>
-                    <span class="detail-footer-hint">ระบบจะบันทึกแผนของคุณเพื่อส่งข้อมูลแจ้งประสานงานชุมชนล่วงหน้า</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="bookPackageModal" class="modal-overlay" onclick="if(event.target === this) closeModal('bookPackageModal')">
-        <div class="modal-box">
-            <h3>ลงทะเบียนใช้แผนการเดินทางคาร์บอนต่ำ</h3>
-            <p id="bookPkgName" style="color: var(--primary-light); font-weight: bold; font-size: 1.05rem; margin-top: -10px; text-align: center;"></p>
-            <input type="hidden" id="bookPkgId">
-            <input type="hidden" id="bookPkgAdultsInput" value="1">
-            <input type="hidden" id="bookPkgChildrenInput" value="0">
-
-            <div class="registration-incentive-box" style="background: rgba(64, 192, 87, 0.08); border: 1px solid rgba(64, 192, 87, 0.2); border-radius: 8px; padding: 14px; margin-bottom: 16px; font-size: 0.9rem; line-height: 1.6; color: var(--text-light); text-align: left;">
-                <div style="font-weight: bold; font-size: 1.05rem; color: var(--primary-light); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
-                    🌿 ทำไมต้องลงทะเบียน? (Why Register?)
-                </div>
-                <ul style="margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px;">
-                    <li><strong>เพื่อร่วมสะสมสถิติคาร์บอนต่ำ:</strong> ยอดคาร์บอนฟุตพริ้นท์ของทริปนี้จะถูกบันทึกเพื่อนำไปรวมเป็นความสำเร็จทางสิ่งแวดล้อมของชุมชนบ้านป่าเหมี้ยง</li>
-                    <li><strong>รับสิทธิพิเศษรักษ์โลก:</strong> ยื่นหน้าจอ <em>"แผนการเดินทางของฉัน"</em> คู่กับภาพถ่ายยืนยันกิจกรรมในพื้นที่จริงเพื่อรับ <strong>สิทธิพิเศษหรือของรางวัลรักษ์โลกจากชุมชน 🎁</strong></li>
-                    <li><strong>ชุมชนจัดเตรียมต้อนรับ:</strong> ข้อมูลวันเดินทางและจำนวนคนจะถูกแจ้งไปยังโฮมสเตย์และร้านค้าท้องถิ่นล่วงหน้าเพื่อเตรียมต้อนรับคุณ</li>
-                </ul>
-                <div style="font-size: 12px; color: var(--text-muted); margin-top: 8px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 8px;">
-                    * <em>การลงทะเบียนนี้ไม่ใช่การจองห้องพัก โฮมสเตย์ หรือร้านอาหารโดยตรง หากต้องการจองที่พักหรือเช็คสถานะว่าง กรุณาเลือกจองผ่านแผนที่หลัก (Map)</em>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>ชื่อผู้จอง</label>
-                <input type="text" id="bookPkgUserName" placeholder="ระบุชื่อ-นามสกุล">
-            </div>
-
-            <div class="form-group">
-                <label>เบอร์โทรศัพท์ติดต่อ</label>
-                <input type="text" id="bookPkgUserPhone" placeholder="ระบุเบอร์โทรศัพท์">
-            </div>
-
-            <div class="form-group">
-                <label>อีเมลผู้จอง (Email)</label>
-                <input type="email" id="bookPkgUserEmail" readonly style="opacity: 0.6; cursor: not-allowed;">
-            </div>
-
-            <div class="form-group">
-                <label>Travel Date (วันที่เดินทาง)</label>
-                <input type="date" id="bookPkgDateInput">
-            </div>
-
-            <div class="form-group">
-                <label>ยานพาหนะหลักที่ใช้เดินทางมาชุมชน (สำหรับคำนวณคาร์บอน)</label>
-                <select id="bookPkgTransportSelect" style="width: 100%; box-sizing: border-box; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; color: #ffffff; padding: 10px; font-family: 'Sarabun', sans-serif; font-size: 14.5px;" onchange="updateBookingCarbonFootprint()">
-                    <option value="car">🚗 รถส่วนตัว (น้ำมัน) [+43.15 kgCO2e/คน]</option>
-                    <option value="ev">🔌 รถยนต์ไฟฟ้า (EV) [+15.52 kgCO2e/คน]</option>
-                    <option value="van">🛻 รถกระบะจากชุมชน [+8.60 kgCO2e/คน]</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label>จำนวนผู้เดินทาง (Guests Count)</label>
-                <div style="background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 4px 16px; margin-top: 6px;">
-                    <!-- Adults Row -->
-                    <div class="counter-row">
-                        <div class="counter-info">
-                            <span class="counter-label">ผู้ใหญ่</span>
-                            <span class="counter-sublabel">อายุ 18 ขึ้นไป</span>
-                        </div>
-                        <div class="counter-controls">
-                            <button type="button" class="counter-btn" id="btn-sub-pkg-adults" onclick="changePkgCount('adults', -1)" disabled>−</button>
-                            <span id="count-pkg-adults" class="counter-value">1</span>
-                            <button type="button" class="counter-btn" id="btn-add-pkg-adults" onclick="changePkgCount('adults', 1)">+</button>
-                        </div>
-                    </div>
-                    <!-- Children Row -->
-                    <div class="counter-row">
-                        <div class="counter-info">
-                            <span class="counter-label">เด็ก</span>
-                            <span class="counter-sublabel">อายุ 0-17</span>
-                        </div>
-                        <div class="counter-controls">
-                            <button type="button" class="counter-btn" id="btn-sub-pkg-children" onclick="changePkgCount('children', -1)" disabled>−</button>
-                            <span id="count-pkg-children" class="counter-value">0</span>
-                            <button type="button" class="counter-btn" id="btn-add-pkg-children" onclick="changePkgCount('children', 1)">+</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Carbon Footprint Summary in Booking Modal -->
-            <div class="carbon-booking-summary" style="background: rgba(64, 192, 87, 0.05); border: 1px solid rgba(64, 192, 87, 0.15); border-radius: 8px; padding: 12px 14px; margin-top: 15px; margin-bottom: 15px;">
-                <div style="font-size: 0.9rem; color: var(--text-muted); text-align: center;">คาร์บอนฟุตพริ้นท์รวม (ในพื้นที่ 1 วัน + ค่าเดินทาง) x จำนวนคน:</div>
-                <div id="bookPkgCarbonTotal" style="font-size: 1.5rem; font-weight: bold; color: #40c057; text-align: center; margin: 6px 0;">0.00 kgCO2e</div>
-                <div style="font-size: 0.8rem; color: var(--text-muted); text-align: center; line-height: 1.4;">คำนวณจากกิจกรรมในพื้นที่ 1 วันต่อคน + ยานพาหนะที่เลือก คูณจำนวนคนทั้งหมด</div>
-            </div>
-
-            <div class="modal-actions">
-                <button class="btn btn-cancel" onclick="closeModal('bookPackageModal')">Cancel</button>
-                <button class="btn btn-save" id="confirmBookPkgBtn" onclick="submitPackageBooking()">💾 บันทึกแผนการเดินทาง</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- User Package Bookings Modal -->
-    <div id="userPkgBookingsModal" class="modal-overlay" onclick="if(event.target === this) closeModal('userPkgBookingsModal')">
-        <div class="modal-box" style="width: 90%; max-width: 800px;">
-            <h3>📋 My Low Carbon Trips (แผนการเดินทางของฉัน)</h3>
-            <div class="admin-bookings-table-container">
-                <table class="admin-bookings-table">
-                    <thead>
-                        <tr>
-                            <th>Low Carbon Trip Name</th>
-                            <th>Traveler Name</th>
-                            <th>Contact Info</th>
-                            <th>Travel Date</th>
-                            <th>Guests</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="userPkgBookingsTableBody">
-                        <!-- User bookings load dynamically -->
-                    </tbody>
-                </table>
-            </div>
-            <div class="modal-actions">
-                <button class="btn btn-cancel" onclick="closeModal('userPkgBookingsModal')">Close</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- User Edit Package Booking Modal -->
-    <div id="editPkgBookingModal" class="modal-overlay" onclick="if(event.target === this) closeModal('editPkgBookingModal')">
-        <div class="modal-box">
-            <h3>✏️ Edit Registered Low Carbon Trip Plan</h3>
-            <p id="editPkgBookingTitle" style="color: var(--primary-light); font-weight: bold; font-size: 1.05rem; margin-top: -10px; text-align: center;"></p>
-            <input type="hidden" id="editPkgBookingId">
-
-            <div class="form-group">
-                <label>ชื่อผู้จอง</label>
-                <input type="text" id="editPkgBookingUserName" placeholder="ระบุชื่อ-นามสกุล">
-            </div>
-
-            <div class="form-group">
-                <label>เบอร์โทรศัพท์ติดต่อ</label>
-                <input type="text" id="editPkgBookingUserPhone" placeholder="ระบุเบอร์โทรศัพท์">
-            </div>
-
-            <div class="form-group">
-                <label>Travel Date (วันที่เดินทาง)</label>
-                <input type="date" id="editPkgBookingDateInput">
-            </div>
-
-            <div class="form-group">
-                <label>จำนวนผู้เดินทาง (Guests Count)</label>
-                <div class="counter-row" style="background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 14px 16px; margin-top: 6px;">
-                    <div class="counter-info">
-                        <span class="counter-label">ผู้เดินทางทั้งหมด</span>
-                        <span class="counter-sublabel">รวมผู้ใหญ่และเด็ก</span>
-                    </div>
-                    <div class="counter-controls">
-                        <button type="button" class="counter-btn" id="btn-sub-edit-pkg-guests" onclick="changeEditPkgGuestsCount(-1)">−</button>
-                        <span id="count-edit-pkg-guests" class="counter-value">1</span>
-                        <input type="hidden" id="editPkgBookingGuestsVal" value="1">
-                        <button type="button" class="counter-btn" id="btn-add-edit-pkg-guests" onclick="changeEditPkgGuestsCount(1)">+</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="modal-actions">
-                <button class="btn btn-cancel" onclick="closeModal('editPkgBookingModal')">Cancel</button>
-                <button class="btn btn-save" id="confirmEditPkgBookingBtn" onclick="savePkgBookingEdit()">💾 Save Changes</button>
-            </div>
-        </div>
-    </div>
 
     <div id="packageSection" class="package-page">
         <div class="package-page-inner">
             <div class="package-page-header">
-                <h1 class="package-page-title">Low Carbon Trip</h1>
-                <p class="package-page-desc">คำแนะนำและแผนเส้นทางท่องเที่ยวคาร์บอนต่ำในบ้านป่าเหมี้ยงด้วยตัวคุณเอง</p>
+                <h1 class="package-page-title">กิจกรรม & คำนวณคาร์บอน</h1>
+                <p class="package-page-desc">เลือกกิจกรรมและวิถีท่องเที่ยวที่คุณทำในบ้านป่าเหมี้ยง เพื่อคำนวณคาร์บอนฟุตพริ้นท์และส่วนลดคาร์บอนที่คุณช่วยเซฟให้โลกได้ทันที</p>
                 <div class="local-welcome-banner">
                     <div class="welcome-quote">
-                        <p class="quote-text">“ยินดีต้อนรับนักท่องเที่ยวทุกท่านเข้าสู่ชุมชนบ้านป่าเหมี้ยง ชุมชนของเราได้จัดเตรียมข้อมูลแผนการเดินทางคาร์บอนต่ำ และพร้อมให้บริการต้อนรับ โฮมสเตย์ และกิจกรรมท้องถิ่นเพื่อช่วยรักษาสิ่งแวดล้อมร่วมกับทุกท่านครับ”</p>
+                        <p class="quote-text">“ยินดีต้อนรับสู่บ้านป่าเหมี้ยง ชวนทุกท่านร่วมบันทึกกิจกรรมและคำนวณคาร์บอน เพื่อร่วมเป็นส่วนหนึ่งในการรักษาผืนป่าต้นน้ำและสนับสนุนวิถีชีวิตคาร์บอนต่ำของชุมชนร่วมกันครับ”</p>
                         <p class="quote-signature">— กลุ่มต้อนรับและชุมชนบ้านป่าเหมี้ยง</p>
                     </div>
                 </div>
-            </div>
-
-
-
-            <!-- Active Challenge Pass Container (ตั๋วผู้พิทักษ์ป่าท้าทายสีเขียว) -->
-            <div id="activeChallengePassContainer" style="display: none;">
-                <!-- HTML will be generated dynamically based on active booking -->
             </div>
 
             <!-- Low Carbon Information & Scale Section -->
@@ -597,15 +110,172 @@
                 </div>
             </div>
 
-            <div id="packageContent" class="package-grid"></div>
+            <!-- Interactive Activity & Carbon Tracker Container -->
+            <div id="activityTrackerContainer" class="tracker-container">
+                <!-- Section 1: Inbound Transportation -->
+                <div class="tracker-category-card">
+                    <div class="category-header">
+                        <div class="step-indicator">ขั้นตอนที่ 1</div>
+                        <div class="category-title-group">
+                            <h2 class="category-title">🚗 ยานพาหนะหลักที่ใช้เดินทางมาบ้านป่าเหมี้ยง</h2>
+                            <p class="category-subtitle">เลือกวิธีเดินทางไป-กลับ ระหว่างตัวเมืองลำปางกับบ้านป่าเหมี้ยง (ระยะทางเฉลี่ย 160 กม.) — เลือก 1 ตัวเลือก</p>
+                        </div>
+                    </div>
+                    <div class="activity-cards-grid" id="transportGrid"></div>
+                </div>
+
+                <!-- Section 2: In-Village Experiences & Stay -->
+                <div class="tracker-category-card">
+                    <div class="category-header">
+                        <div class="step-indicator step-amber">ขั้นตอนที่ 2</div>
+                        <div class="category-title-group">
+                            <h2 class="category-title">🏡 ประสบการณ์ชุมชนและที่พักในบ้านป่าเหมี้ยง</h2>
+                            <p class="category-subtitle">ติ๊กเลือกกิจกรรมและวิถีชุมชนที่คุณได้สัมผัสหรือวางแผนจะทำ (เลือกได้หลายข้อ)</p>
+                        </div>
+                    </div>
+                    <div class="activity-cards-grid" id="villageActivitiesGrid"></div>
+                </div>
+
+                <!-- Section 3: Green Actions & Offsets -->
+                <div class="tracker-category-card category-card-green">
+                    <div class="category-header">
+                        <div class="step-indicator step-emerald">ขั้นตอนที่ 3</div>
+                        <div class="category-title-group">
+                            <h2 class="category-title">🌱 พฤติกรรมรักษ์โลกที่คุณร่วมทำ (Green Actions & Offsets)</h2>
+                            <p class="category-subtitle">ติ๊กสิ่งดีๆ ที่คุณช่วยทำเพื่อลดขยะและลดคาร์บอน ยิ่งติ๊กมาก ยิ่งช่วยป่าเหมี้ยงเซฟคาร์บอนได้สูงขึ้น</p>
+                        </div>
+                    </div>
+                    <div class="activity-cards-grid" id="greenActionsGrid"></div>
+                </div>
+            </div>
+
+            <!-- Sticky Floating Carbon Summary Bar -->
+            <div id="stickyCarbonBar" class="sticky-carbon-bar">
+                <div class="sticky-bar-inner">
+                    <div class="sticky-metric-group">
+                        <div class="sticky-metric-item">
+                            <span class="metric-label">คาร์บอนที่ปล่อย</span>
+                            <span class="metric-value emission-val" id="barGrossEmissions">0.00 <small>kgCO2e</small></span>
+                        </div>
+                        <div class="metric-operator">−</div>
+                        <div class="sticky-metric-item">
+                            <span class="metric-label">คาร์บอนที่ช่วยเซฟ</span>
+                            <span class="metric-value savings-val" id="barTotalSavings">0.00 <small>kgCO2e</small></span>
+                        </div>
+                        <div class="metric-operator">=</div>
+                        <div class="sticky-metric-item highlight-net">
+                            <span class="metric-label">คาร์บอนสุทธิ</span>
+                            <span class="metric-value net-val" id="barNetCarbon">0.00 <small>kgCO2e</small></span>
+                        </div>
+                    </div>
+
+                    <div class="sticky-tier-badge" id="barTierBadge">
+                        <span class="tier-pill badge-good">🌱 ดีต่อสิ่งแวดล้อม</span>
+                    </div>
+
+                    <div class="sticky-actions">
+                        <button type="button" class="btn-reset-tracker" onclick="resetActivityTracker()" title="รีเซ็ตกิจกรรมทั้งหมด">
+                            🔄 รีเซ็ต
+                        </button>
+                        <button type="button" class="btn-generate-card" onclick="openEcoCardModal()">
+                            🏷️ ดูการ์ดสรุปผล Eco Card
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Minimal Eco Summary Card Modal -->
+            <div id="ecoCardModal" class="modal-overlay eco-card-modal-overlay" onclick="if(event.target === this) closeModal('ecoCardModal')">
+                <div class="modal-box eco-card-modal-box">
+                    <div class="eco-modal-top-bar">
+                        <span class="eco-badge-header">🌱 MIANG MAP • ECO RANK CARD</span>
+                        <button class="eco-card-close-btn" onclick="closeModal('ecoCardModal')">&times;</button>
+                    </div>
+
+                    <div class="card-name-input-bar">
+                        <label for="travelerNameInput">🏷️ ระบุชื่อของคุณบนการ์ด:</label>
+                        <input type="text" id="travelerNameInput" placeholder="พิมพ์ชื่อของคุณ (เช่น คุณสมชาย สายกรีน)" oninput="updateCardTravelerName(this.value)">
+                    </div>
+
+                    <!-- 1:1 Minimal Square Eco Card -->
+                    <div class="card-preview-wrapper">
+                        <div class="minimal-square-eco-card" id="minimalEcoCard">
+                            <!-- Top Brand -->
+                            <div class="card-top-brand">
+                                <span class="brand-leaf">🌿</span>
+                                <span class="brand-text">บ้านป่าเหมี้ยง • MIANG MAP</span>
+                            </div>
+
+                            <!-- Traveler Name -->
+                            <div class="card-traveler-section">
+                                <span class="card-lead-text">บันทึกสถิติการท่องเที่ยวคาร์บอนต่ำ</span>
+                                <h3 class="card-traveler-name" id="ticketUserNameDisplay">นักเดินทางรักษ์โลก</h3>
+                            </div>
+
+                            <!-- Rank Badge & Title -->
+                            <div class="card-rank-center" id="cardRankBox">
+                                <div class="card-medal-icon" id="ticketHonorIcon">🥇</div>
+                                <div class="card-rank-tier-title" id="ticketHonorTitle">ระดับเหรียญทอง</div>
+                                <div class="card-rank-honor-name" id="cardRankHonorName">ผู้พิทักษ์ผืนป่าเหมี้ยง</div>
+                            </div>
+
+                            <!-- Hero Metric: Carbon Credit Saved -->
+                            <div class="card-credit-highlight">
+                                <span class="credit-metric-label">ยอดคาร์บอนเครดิตที่ช่วยลดได้</span>
+                                <div class="credit-metric-number-wrap">
+                                    <span class="credit-number" id="ticketSavingsDisplay">-4.20</span>
+                                    <span class="credit-unit">kgCO2e</span>
+                                </div>
+                                <div class="credit-net-subtext">
+                                    คาร์บอนสุทธิ: <strong id="ticketNetDisplay">4.40</strong> kgCO2e
+                                </div>
+                            </div>
+
+                            <!-- Community Thank You Note -->
+                            <div class="card-thankyou-box">
+                                <p class="thankyou-quote">
+                                    “ขอบคุณที่ร่วมท่องเที่ยวอย่างรับผิดชอบ<br>และช่วยดูแลผืนป่าต้นน้ำบ้านป่าเหมี้ยงไปด้วยกัน”
+                                </p>
+                                <span class="thankyou-by">— ชุมชนท่องเที่ยวบ้านป่าเหมี้ยง จ.ลำปาง</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Minimal Action Buttons -->
+                    <div class="modal-actions eco-modal-actions-minimal">
+                        <button type="button" class="btn btn-cancel" onclick="closeModal('ecoCardModal')">✕ ปิด</button>
+                        <button type="button" class="btn btn-copy-caption" onclick="copyCardSummaryText()">📋 คัดลอกข้อความ</button>
+                        <button type="button" class="btn btn-save-image" onclick="downloadCertificateImage()">🖼️ บันทึกรูปภาพ (PNG 1:1)</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Carbon Breakdown Detail Modal (ADR 0006) -->
+            <div id="carbonBreakdownModal" class="modal-overlay" onclick="if(event.target === this) closeModal('carbonBreakdownModal')">
+                <div class="modal-box carbon-breakdown-modal-box">
+                    <div class="breakdown-modal-header">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 20px;">📊</span>
+                            <h3 id="breakdownModalTitle" style="margin: 0; font-size: 1.15rem; color: #ffffff;">ที่มาและการคำนวณคาร์บอน</h3>
+                        </div>
+                        <button type="button" class="eco-card-close-btn" onclick="closeModal('carbonBreakdownModal')">&times;</button>
+                    </div>
+                    <p id="breakdownModalSource" class="breakdown-source-text"></p>
+                    <div id="breakdownModalContent" class="breakdown-table-wrapper"></div>
+                    <div class="modal-actions" style="margin-top: 18px; justify-content: flex-end;">
+                        <button type="button" class="btn btn-cancel" onclick="closeModal('carbonBreakdownModal')">ปิดหน้าต่าง</button>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 
     <!-- Toast Container -->
     <div id="toast-container"></div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="../shared_auth.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script src="../community_stories.js"></script>
     <script src="script.js"></script>
 </body>
 

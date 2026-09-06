@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 
 <head>
     <meta charset="UTF-8">
@@ -9,7 +9,7 @@
     <title>MIANG MAP - สัมผัสชุมชนบ้านป่าเหมี้ยง</title>
 
     <link
-        href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700;800&family=Sarabun:wght@300;400;500;600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700;800&family=Sarabun:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
 
     <style>
@@ -25,6 +25,23 @@
             --text-muted: #868e96;
             --glass-bg: rgba(15, 20, 16, 0.7);
             --glass-border: rgba(255, 255, 255, 0.1);
+
+            /* Impeccable Density & Spacing Scale (DESIGN.md) */
+            --p-density: 1;
+            --space-unit: calc(var(--p-density, 1) * 8px);
+            --space-xs: calc(var(--space-unit) * 1);    /* 8px */
+            --space-sm: calc(var(--space-unit) * 2);    /* 16px */
+            --space-md: calc(var(--space-unit) * 3);    /* 24px */
+            --space-lg: calc(var(--space-unit) * 4);    /* 32px */
+            --space-xl: calc(var(--space-unit) * 6);    /* 48px */
+            --space-xxl: calc(var(--space-unit) * 10);  /* 80px */
+
+            /* Rounded Scale */
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --radius-pill: 50px;
         }
 
         * {
@@ -34,7 +51,7 @@
         }
 
         body {
-            font-family: 'Barlow', 'Sarabun', sans-serif;
+            font-family: 'Sarabun', 'Barlow', sans-serif;
             background-color: var(--bg-dark);
             color: var(--text-light);
             line-height: 1.6;
@@ -71,7 +88,7 @@
             border: none;
             cursor: pointer;
             padding: 8px;
-            display: flex;
+            display: none;
             flex-direction: column;
             gap: 5px;
             z-index: 2100;
@@ -136,8 +153,8 @@
 
         .hamburger-link.active {
             color: var(--primary-light);
-            background: linear-gradient(90deg, rgba(64, 192, 87, 0.15) 0%, transparent 100%);
-            border-left: 3px solid var(--primary-light);
+            background: rgba(64, 192, 87, 0.12);
+            font-weight: 600;
         }
 
         .hamburger-icon {
@@ -164,45 +181,48 @@
 
         .nav-brand {
             color: white;
-            font-size: 26px;
+            font-size: 24px;
             font-weight: 800;
             letter-spacing: 1.5px;
             text-transform: uppercase;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            text-decoration: none;
+            transition: color 0.2s ease;
+            display: inline-block;
         }
 
         .nav-brand:hover {
             color: var(--primary-light);
-            text-shadow: 0 0 10px rgba(64, 192, 87, 0.5);
         }
 
         .nav-links {
             display: flex;
-            gap: 15px;
+            gap: 10px;
             align-items: center;
         }
 
         .nav-btn {
             background: none;
             border: none;
-            color: #ccc;
+            color: #d1d5db;
             font-family: 'Barlow', sans-serif;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 600;
-            text-transform: uppercase;
             cursor: pointer;
-            padding: 10px 15px;
-            transition: all 0.3s ease;
+            padding: 8px 16px;
+            transition: all 0.25s ease;
             position: relative;
             white-space: nowrap;
             letter-spacing: 0.5px;
-            border-radius: 4px;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            text-transform: uppercase;
         }
 
         .nav-btn:hover {
             color: white;
-            background-color: rgba(255, 255, 255, 0.05);
+            background-color: rgba(255, 255, 255, 0.08);
         }
 
         .nav-btn.active {
@@ -214,8 +234,8 @@
             content: '';
             position: absolute;
             bottom: 2px;
-            left: 15px;
-            width: calc(100% - 30px);
+            left: 16px;
+            width: calc(100% - 32px);
             height: 3px;
             background-color: var(--primary-light);
             border-radius: 2px;
@@ -275,13 +295,14 @@
 
         .hero h1 {
             font-family: 'Sarabun', 'Barlow', sans-serif;
-            font-size: 3.5rem;
+            font-size: clamp(2.2rem, 5vw, 3.5rem);
             font-weight: 800;
-            line-height: 1.65;
+            line-height: 1.3;
             margin-bottom: 20px;
             letter-spacing: 0;
             color: #ffffff;
             text-shadow: 0 2px 16px rgba(0, 0, 0, 0.55);
+            text-wrap: balance;
         }
 
         .hero p {
@@ -292,6 +313,7 @@
             max-width: 700px;
             margin: 0 auto 35px auto;
             line-height: 1.7;
+            text-wrap: balance;
         }
 
         .hero-actions {
@@ -318,14 +340,14 @@
         .btn-primary-style {
             background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
             color: white;
-            box-shadow: 0 8px 24px rgba(64, 192, 87, 0.3);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
             border: none;
         }
 
         .btn-primary-style:hover {
             transform: translateY(-3px);
-            box-shadow: 0 12px 30px rgba(64, 192, 87, 0.5);
-            filter: brightness(1.1);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+            filter: brightness(1.08);
         }
 
         .btn-secondary-style {
@@ -343,44 +365,51 @@
 
         /* Info Section */
         .info-section {
-            padding: 100px 20px;
+            padding: clamp(60px, 8vw, 100px) 20px;
             max-width: 1200px;
             margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: clamp(70px, 8vw, 110px);
         }
 
         .section-header {
             text-align: center;
-            margin-bottom: 60px;
+            margin-bottom: clamp(28px, 4vw, 44px);
         }
 
         .section-header h2 {
             font-family: 'Barlow', 'Sarabun', sans-serif;
-            font-size: 2.5rem;
+            font-size: clamp(2rem, 3.5vw, 2.5rem);
             font-weight: 800;
             color: white;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             letter-spacing: -0.5px;
+            text-wrap: balance;
         }
 
         .section-header p {
             color: var(--text-muted);
-            max-width: 600px;
+            max-width: 620px;
             margin: 0 auto;
-            font-size: 1.1rem;
+            font-size: 1.05rem;
+            line-height: 1.6;
+            font-weight: 300;
+            text-wrap: balance;
         }
 
         .story-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 50px;
-            align-items: center;
-            margin-bottom: 100px;
+            gap: clamp(32px, 5vw, 50px);
+            align-items: stretch;
+            margin: 0;
         }
 
         @media (max-width: 992px) {
             .story-container {
                 grid-template-columns: 1fr;
-                gap: 40px;
+                gap: 32px;
             }
         }
 
@@ -440,10 +469,11 @@
 
         .story-media {
             position: relative;
-            border-radius: 16px;
+            border-radius: var(--radius-lg);
             overflow: hidden;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
-            aspect-ratio: 4/3;
+            height: 100%;
+            min-height: 460px;
             border: 1px solid var(--glass-border);
         }
 
@@ -474,92 +504,123 @@
             margin-bottom: 5px;
         }
 
-        /* Card Grid Section */
+        /* Card Grid Section - Editorial Photo Cards */
         .card-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 30px;
-            margin-bottom: 100px;
+            gap: 24px;
+            margin: 0;
         }
 
         .sight-card {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 16px;
-            padding: 30px;
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
+            border-radius: var(--radius-lg);
             overflow: hidden;
             display: flex;
             flex-direction: column;
-        }
-
-        .sight-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary-light), var(--primary));
-            opacity: 0;
-            transition: opacity 0.3s ease;
+            height: 100%;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            cursor: default;
         }
 
         .sight-card:hover {
-            transform: translateY(-10px);
-            background: rgba(255, 255, 255, 0.06);
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.05);
             border-color: rgba(64, 192, 87, 0.3);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.45);
         }
 
-        .sight-card:hover::before {
-            opacity: 1;
+        .sight-media {
+            position: relative;
+            width: 100%;
+            height: 190px;
+            overflow: hidden;
+            background: #151b14;
         }
 
-        .card-icon {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
+        .sight-media img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+        }
+
+        .sight-card:hover .sight-media img {
+            transform: scale(1.05);
+        }
+
+        .sight-badge {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            background: rgba(15, 20, 16, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            color: #d4e8c1;
+            font-size: 11.5px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: var(--radius-pill);
+            backdrop-filter: blur(6px);
+            letter-spacing: 0.3px;
+        }
+
+        .sight-body {
+            padding: 22px 24px 26px 24px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            justify-content: space-between;
+        }
+
+        .sight-tag {
+            font-size: 11.5px;
+            font-weight: 700;
+            color: var(--primary-light);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 6px;
         }
 
         .sight-card h3 {
-            font-size: 1.35rem;
+            font-size: 1.25rem;
             font-weight: 700;
             color: white;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
+            line-height: 1.4;
         }
 
         .sight-card p {
-            color: #ced4da;
-            font-size: 0.95rem;
+            color: #d1d5db;
+            font-size: 0.9rem;
             line-height: 1.6;
             font-weight: 300;
+            margin: 0;
         }
 
         /* Carbon neutral feature box */
         .carbon-box {
             background: linear-gradient(135deg, rgba(43, 138, 62, 0.15) 0%, rgba(27, 67, 50, 0.05) 100%);
             border: 1px solid rgba(64, 192, 87, 0.2);
-            border-radius: 20px;
-            padding: 50px;
+            border-radius: var(--radius-xl);
+            padding: clamp(30px, 5vw, 50px);
             display: grid;
             grid-template-columns: 1.2fr 0.8fr;
-            gap: 40px;
+            gap: clamp(28px, 4vw, 40px);
             align-items: center;
-            margin-bottom: 80px;
+            margin: 0;
         }
 
         @media (max-width: 992px) {
             .carbon-box {
                 grid-template-columns: 1fr;
-                padding: 30px;
             }
         }
 
         .carbon-content h3 {
-            font-size: 2rem;
+            font-size: clamp(1.6rem, 2.5vw, 2rem);
             color: white;
             margin-bottom: 15px;
             font-weight: 700;
@@ -570,51 +631,66 @@
             font-size: 1.05rem;
             margin-bottom: 25px;
             font-weight: 300;
+            line-height: 1.7;
         }
 
         .carbon-points {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 14px;
         }
 
         .carbon-point {
             display: flex;
-            align-items: center;
-            gap: 12px;
+            align-items: flex-start;
+            gap: 14px;
             font-size: 1rem;
             color: var(--accent);
             font-weight: 500;
+            line-height: 1.5;
         }
 
         .carbon-point-icon {
             color: var(--primary-light);
-            font-size: 1.2rem;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .carbon-panel-right {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            height: 100%;
+            justify-content: center;
         }
 
         .carbon-stats {
-            background: rgba(15, 20, 16, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 30px;
-            border-radius: 16px;
+            background: rgba(15, 20, 16, 0.65);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 24px 20px;
+            border-radius: var(--radius-lg);
             text-align: center;
             backdrop-filter: blur(10px);
         }
 
         .stat-value {
-            font-size: 3.5rem;
+            font-size: clamp(2.8rem, 4vw, 3.5rem);
             font-weight: 800;
             color: var(--primary-light);
             line-height: 1;
-            margin-bottom: 5px;
+            margin-bottom: 6px;
             letter-spacing: -1px;
+            font-family: 'Barlow', sans-serif;
         }
 
         .stat-label {
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             color: #ced4da;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+            font-family: 'Barlow', 'Sarabun', sans-serif;
         }
 
         /* Call To Action */
@@ -734,38 +810,12 @@
                 font-size: 18px;
             }
 
-            .nav-links {
+            .hamburger-btn {
                 display: flex;
-                align-items: center;
-                gap: 6px;
-                max-width: 60%;
-                overflow-x: auto;
-                white-space: nowrap;
-                padding: 0;
-                margin: 0;
-                -ms-overflow-style: none;  /* IE and Edge */
-                scrollbar-width: none;  /* Firefox */
             }
 
-            .nav-links::-webkit-scrollbar {
-                display: none;
-            }
-
-            .nav-btn {
-                font-size: 12px;
-                padding: 6px 10px;
-                height: 32px;
-                line-height: 20px;
-                white-space: nowrap;
-            }
-
-            .admin-btn {
-                padding: 6px 10px;
-                margin-left: 4px;
-                font-size: 12px;
-                height: 32px;
-                line-height: 20px;
-                white-space: nowrap;
+            .nav-links {
+                display: none !important;
             }
 
             .hamburger-menu {
@@ -793,276 +843,334 @@
             }
         }
 
-        /* Modals (Login, Edit & Bookings) */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            z-index: 3000;
-            justify-content: center;
-            align-items: center;
-            backdrop-filter: blur(4px);
+        /* Carbon Journal Field Note */
+        .carbon-journal {
+            font-size: 0.98rem;
+            line-height: 1.75;
+            color: #e5e7eb;
+            position: relative;
+            padding: 20px 24px;
+            background: rgba(15, 20, 16, 0.5);
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            margin: 0;
         }
 
-        .modal-box {
-            background: #1b2318;
-            /* Forest Floor Raised */
-            color: var(--text-light);
-            border: 1px solid var(--glass-border);
-            padding: 30px;
-            border-radius: 16px;
-            width: 340px;
+        .carbon-journal-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--primary-light);
+            margin-bottom: 8px;
             font-family: 'Barlow', 'Sarabun', sans-serif;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
-            max-height: 90vh;
-            overflow-y: auto;
         }
 
-        .modal-box h3 {
-            margin-top: 0;
-            margin-bottom: 20px;
-            font-size: 24px;
-            font-weight: 800;
-            color: #ffffff;
-            font-family: 'Barlow', sans-serif;
-            text-align: center;
-            letter-spacing: -0.5px;
+        .carbon-journal p {
+            margin: 0;
+            font-style: italic;
         }
 
-        .form-group {
-            margin-bottom: 16px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 13px;
-            margin-bottom: 6px;
-            font-weight: 600;
+        .carbon-journal-author {
+            margin-top: 14px;
+            font-size: 0.8rem;
             color: var(--text-muted);
-            font-family: 'Barlow', 'Sarabun', sans-serif;
+            text-align: right;
+            font-style: normal;
+        }
+
+        .highlight-text {
+            color: var(--primary-light);
+            font-weight: 700;
+            font-style: normal;
+        }
+
+        /* Community Pioneers Showcase (ADR 0006) */
+        .pioneers-section {
+            margin: 0;
+        }
+
+        .pioneers-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        @media (min-width: 641px) and (max-width: 991px) {
+            .pioneers-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .pioneer-card:first-child {
+                grid-column: span 2;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .pioneers-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .pioneer-card {
+            background: #1b2318;
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+            transition: all 0.25s ease;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        }
+
+        .pioneer-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(64, 192, 87, 0.4);
+            box-shadow: 0 14px 35px rgba(0, 0, 0, 0.5);
+        }
+
+        .pioneer-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 14px;
+        }
+
+        .pioneer-icon-wrap {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-md);
+            background: rgba(64, 192, 87, 0.12);
+            border: 1px solid rgba(64, 192, 87, 0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .pioneer-name {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+            line-height: 1.3;
+        }
+
+        .pioneer-host {
+            font-size: 0.85rem;
+            color: var(--primary-light);
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        .pioneer-tagline {
+            font-size: 0.9rem;
+            color: #d1d5db;
+            font-style: italic;
+            margin: 0 0 14px 0;
+            line-height: 1.5;
+            min-height: 2.8em;
+        }
+
+        .pioneer-highlight {
+            font-size: 0.85rem;
+            color: #9ca3af;
+            line-height: 1.55;
+            margin-bottom: 18px;
+            flex-grow: 1;
+        }
+
+        .pioneer-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: auto;
+            padding-top: 14px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .btn-pioneer-story {
+            flex: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            background: rgba(64, 192, 87, 0.15);
+            color: var(--primary-light);
+            border: 1px solid rgba(64, 192, 87, 0.3);
+            padding: 10px 16px;
+            min-height: 44px;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-pioneer-story:hover {
+            background: var(--primary-light);
+            color: #ffffff;
+            border-color: var(--primary-light);
+        }
+
+        /* Traveler Field Guide & Forest Advisory (ADR 0006 - Page 15) */
+        .field-guide-section {
+            margin: 0;
+        }
+
+        .ranger-advisory-card {
+            background: linear-gradient(135deg, rgba(27, 67, 50, 0.35) 0%, rgba(15, 20, 16, 0.85) 100%);
+            border: 1px solid rgba(169, 227, 75, 0.3);
+            border-radius: var(--radius-lg);
+            padding: clamp(24px, 4vw, 32px);
+            margin-bottom: 28px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4);
+        }
+
+        .ranger-advisory-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(64, 192, 87, 0.15);
+            border: 1px solid rgba(64, 192, 87, 0.35);
+            color: #d4e8c1;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 5px 14px;
+            border-radius: var(--radius-pill);
+            margin-bottom: 12px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            padding: 10px 14px;
-            box-sizing: border-box;
-            background: rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
+        .ranger-advisory-title {
+            font-size: clamp(1.15rem, 2vw, 1.35rem);
+            font-weight: 700;
             color: #ffffff;
-            font-family: 'Sarabun', sans-serif;
-            font-size: 14.5px;
-            transition: all 0.2s ease;
+            margin: 0 0 10px 0;
+            line-height: 1.4;
+            text-wrap: balance;
         }
 
-        .form-group input:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: var(--primary-light);
-            background: rgba(0, 0, 0, 0.4);
-            box-shadow: 0 0 0 3px rgba(64, 192, 87, 0.15);
+        .ranger-advisory-desc {
+            font-size: 0.95rem;
+            color: #e5e7eb;
+            line-height: 1.7;
+            margin: 0 0 20px 0;
         }
 
-        .google-btn {
-            width: 100%;
-            padding: 12px 14px;
-            box-sizing: border-box;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 8px;
-            color: #ffffff;
+        .advisory-tips-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+        }
+
+        .advisory-tip-box {
+            background: rgba(15, 20, 16, 0.65);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: var(--radius-md);
+            padding: 18px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            height: 100%;
+            transition: border-color 0.2s ease;
+        }
+
+        .advisory-tip-box:hover {
+            border-color: rgba(64, 192, 87, 0.3);
+        }
+
+        .advisory-tip-num {
+            font-size: 11.5px;
+            font-weight: 800;
+            color: var(--primary-light);
+            text-transform: uppercase;
+            letter-spacing: 1px;
             font-family: 'Barlow', sans-serif;
-            font-size: 15px;
-            font-weight: 600;
+        }
+
+        .advisory-tip-heading {
+            font-size: 1.02rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+        }
+
+        .advisory-tip-body {
+            font-size: 0.88rem;
+            color: #d1d5db;
+            line-height: 1.55;
+            margin: 0;
+        }
+
+        /* 1 Lead Safety Card + 2x2 Balanced Checklist Grid */
+        .checklist-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+        }
+
+        .checklist-card {
+            background: #1b2318;
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            padding: 22px;
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s ease;
+            height: 100%;
+        }
+
+        .checklist-card:hover {
+            border-color: rgba(255, 255, 255, 0.18);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .checklist-card.lead-checklist {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, rgba(27, 67, 50, 0.45) 0%, rgba(27, 35, 24, 0.95) 100%);
+            border: 1px solid rgba(64, 192, 87, 0.3);
+            padding: 24px 28px;
+        }
+
+        @media (max-width: 680px) {
+            .checklist-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .checklist-num {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            background: rgba(64, 192, 87, 0.12);
+            border: 1px solid rgba(64, 192, 87, 0.25);
+            color: var(--primary-light);
+            font-weight: 800;
+            font-size: 14.5px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            cursor: pointer;
-            transition: all 0.25s ease;
-            margin-bottom: 16px;
-        }
-
-        .google-btn:hover {
-            background: rgba(255, 255, 255, 0.12);
-            border-color: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
-        }
-
-        .google-btn svg {
             flex-shrink: 0;
-        }
-
-        .auth-divider {
-            display: flex;
-            align-items: center;
-            text-align: center;
-            margin-bottom: 20px;
-            color: var(--text-muted);
-            font-size: 12px;
-            font-weight: 700;
-            letter-spacing: 1px;
-        }
-
-        .auth-divider::before,
-        .auth-divider::after {
-            content: '';
-            flex: 1;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        .auth-divider:not(:empty)::before {
-            margin-right: 15px;
-        }
-
-        .auth-divider:not(:empty)::after {
-            margin-left: 15px;
-        }
-
-        .modal-actions {
-            display: flex;
-            gap: 12px;
-            justify-content: flex-end;
-            margin-top: 24px;
-        }
-
-        .btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 700;
             font-family: 'Barlow', sans-serif;
-            font-size: 14px;
-            transition: all 0.2s ease;
         }
 
-        .btn-cancel {
-            background: rgba(255, 255, 255, 0.08);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .btn-save {
-            background: var(--primary);
-            color: white;
-        }
-
-        .btn-save:hover {
-            background: var(--primary-light);
-        }
-
-        /* Nav Bar Button styles */
-        .admin-btn {
-            color: var(--primary-light) !important;
-            border: 1px solid var(--primary-light) !important;
-            border-radius: 6px !important;
-            padding: 6px 14px !important;
-            margin-left: 10px !important;
-            background: rgba(64, 192, 87, 0.05) !important;
-            font-family: 'Barlow', sans-serif !important;
-            font-size: 15px !important;
-            font-weight: 600 !important;
-            text-transform: uppercase !important;
-            transition: all 0.3s ease !important;
-            display: inline-block;
-        }
-
-        .admin-btn:hover {
-            background-color: var(--primary-light) !important;
-            color: white !important;
-            box-shadow: 0 4px 12px rgba(64, 192, 87, 0.2);
-        }
-
-        .my-bookings-btn,
-        .admin-bookings-btn,
-        .admin-manage-packages-btn {
-            background-color: rgba(64, 192, 87, 0.08) !important;
-            border: 1px solid rgba(64, 192, 87, 0.2) !important;
-            color: var(--primary-light) !important;
-            padding: 6px 16px !important;
-            border-radius: 20px !important;
-            font-weight: 700 !important;
-            font-size: 13.5px !important;
-            transition: all 0.3s ease !important;
-            margin-right: 8px;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .my-bookings-btn:hover,
-        .admin-bookings-btn:hover,
-        .admin-manage-packages-btn:hover {
-            background-color: rgba(64, 192, 87, 0.15) !important;
-            border-color: var(--primary-light) !important;
-        }
-
-        /* Toast UI Styles */
-        #toast-container {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            max-width: 380px;
-        }
-
-        .toast {
-            background: #1b2318;
-            border: 1px solid var(--glass-border);
+        .checklist-title {
+            font-size: 1.05rem;
+            font-weight: 700;
             color: #ffffff;
-            padding: 14px 20px;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-            font-family: 'Barlow', 'Sarabun', sans-serif;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 15px;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin: 0 0 6px 0;
         }
 
-        .toast.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .toast-success {
-            border-left: 4px solid var(--primary-light);
-        }
-
-        .toast-error {
-            border-left: 4px solid #ff6b6b;
-        }
-
-        .toast-info {
-            border-left: 4px solid #339af0;
-        }
-
-        .toast-close {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            font-size: 18px;
-            cursor: pointer;
-            padding: 0;
-            line-height: 1;
-        }
-
-        .toast-close:hover {
-            color: #ffffff;
+        .checklist-desc {
+            font-size: 0.88rem;
+            color: #d1d5db;
+            margin: 0;
+            line-height: 1.6;
         }
     </style>
 </head>
@@ -1071,12 +1179,12 @@
 
     <nav class="big-nav">
         <div class="nav-left">
-            <button class="hamburger-btn" onclick="toggleHamburger()" id="hamburgerBtn">
+            <button class="hamburger-btn" onclick="toggleHamburger()" id="hamburgerBtn" aria-label="เปิดเมนู">
                 <span></span>
                 <span></span>
                 <span></span>
             </button>
-            <div class="nav-brand" style="cursor: pointer;" onclick="window.location.reload()">MIANG MAP</div>
+            <a href="index.html" class="nav-brand">MIANG MAP</a>
         </div>
 
         <div class="hamburger-menu" id="hamburgerMenu">
@@ -1089,14 +1197,16 @@
                 <span>Map</span>
             </a>
             <a href="../travel_package/index.html" class="hamburger-link">
-                <span class="hamburger-icon">📦</span>
-                <span>Low Carbon Trip</span>
+                <span class="hamburger-icon">🌱</span>
+                <span>Activities & Carbon</span>
             </a>
         </div>
         <div class="hamburger-backdrop" id="hamburgerBackdrop" onclick="toggleHamburger()"></div>
 
         <div class="nav-links">
-            <button id="authBtn" onclick="toggleAuthModal()" class="nav-btn admin-btn">Login / Sign Up</button>
+            <a href="index.html" class="nav-btn active">Home</a>
+            <a href="../map/index.html" class="nav-btn">Map</a>
+            <a href="../travel_package/index.html" class="nav-btn">Activities & Carbon</a>
         </div>
     </nav>
 
@@ -1109,8 +1219,8 @@
                 ปลูกชากาแฟออร์แกนิกใต้ร่มไม้ใหญ่อย่างยั่งยืน</p>
             <div class="hero-actions">
                 <a href="../map/index.html" class="btn-premium btn-primary-style">🗺️ เริ่มเดินทางสำรวจแผนที่</a>
-                <a href="../travel_package/index.html" class="btn-premium btn-secondary-style">🌿
-                    ดูทริปคาร์บอนต่ำ</a>
+                <a href="../travel_package/index.html" class="btn-premium btn-secondary-style">🌱
+                    กิจกรรม & คำนวณคาร์บอน</a>
             </div>
         </div>
     </header>
@@ -1121,37 +1231,26 @@
         <!-- Story section -->
         <section class="story-container">
             <div class="story-text">
-                <h3>เรื่องราวแห่งป่าและคน "บ้านป่าเหมี้ยง"</h3>
-                <p>"บ้านป่าเหมี้ยง"
-                    คือชุมชนท่องเที่ยวเชิงอนุรักษ์ที่ซ่อนตัวอยู่ในเขต<strong>อุทยานแห่งชาติแจ้ซ้อน</strong>
-                    ตำบลแจ้ซ้อน อำเภอเมืองปาน จังหวัดลำปาง ตัวหมู่บ้านตั้งอยู่ในหุบเขาสูงประมาณ 1,200
-                    เมตรจากระดับน้ำทะเล
-                    มีเส้นทาง ลป.4030 เชื่อมต่อไปยังหมู่บ้านแม่กำปอง จังหวัดเชียงใหม่ ห่างกันเพียง 5–6 กิโลเมตร
-                    ที่นี่อากาศเย็นสบายตลอดทั้งปี โดยเฉพาะฤดูหนาวที่อุณหภูมิอาจต่ำกว่า 10 องศาเซลเซียส</p>
-                <p>หมู่บ้านแห่งนี้มีประวัติศาสตร์<strong>ยาวนานกว่า 200 ปี</strong>
-                    บรรพบุรุษของชาวบ้านอพยพมาจากเชียงใหม่
-                    เชียงราย และลำพูน เพื่อบุกเบิกทำมาหากินในป่าแห่งนี้ โดยยึดอาชีพ<strong>เก็บใบเหมี้ยง</strong>
-                    (ชาอัสสัมป่าที่ขึ้นตามธรรมชาติอย่างหนาแน่น) นำมานึ่งและหมักเป็น "เมี่ยง"
-                    ของว่างพื้นบ้านภูมิปัญญาล้านนาที่ใช้เคี้ยวหลังมื้ออาหารและต้อนรับแขก
-                    วิถีชีวิต เศรษฐกิจ และความผูกพันของคนที่นี่จึงเติบโตมาพร้อมกับป่าเหมี้ยงอย่างเกื้อกูลกัน</p>
+                <h3>เรื่องราวแห่งป่าและคน "บ้านป่าเหมี้ยง" (200 ปีกำเนิดชุมชน)</h3>
+                <p>"บ้านป่าเหมี้ยง" คือชุมชนท่องเที่ยวเชิงอนุรักษ์ที่ซ่อนตัวอยู่ในเขต<strong>อุทยานแห่งชาติแจ้ซ้อน</strong>
+                    ตำบลแจ้ซ้อน อำเภอเมืองปาน จังหวัดลำปาง ตัวหมู่บ้านตั้งอยู่ในหุบเขาสูงประมาณ 1,200 เมตรจากระดับน้ำทะเล
+                    มีเส้นทางเชื่อมต่อไปยังหมู่บ้านแม่กำปอง จังหวัดเชียงใหม่ ห่างกันเพียง 5–6 กิโลเมตร ที่นี่อากาศเย็นสบายตลอดทั้งปี</p>
+                <p>ย้อนรอยประวัติศาสตร์กว่า <strong>200 ปีก่อน</strong> บรรพบุรุษบ้านป่าเหมี้ยงได้อพยพมาจากตำบลแจ้ซ้อนและพื้นที่ใกล้เคียงเพื่อหนีภัยสงครามและการเก็บส่วยภาษี (ภาษี 4 บาทในสมัยนั้น) เข้ามาตั้งถิ่นฐานกลางหุบเขาและริเริ่มทำกินด้วยการเก็บ <strong>"ชาและเหมี้ยง"</strong> (ชาอัสสัมป่าที่เติบโตใต้ร่มไม้ใหญ่) นำมานึ่งและหมักเป็นของเคี้ยวหลังอาหารตามวัฒนธรรมล้านนา (ถ่ายทอดโดย <em>พ่อประสิทธิ์</em>)</p>
+                <p>จนกระทั่งในยุคเปลี่ยนผ่าน <strong>โครงการหลวง</strong> ได้ก้าวเข้ามามีบทบาทสำคัญ ส่งเสริมการปลูกชาและกาแฟอาราบิกาใต้ร่มเงาป่า จนกลายมาเป็นพืชเศรษฐกิจหลักที่สร้างรายได้ยั่งยืน และชุมชนได้ริเริ่มเปิด <strong>"โฮมสเตย์ 2–3 หลังแรก"</strong> โดยมี <em>พ่อหล้า</em> หนึ่งในคณะกรรมการหมู่บ้านรุ่นบุกเบิก คอยส่งต่อภูมิปัญญาแก่คนรุ่นใหม่ สู่การท่องเที่ยวเชิงนิเวศคาร์บอนต่ำในปัจจุบัน</p>
 
                 <div class="story-highlights">
                     <div class="highlight-item">
                         <div class="highlight-icon">🍃</div>
                         <div class="highlight-desc">
-                            <h4>วิถีใบเหมี้ยงแบบยั่งยืน</h4>
-                            <p>สืบทอดการเก็บใบเหมี้ยงด้วยมือจากต้น นึ่งด้วยไอน้ำร้อนๆ และหมักแบบดั้งเดิม
-                                แปรรูปเป็นเมี่ยงหมักและชาคั่ว รวมถึงเมนูสุด Unseen อย่าง "ยำใบเหมี้ยง"
-                                และ "หมอนใบชาเพื่อสุขภาพ" ที่ส่งกลิ่นหอมผ่อนคลายเวลานอน</p>
+                            <h4>วิถีใบเหมี้ยงและงานคราฟต์ล้านนา</h4>
+                            <p>สืบทอดการเก็บใบเหมี้ยงด้วยมือจากต้น นึ่งด้วยไหไม้เตาฟืนดั้งเดิม แปรรูปเป็นเมี่ยงหมักโบราณ ยำใบเหมี้ยงรสเลิศ และ "หมอนใบชาเพื่อสุขภาพ" ที่ส่งกลิ่นหอมผ่อนคลาย</p>
                         </div>
                     </div>
                     <div class="highlight-item">
                         <div class="highlight-icon">☕</div>
                         <div class="highlight-desc">
-                            <h4>กาแฟออร์แกนิกใต้ร่มเงาป่า</h4>
-                            <p>กาแฟอาราบิก้าที่เติบโตแบบธรรมชาติใต้ต้นไม้ใหญ่ในป่าเหมี้ยง ออร์แกนิก 100%
-                                ให้รสชาติที่เป็นเอกลักษณ์เฉพาะพื้นที่ เป็นมิตรกับสิ่งแวดล้อม
-                                และช่วยรักษาความสมบูรณ์ของป่าไม้ได้อย่างยั่งยืน</p>
+                            <h4>กาแฟออร์แกนิกใต้ร่มเงาป่า (Shade-Grown Coffee)</h4>
+                            <p>กาแฟอาราบิก้าที่เติบโตใต้ร่มไม้ใหญ่ในระบบวนเกษตร ออร์แกนิก 100% คัดเก็บผลเชอร์รี่สุกและคั่วด้วยมือ ช่วยรักษาความสมบูรณ์ของป่าต้นน้ำได้อย่างยั่งยืน</p>
                         </div>
                     </div>
                 </div>
@@ -1167,7 +1266,7 @@
         </section>
 
         <!-- Highlights section -->
-        <section>
+        <section class="highlights-section">
             <div class="section-header">
                 <h2>สถานที่และกิจกรรมห้ามพลาด</h2>
                 <p>สถานที่ท่องเที่ยวและกิจกรรมที่จะเปิดมุมมองใหม่ในการเดินทางแบบยั่งยืนของคุณ</p>
@@ -1175,31 +1274,223 @@
 
             <div class="card-grid">
                 <div class="sight-card">
-                    <div class="card-icon">🌅</div>
-                    <h3>กิ่วฝิ่น (Kiu Fin)</h3>
-                    <p>จุดชมวิวที่สูงจากระดับน้ำทะเล 1,517 เมตร ตั้งอยู่บนเขตแดนระหว่างลำปางและเชียงใหม่
-                        ชมความงดงามของพระอาทิตย์ขึ้น ทะเลหมอก และวิวทิวเขาแบบ 360 องศา สัมผัสลมหนาวตลอดทั้งปี</p>
+                    <div class="sight-media">
+                        <img src="images/kiu_fin.png" alt="จุดชมวิวกิ่วฝิ่น ยอดดอยป่าเหมี้ยง" loading="lazy">
+                        <span class="sight-badge">1,517 ม. รกม.</span>
+                    </div>
+                    <div class="sight-body">
+                        <span class="sight-tag">จุดชมวิวธรรมชาติ</span>
+                        <h3>กิ่วฝิ่น (Kiu Fin)</h3>
+                        <p>จุดชมวิวสันเขาพรมแดนลำปาง-เชียงใหม่ ชมทะเลหมอกและทิวเขาเขียวขจีแบบ 360 องศา สัมผัสลมหนาวตลอดทั้งปี</p>
+                    </div>
                 </div>
 
                 <div class="sight-card">
-                    <div class="card-icon">☕</div>
-                    <h3>กาแฟป่าเหมี้ยง</h3>
-                    <p>ลิ้มรสกาแฟอาราบิก้าชั้นเลิศที่ปลูกในผืนป่า ร่วมกิจกรรมเวิร์กช็อปตั้งแต่กระบวนการดริป ชง ดื่ม
-                        ดื่มด่ำรสชาติที่กลมกล่อมท่ามกลางอุณหภูมิที่เย็นสบาย</p>
+                    <div class="sight-media">
+                        <img src="images/wild_coffee.png" alt="กาแฟอาราบิกาในระบบวนเกษตรใต้ร่มเงาป่า" loading="lazy">
+                        <span class="sight-badge">วนเกษตรอินทรีย์</span>
+                    </div>
+                    <div class="sight-body">
+                        <span class="sight-tag">เกษตรอินทรีย์</span>
+                        <h3>กาแฟป่าเหมี้ยง</h3>
+                        <p>ลิ้มรสกาแฟอาราบิกาใต้ร่มเงาป่าดิบเขา คัดเก็บผลสุกด้วยมือ แปรรูปและคั่วบดสดใหม่คงเอกลักษณ์แห่งผืนป่า</p>
+                    </div>
                 </div>
 
                 <div class="sight-card">
-                    <div class="card-icon">🌊</div>
-                    <h3>น้ำตกสองปาน (Song Pan Waterfall)</h3>
-                    <p>น้ำตกที่โอบล้อมด้วยธรรมชาติป่าเขียวขจีในชุมชนบ้านป่าเหมี้ยง สายน้ำไหลเย็นใสสะอาด
-                        เป็นสถานที่ท่องเที่ยวธรรมชาติที่อุดมสมบูรณ์และเงียบสงบ เหมาะแก่การมาพักผ่อนหย่อนใจ</p>
+                    <div class="sight-media">
+                        <img src="images/mae_ka_waterfall.png" alt="น้ำตกสองปาน ลำธารใสกลางหุบเขา" loading="lazy">
+                        <span class="sight-badge">สายน้ำต้นน้ำ</span>
+                    </div>
+                    <div class="sight-body">
+                        <span class="sight-tag">แหล่งน้ำธรรมชาติ</span>
+                        <h3>น้ำตกสองปาน (Song Pan Waterfall)</h3>
+                        <p>สายน้ำใสบริสุทธิ์ที่โอบล้อมด้วยป่าโบราณอันร่มรื่น เป็นแหล่งหล่อเลี้ยงวิถีชีวิตและระบบนิเวศของชุมชน</p>
+                    </div>
                 </div>
 
                 <div class="sight-card">
-                    <div class="card-icon">🏡</div>
-                    <h3>โฮมสเตย์ชุมชน</h3>
-                    <p>พักผ่อนกับโฮมสเตย์ที่อบอุ่นของชาวบ้านริมธารน้ำใส สัมผัสความเรียบง่าย
-                        ไม่มีเครื่องปรับอากาศแต่เย็นสบายด้วยลมธรรมชาติ ฟังเสียงน้ำไหลและลมป่าพัดโชยตลอดคืน</p>
+                    <div class="sight-media">
+                        <img src="images/community_homestay.png" alt="โฮมสเตย์ชุมชนบ้านป่าเหมี้ยงริมลำธาร" loading="lazy">
+                        <span class="sight-badge">วิถีเรียบง่าย</span>
+                    </div>
+                    <div class="sight-body">
+                        <span class="sight-tag">ที่พักริมลำธาร</span>
+                        <h3>โฮมสเตย์ชุมชน</h3>
+                        <p>พักผ่อนท่ามกลางเสียงน้ำไหลและลมป่าพัดโชย อาหารพื้นบ้านรสฝีมือแม่ อบอุ่นด้วยวัฒนธรรมการต้อนรับแบบล้านนา</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Voices of the Forest: Pioneers Showcase (ADR 0006) -->
+        <section class="pioneers-section">
+            <div class="section-header">
+                <h2>บุคคลและภูมิปัญญาที่ภาคภูมิใจ</h2>
+                <p>สัมผัสเรื่องราวและเสน่ห์วิถีชีวิตผ่านหัวใจของผู้คนตัวจริงที่ขับเคลื่อนชุมชน</p>
+            </div>
+
+            <div class="pioneers-grid">
+                <!-- 1. Zhan Coffee โดย พี่คมสันต์ -->
+                <div class="pioneer-card">
+                    <div>
+                        <div class="pioneer-header">
+                            <div class="pioneer-icon-wrap">☕</div>
+                            <div>
+                                <h3 class="pioneer-name">Zhan Coffee</h3>
+                                <div class="pioneer-host">โดย พี่คมสันต์</div>
+                            </div>
+                        </div>
+                        <p class="pioneer-tagline">"ยกระดับกาแฟป่าเหมี้ยงจากศูนย์ สู่รสชาติเอกลักษณ์กลางผืนป่า"</p>
+                        <p class="pioneer-highlight">มุ่งมั่นพัฒนาเมล็ดกาแฟอาราบิกาในระบบวนเกษตรใต้ร่มเงาป่า คัดเก็บเชอร์รี่สุก และคั่วด้วยมือเพื่อดึงรสชาติตามธรรมชาติ สู่ร้านกาแฟ 3 สาขา</p>
+                    </div>
+                    <div class="pioneer-actions">
+                        <a href="../attraction/index.html?id=34" class="btn-pioneer-story">🔍 อ่านเรื่องราว</a>
+                    </div>
+                </div>
+
+                <!-- 2. หมอนใบชาโฮมสเตย์ โดย พี่สุนีย์ -->
+                <div class="pioneer-card">
+                    <div>
+                        <div class="pioneer-header">
+                            <div class="pioneer-icon-wrap">🧵</div>
+                            <div>
+                                <h3 class="pioneer-name">หมอนใบชาโฮมสเตย์</h3>
+                                <div class="pioneer-host">โดย พี่สุนีย์</div>
+                            </div>
+                        </div>
+                        <p class="pioneer-tagline">"พักผ่อนริมธาร สัมผัสไอหมอก พร้อมเวิร์กช็อปงานคราฟต์กลิ่นใบชา"</p>
+                        <p class="pioneer-highlight">พักผ่อนริมลำธารใส อาหารพื้นถิ่น 3 เมนู และเวิร์กช็อปทำหมอนใบชาเพื่อสุขภาพ & ตุ๊กตาชาหอมกรุ่น ช่วยให้หลับสบาย (สอนฟรีสำหรับผู้เข้าพัก)</p>
+                    </div>
+                    <div class="pioneer-actions">
+                        <a href="../attraction/index.html?id=46" class="btn-pioneer-story">🔍 อ่านเรื่องราว</a>
+                    </div>
+                </div>
+
+                <!-- 3. สายชลโฮมสเตย์ โดย แม่สายชล -->
+                <div class="pioneer-card">
+                    <div>
+                        <div class="pioneer-header">
+                            <div class="pioneer-icon-wrap">🏡</div>
+                            <div>
+                                <h3 class="pioneer-name">สายชลโฮมสเตย์</h3>
+                                <div class="pioneer-host">โดย แม่สายชล</div>
+                            </div>
+                        </div>
+                        <p class="pioneer-tagline">"มนต์เสน่ห์โฮมสเตย์รุ่นบุกเบิก อบอุ่นด้วยวัฒนธรรมล้านนาดั้งเดิม"</p>
+                        <p class="pioneer-highlight">โฮมสเตย์รุ่นแรกเปิดตั้งแต่ปี 2547 ดูแลด้วยอาหารตามสั่งรสฝีมือแม่ บายศรีสู่ขวัญ ดนตรีสะล้อซอซึง และพาเดินทัวร์สวนเกษตรผสมผสาน (Zero Carbon)</p>
+                    </div>
+                    <div class="pioneer-actions">
+                        <a href="../attraction/index.html?id=14" class="btn-pioneer-story">🔍 อ่านเรื่องราว</a>
+                    </div>
+                </div>
+
+                <!-- 4. คนบนดอยโฮมสเตย์ x คาเฟ่ โดย พี่หนุ่ม -->
+                <div class="pioneer-card">
+                    <div>
+                        <div class="pioneer-header">
+                            <div class="pioneer-icon-wrap">☕</div>
+                            <div>
+                                <h3 class="pioneer-name">คนบนดอยโฮมสเตย์</h3>
+                                <div class="pioneer-host">โดย พี่หนุ่ม</div>
+                            </div>
+                        </div>
+                        <p class="pioneer-tagline">"จากโปรแกรมเมอร์ IT สู่บ้านพักริมธารและวิถีคนทำกาแฟ"</p>
+                        <p class="pioneer-highlight">บ้านพักริมน้ำ 4 ชั้น Private 1 กรุ๊ป/ชั้น ขันโตกยำใบเหมี้ยง และเวิร์กช็อปเปิดโลกกาแฟครบวงจร (เก็บ คั่วด้วยมือ ดริปสด ปล่อยคาร์บอนเพียง 0.08 kgCO2e)</p>
+                    </div>
+                    <div class="pioneer-actions">
+                        <a href="../attraction/index.html?id=20" class="btn-pioneer-story">🔍 อ่านเรื่องราว</a>
+                    </div>
+                </div>
+
+                <!-- 5. กฤษณาธาราโฮมสเตย์ โดย พี่ติ๋ง -->
+                <div class="pioneer-card">
+                    <div>
+                        <div class="pioneer-header">
+                            <div class="pioneer-icon-wrap">🍲</div>
+                            <div>
+                                <h3 class="pioneer-name">กฤษณาธาราโฮมสเตย์</h3>
+                                <div class="pioneer-host">โดย พี่ติ๋ง</div>
+                            </div>
+                        </div>
+                        <p class="pioneer-tagline">"ขันโตกใบเหมี้ยงรสเด็ด หัวใจแห่งการต้อนรับที่เชื่อมโยงทั้งชุมชน"</p>
+                        <p class="pioneer-highlight">เปิดมากว่า 9 ปี เป็นสะพานเชื่อมพานักท่องเที่ยวไปสัมผัสกิจกรรมทุกบ้านในชุมชน โดดเด่นด้วยสำรับขันโตกพื้นบ้านสั่งทำพิเศษ ยำและไส้อั่วใบเหมี้ยง</p>
+                    </div>
+                    <div class="pioneer-actions">
+                        <a href="../attraction/index.html?id=18" class="btn-pioneer-story">🔍 อ่านเรื่องราว</a>
+                    </div>
+                </div>
+
+                <!-- 6. ศูนย์เรียนรู้วิถีนึ่งเหมี้ยงโบราณ โดย ลุงสมบัติ & ยายเขียว -->
+                <div class="pioneer-card">
+                    <div>
+                        <div class="pioneer-header">
+                            <div class="pioneer-icon-wrap">🍃</div>
+                            <div>
+                                <h3 class="pioneer-name">วิถีนึ่งเหมี้ยงโบราณ</h3>
+                                <div class="pioneer-host">โดย ลุงสมบัติ & ยายเขียว</div>
+                            </div>
+                        </div>
+                        <p class="pioneer-tagline">"เปิดแหล่งเรียนรู้วิถีทำเหมี้ยงดั้งเดิม มรดกภูมิปัญญาที่ส่งต่อมารุ่นสู่รุ่น"</p>
+                        <p class="pioneer-highlight">สัมผัสภูมิปัญญาดั้งเดิมกว่า 200 ปี จักตอกไม้ไผ่ นึ่งด้วยไหไม้และเตาฟืนไม้แห้ง ผึ่งลมธรรมชาติ และมัดกำใบตองตึงเพื่อนำไปหมักส่งขายตัวเมือง</p>
+                    </div>
+                    <div class="pioneer-actions">
+                        <a href="../attraction/index.html?id=48" class="btn-pioneer-story">🔍 อ่านเรื่องราว</a>
+                    </div>
+                </div>
+
+                <!-- 7. ไส้อั่วดอกเสี้ยว & อาหารถิ่น โดย ป้าคำ -->
+                <div class="pioneer-card">
+                    <div>
+                        <div class="pioneer-header">
+                            <div class="pioneer-icon-wrap">🌸</div>
+                            <div>
+                                <h3 class="pioneer-name">ไส้อั่วดอกเสี้ยว</h3>
+                                <div class="pioneer-host">โดย ป้าคำ</div>
+                            </div>
+                        </div>
+                        <p class="pioneer-tagline">"ภูมิปัญญาบนจานอาหาร มนต์เสน่ห์แห่งเทศกาลดอกเสี้ยวบาน"</p>
+                        <p class="pioneer-highlight">รังสรรค์เมนูเด็ดตามฤดูกาล นำกลีบดอกเสี้ยวป่ามาผสมเครื่องแกงทำไส้อั่วรสสัมผัสฝาดละมุนเฉพาะตัว และเมนูดอกเสี้ยวทอดกรอบสุดอร่อย</p>
+                    </div>
+                    <div class="pioneer-actions">
+                        <a href="../attraction/index.html?id=pa_kham" class="btn-pioneer-story">🔍 อ่านเรื่องราว</a>
+                    </div>
+                </div>
+
+                <!-- 8. ศาสตร์แห่งผึ้งป่าและสมุนไพร โดย ลุงสิงห์ทอง -->
+                <div class="pioneer-card">
+                    <div>
+                        <div class="pioneer-header">
+                            <div class="pioneer-icon-wrap">🐝</div>
+                            <div>
+                                <h3 class="pioneer-name">ศาสตร์แห่งผึ้งป่า & โอสถ</h3>
+                                <div class="pioneer-host">โดย ลุงสิงห์ทอง</div>
+                            </div>
+                        </div>
+                        <p class="pioneer-tagline">"ภูมิปัญญาคนตีผึ้งกลางสวนผสม สู่โอสถธรรมชาติตำรับสุขภาพ"</p>
+                        <p class="pioneer-highlight">ปราชญ์ชาวบ้านผู้เชี่ยวชาญการตีผึ้งโพรงและชันโรงในสวนผสม นำน้ำผึ้งป่าบริสุทธิ์มาปรุงเป็นยาลูกกลอนสมุนไพรบำรุงสุขภาพ</p>
+                    </div>
+                    <div class="pioneer-actions">
+                        <a href="../attraction/index.html?id=lung_singhthong" class="btn-pioneer-story">🔍 อ่านเรื่องราว</a>
+                    </div>
+                </div>
+
+                <!-- 9. หัตถศิลป์สานตอก โดย หนานนิด -->
+                <div class="pioneer-card">
+                    <div>
+                        <div class="pioneer-header">
+                            <div class="pioneer-icon-wrap">🎋</div>
+                            <div>
+                                <h3 class="pioneer-name">หัตถศิลป์สานตอกรักษ์โลก</h3>
+                                <div class="pioneer-host">โดย หนานนิด</div>
+                            </div>
+                        </div>
+                        <p class="pioneer-tagline">"ความเพียรในเส้นตอก สู่ที่ใส่แก้วทำมือจากหัวใจช่างฝีมือ"</p>
+                        <p class="pioneer-highlight">งานหัตถกรรมพื้นบ้านจักสานเส้นตอกไม้ไผ่เป็นที่ใส่แก้วน้ำรักษ์โลก สะท้อนวิถีชีวิตเรียบง่าย ความเพียร และการลดขยะพลาสติก</p>
+                    </div>
+                    <div class="pioneer-actions">
+                        <a href="../attraction/index.html?id=nhan_nid" class="btn-pioneer-story">🔍 อ่านเรื่องราว</a>
+                    </div>
                 </div>
             </div>
         </section>
@@ -1230,18 +1521,97 @@
                 </div>
             </div>
 
-            <div class="carbon-journal">
-                <div class="carbon-journal-title">บันทึกของผู้นำทางสิ่งแวดล้อม</div>
-                <p>
-                    "ทุกรอยเท้าที่เราย่ำผ่านผืนป่าเหมี้ยงล้วนทิ้งผลกระทบไว้ข้างหลัง
-                    จากการประเมินวิถีการเดินทางและกิจกรรมท่องเที่ยวของชุมชน พบว่าการเลือกใช้โฮมสเตย์พลังงานธรรมชาติ
-                    การสัญจรด้วยการเดินเท้า และการรับประทานอาหารจากวัตถุดิบป่าและสวนในท้องถิ่น สามารถช่วย <span
-                        class="highlight-text">ลดการปล่อยคาร์บอนลงได้ถึง 50%</span>
-                    เมื่อเทียบกับการท่องเที่ยวในรูปแบบปกติ... การมาเยือนของท่านจึงมิใช่เพียงการพักผ่อน
-                    แต่เป็นการร่วมปกป้องผืนป่าต้นน้ำให้คงอยู่อย่างสมบูรณ์และยั่งยืน"
+            <div class="carbon-panel-right">
+                <div class="carbon-stats">
+                    <div class="stat-value">-50%</div>
+                    <div class="stat-label">ลดการปล่อยคาร์บอน (เทียบกับการท่องเที่ยวทั่วไป)</div>
+                </div>
+                <div class="carbon-journal">
+                    <div class="carbon-journal-title">บันทึกของผู้นำทางสิ่งแวดล้อม</div>
+                    <p>
+                        "ทุกรอยเท้าที่เราย่ำผ่านผืนป่าเหมี้ยงล้วนทิ้งผลกระทบไว้ข้างหลัง
+                        จากการประเมินวิถีการเดินทางและกิจกรรมท่องเที่ยวของชุมชน พบว่าการเลือกใช้โฮมสเตย์พลังงานธรรมชาติ
+                        การสัญจรด้วยการเดินเท้า และการรับประทานอาหารจากวัตถุดิบป่าและสวนในท้องถิ่น สามารถช่วย <span
+                            class="highlight-text">ลดการปล่อยคาร์บอนลงได้ถึง 50%</span>
+                        เมื่อเทียบกับการท่องเที่ยวในรูปแบบปกติ... การมาเยือนของท่านจึงมิใช่เพียงการพักผ่อน
+                        แต่เป็นการร่วมปกป้องผืนป่าต้นน้ำให้คงอยู่อย่างสมบูรณ์และยั่งยืน"
+                    </p>
+                    <div class="carbon-journal-author">
+                        — ชุมชนบ้านป่าเหมี้ยง, ลำปาง
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Traveler Field Guide & Safety Section (ADR 0006 - Page 15) -->
+        <section class="field-guide-section">
+            <div class="section-header">
+                <h2>ข้อควรรู้และเตรียมความพร้อมก่อนขึ้นดอยป่าเหมี้ยง</h2>
+                <p>คำแนะนำจากชุมชนเพื่อการพักผ่อนท่ามกลางธรรมชาติอย่างราบรื่น ปลอดภัย และมีความสุข</p>
+            </div>
+
+            <!-- Ranger & Health Advisory Card (ADR 0006 - Page 15) -->
+            <div class="ranger-advisory-card">
+                <div class="ranger-advisory-badge">🌿 ข้อแนะนำการปรับตัวในระบบนิเวศป่าต้นน้ำ</div>
+                <h3 class="ranger-advisory-title">ข้อแนะนำสำคัญ: การรับมือ "ตัวคุ่น" (ริ้นดำ) ในผืนป่าธรรมชาติ</h3>
+                <p class="ranger-advisory-desc">
+                    บ้านป่าเหมี้ยงแวดล้อมด้วยผืนป่าดิบเขาและลำธารต้นน้ำที่บริสุทธิ์ จึงเป็นถิ่นอาศัยตามธรรมชาติของ <strong>"ตัวคุ่น" (ริ้นดำ)</strong> ซึ่งเป็นสิ่งมีชีวิตดัชนีชี้วัดความสะอาดและความสมบูรณ์ของระบบนิเวศ ตัวคุ่นมีขนาดเล็กมาก เมื่อสัมผัสผิวอาจทำให้เกิดอาการคันและตุ่มแดงในบางบุคคล เพื่อให้การท่องเที่ยวผ่อนคลายและสุขสบายสูงสุด ชุมชนขอแนะนำข้อปฏิบัติดังนี้:
                 </p>
-                <div style="margin-top: 20px; font-size: 0.8rem; color: var(--text-muted); text-align: right;">
-                    — ชุมชนบ้านป่าเหมี้ยง, ลำปาง
+                <div class="advisory-tips-grid">
+                    <div class="advisory-tip-box">
+                        <span class="advisory-tip-num">01 / เครื่องแต่งกาย</span>
+                        <h4 class="advisory-tip-heading">สวมเสื้อผ้าให้มิดชิด</h4>
+                        <p class="advisory-tip-body">สวมเสื้อแขนยาว กางเกงขายาวเนื้อละเอียด และถุงเท้า โดยเฉพาะขณะเดินเลียบแปลงกาแฟ วนเกษตร หรือริมลำธาร</p>
+                    </div>
+                    <div class="advisory-tip-box">
+                        <span class="advisory-tip-num">02 / การป้องกันผิว</span>
+                        <h4 class="advisory-tip-heading">ใช้สเปรย์หรือโลชั่นกันแมลง</h4>
+                        <p class="advisory-tip-body">ทาโลชั่นหรือสเปรย์ที่มีส่วนผสมของน้ำมันยูคาลิปตัสเลมอน (Lemon Eucalyptus) หรือ DEET โดยทาซ้ำทุก 2–3 ชั่วโมง</p>
+                    </div>
+                    <div class="advisory-tip-box">
+                        <span class="advisory-tip-num">03 / สุขอนามัย</span>
+                        <h4 class="advisory-tip-heading">หลีกเลี่ยงการเกา</h4>
+                        <p class="advisory-tip-body">พกยาทาแก้แพ้หรือยาหม่องสมุนไพร หากมีรอยคันให้ล้างด้วยน้ำสะอาดและทายา หลีกเลี่ยงการเกาเพื่อรักษาผิวให้สะอาด</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preparation Checklist Grid -->
+            <div class="checklist-grid">
+                <div class="checklist-card lead-checklist">
+                    <div class="checklist-num">01</div>
+                    <div>
+                        <h4 class="checklist-title">การเดินทางและยานพาหนะ</h4>
+                        <p class="checklist-desc">เส้นทางขึ้นบ้านป่าเหมี้ยงเป็นทางขึ้นเขาลาดชันและมีโค้งแคบ ควรตรวจเช็กสภาพเบรกและยางรถให้พร้อม ใช้เกียร์ต่ำ และเติมน้ำมันให้เต็มถังก่อนขึ้นดอย</p>
+                    </div>
+                </div>
+                <div class="checklist-card">
+                    <div class="checklist-num">02</div>
+                    <div>
+                        <h4 class="checklist-title">เตรียมเงินสดสำรอง</h4>
+                        <p class="checklist-desc">สัญญาณอินเทอร์เน็ตบนดอยอาจไม่ครอบคลุมในบางจุด และร้านค้าชุมชนส่วนใหญ่ยังเน้นรับเงินสด แนะนำให้กดเงินสดสำรองไว้ล่วงหน้า</p>
+                    </div>
+                </div>
+                <div class="checklist-card">
+                    <div class="checklist-num">03</div>
+                    <div>
+                        <h4 class="checklist-title">เสื้อกันหนาวและอุปกรณ์กันฝน</h4>
+                        <p class="checklist-desc">สภาพอากาศบนดอยเย็นสบายตลอดปีและจะหนาวเย็นเป็นพิเศษในตอนค่ำ ควรเตรียมเสื้อกันหนาวติดไปด้วย รวมถึงร่มหรือเสื้อกันฝนหากเดินทางช่วงฤดูฝน</p>
+                    </div>
+                </div>
+                <div class="checklist-card">
+                    <div class="checklist-num">04</div>
+                    <div>
+                        <h4 class="checklist-title">รองเท้าสำหรับเดินลุย</h4>
+                        <p class="checklist-desc">หมู่บ้านมีทางเดินเนินสูงและเส้นทางศึกษาธรรมชาติ แนะนำให้สวมรองเท้าผ้าใบหรือรองเท้าเดินป่าที่กระชับ ไม่ลื่น</p>
+                    </div>
+                </div>
+                <div class="checklist-card">
+                    <div class="checklist-num">05</div>
+                    <div>
+                        <h4 class="checklist-title">เคารพความสงบของชุมชน</h4>
+                        <p class="checklist-desc">ป่าเหมี้ยงเป็นหมู่บ้านวิถีชีวิตดั้งเดิมที่เงียบสงบ งดส่งเสียงดังยามวิกาล และช่วยกันรักษาความสะอาดด้วยการไม่ทิ้งขยะตามเส้นทางธรรมชาติ</p>
+                    </div>
                 </div>
             </div>
         </section>
@@ -1252,12 +1622,10 @@
     <section class="cta-section">
         <div class="cta-inner">
             <h2>พร้อมที่จะสัมผัสวิถีชีวิตบ้านป่าเหมี้ยงแล้วหรือยัง?</h2>
-            <p>ร่วมเดินทางอย่างรับผิดชอบ สำรวจพิกัดร้านค้า โฮมสเตย์ ที่เที่ยว ในแผนที่นำทางแบบโต้ตอบได้
-                หรือเลือกจองทริปคาร์บอนต่ำที่เราคัดสรรมาให้คุณ</p>
+            <p>ร่วมเดินทางอย่างรับผิดชอบ สำรวจพิกัดร้านค้า โฮมสเตย์ จุดชมวิวในแผนที่นำทางชุมชน และคำนวณรอยเท้าคาร์บอนจากกิจกรรมท่องเที่ยวของคุณ</p>
             <div class="cta-buttons">
                 <a href="../map/index.html" class="btn-premium btn-primary-style">🗺️ เปิดแผนที่นำทางเชิงลึก</a>
-                <a href="../travel_package/index.html" class="btn-premium btn-secondary-style">🌿
-                    สำรวจทริปคาร์บอนต่ำ</a>
+                <a href="../travel_package/index.html" class="btn-premium btn-secondary-style">🌱 กิจกรรม & คำนวณคาร์บอน</a>
             </div>
         </div>
     </section>
@@ -1268,94 +1636,11 @@
         <div class="footer-links">
             <a href="index.html">Home</a>
             <a href="../map/index.html">Map</a>
-            <a href="../travel_package/index.html">Low Carbon Trip</a>
+            <a href="../travel_package/index.html">Activities & Carbon</a>
         </div>
         <p>&copy; 2026 MIANG MAP - โครงการส่งเสริมการท่องเที่ยวคาร์บอนต่ำชุมชนบ้านป่าเหมี้ยง. All Rights Reserved.</p>
     </footer>
 
-    <!-- Auth Modals -->
-    <div id="loginModal" class="modal-overlay" onclick="if(event.target === this) closeModal('loginModal')">
-        <div class="modal-box">
-            <h3 id="authModalTitle">Login</h3>
-
-            <div id="googleAuthContainer">
-                <button class="google-btn" onclick="handleGoogleLogin()">
-                    <svg viewBox="0 0 24 24" width="20" height="20">
-                        <path fill="#4285F4"
-                            d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                        <path fill="#34A853"
-                            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                        <path fill="#FBBC05"
-                            d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
-                        <path fill="#EA4335"
-                            d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
-                    </svg>
-                    <span>Sign in with Google</span>
-                </button>
-                <div class="auth-divider">
-                    <span>OR</span>
-                </div>
-            </div>
-
-            <div id="signupFields" style="display: none;">
-                <div class="form-group">
-                    <label>First Name (ชื่อ)</label>
-                    <input type="text" id="firstNameInput" placeholder="Enter first name">
-                </div>
-                <div class="form-group">
-                    <label>Last Name (นามสกุล)</label>
-                    <input type="text" id="lastNameInput" placeholder="Enter last name">
-                </div>
-                <div class="form-group">
-                    <label>Phone Number (เบอร์โทร)</label>
-                    <input type="tel" id="phoneNumInput" placeholder="Enter phone number">
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Email</label>
-                <input type="email" id="emailInput" placeholder="Enter email">
-            </div>
-            <div class="form-group" id="passwordFieldGroup">
-                <label>Password</label>
-                <input type="password" id="passwordInput" placeholder="Enter password">
-            </div>
-            <div
-                style="font-size: 14px; text-align: center; margin-bottom: 15px; display: flex; flex-direction: column; gap: 8px;">
-                <a href="#" onclick="toggleAuthType()" id="authToggleLink"
-                    style="color: #1a73e8; text-decoration: none;">Don't have an account? Sign Up</a>
-                <a href="#" onclick="switchToForgotMode()" id="forgotPasswordLink"
-                    style="color: #868e96; text-decoration: none; font-size: 13px;">Forgot Password? (ลืมรหัสผ่าน?)</a>
-            </div>
-            <div class="modal-actions">
-                <button class="btn btn-cancel" onclick="closeModal('loginModal')">Cancel</button>
-                <button class="btn btn-save" id="authSubmitBtn" onclick="handleAuthAction()">Login</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Password Recovery/Update Modal -->
-    <div id="updatePasswordModal" class="modal-overlay"
-        onclick="if(event.target === this) closeModal('updatePasswordModal')">
-        <div class="modal-box">
-            <h3>Update Password</h3>
-            <div class="form-group">
-                <label>New Password (รหัสผ่านใหม่)</label>
-                <input type="password" id="newPasswordInput" placeholder="Enter new password (min 6 chars)">
-            </div>
-            <div class="modal-actions">
-                <button class="btn btn-cancel" onclick="closeModal('updatePasswordModal')">Cancel</button>
-                <button class="btn btn-save" id="updatePasswordBtn" onclick="handleUpdatePassword()">Update
-                    Password</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Toast Container -->
-    <div id="toast-container"></div>
-
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="../shared_auth.js"></script>
     <script>
         function toggleHamburger() {
             document.getElementById('hamburgerBtn').classList.toggle('open');
